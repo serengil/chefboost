@@ -1,5 +1,7 @@
 # chefboost
 
+<p align="center"><img src="https://raw.githubusercontent.com/serengil/chefboost/master/icon/chefboost.jpg"></p>
+
 Chefboost is a gradient boosting and random forest enabled decision tree framework. ID3, C4.5, CART and regression tree algorithms are supported.
 
 # Usage
