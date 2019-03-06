@@ -36,3 +36,7 @@ pip install numpy
 # Documentation
 
 You can find detailed documentations about these core algorithms [here](https://sefiks.com/tag/decision-tree/).
+
+# Licence
+
+You can use, clone or distribute any content of this repository just to the extent that you cite or reference.
