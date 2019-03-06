@@ -7,7 +7,7 @@ Chefboost is a gradient boosting and random forest enabled decision tree framewo
 Basically, you just need to pass the dataset as pandas data frame and tree configurations after importing Chefboost as illustrated below.
 
 ```
-import Chefboost as cb
+import Chefboost as chef
 import pandas as pd
 
 #GBM example
@@ -21,7 +21,7 @@ config = {
 
 df = pd.read_csv("dataset/golf3.txt")
 
-cb.fit(df, config)
+chef.fit(df, config)
 ```
 
 Initial tests are run on Python 3.6.4 and Windows 10 OS.
