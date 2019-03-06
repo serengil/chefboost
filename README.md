@@ -4,7 +4,7 @@ Chefboost is a gradient boosting and random forest enabled decision tree framewo
 
 # Usage
 
-Basically, you just need to pass the dataset as pandas data frame and tree configurations after importing Chefboost as illustrated below.
+Basically, you just need to pass the dataset as pandas data frame and tree configurations after importing Chefboost as illustrated below. You just need to set the label of the target column to **"Decision"**. 
 
 ```
 import Chefboost as chef
