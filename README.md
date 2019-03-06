@@ -26,6 +26,10 @@ chef.fit(df, config)
 
 Initial tests are run on Python 3.6.4 and Windows 10 OS.
 
+# Outcomes
+
+Built decision trees are stored as python if statements in the outputs/rules directory. 
+
 # Prerequisites
 
 Pandas and numpy python libraries are used to load data sets in this repository. You might run the following commands to install these packages if you are going to use them first time.
