@@ -1,0 +1,15 @@
+Outlook,Temp.,Humidity,Wind,Decision
+Sunny,85,85,Weak,No
+Sunny,80,90,Strong,No
+Overcast,83,78,Weak,Yes
+Rain,70,96,Weak,Yes
+Rain,68,80,Weak,Yes
+Rain,65,70,Strong,No
+Overcast,64,65,Strong,Yes
+Sunny,72,95,Weak,No
+Sunny,69,70,Weak,Yes
+Rain,75,80,Weak,Yes
+Sunny,75,70,Strong,Yes
+Overcast,72,90,Strong,Yes
+Overcast,81,75,Weak,Yes
+Rain,71,80,Strong,No
