@@ -6,19 +6,18 @@ Chefboost is [gradient boosting](https://sefiks.com/2018/10/04/a-step-by-step-gr
 
 # Usage
 
-Basically, you just need to pass the dataset as pandas data frame and tree configurations after importing Chefboost as illustrated below. You just need to set the label of the target column to **"Decision"**. 
+Basically, you just need to pass the dataset as pandas data frame and tree configurations after importing Chefboost as illustrated below. You just need to set the label of the target column to **Decision**. 
 
 ```
 import Chefboost as chef
 import pandas as pd
 
-#GBM example
-
 config = {
 	'algorithm': 'ID3' #ID3, C4.5, CART, Regression
 	, 'enableGBM': False, 'epochs': 10, 'learning_rate': 1
-	, 'enableRandomForest': True, 'num_of_trees': 5
-	, 'enableAdaboost': False, 'debug': False
+	, 'enableRandomForest': False, 'num_of_trees': 5
+	, 'enableAdaboost': False
+	, 'debug': False
 }
 
 df = pd.read_csv("dataset/golf3.txt")
