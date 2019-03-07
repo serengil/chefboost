@@ -2,7 +2,7 @@
 
 <p align="center"><img src="https://raw.githubusercontent.com/serengil/chefboost/master/icon/chefboost.jpg" width="200" height="200"></p>
 
-Chefboost is a gradient boosting and random forest enabled decision tree framework. ID3, C4.5, CART and regression tree algorithms are supported.
+Chefboost is a gradient boosting and random forest enabled decision tree framework supporting ID3, C4.5, CART and regression tree algorithms.
 
 # Usage
 
@@ -30,7 +30,7 @@ Initial tests are run on Python 3.6.4 and Windows 10 OS.
 
 # Outcomes
 
-Built decision trees are stored as python if statements in the outputs/rules directory. A sample of decision rules is demonstrated below.
+Built decision trees are stored as python if statements in the outputs/rules/rules.py file. A sample of decision rules is demonstrated below.
 
 ```
 def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
