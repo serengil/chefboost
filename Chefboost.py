@@ -84,7 +84,7 @@ def fit(df, config):
 			gbm.regressor(df, config, header, dataset_features)
 				
 	elif enableRandomForest == True:
-		randomforest.runForSingleThread(df, config, header, dataset_features)
+		randomforest.apply(df, config, header, dataset_features)
 	else: #regular decision tree building
 
 		root = 1; file = "outputs/rules/rules.py"
