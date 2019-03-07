@@ -80,35 +80,11 @@ def fit(df, config):
 		if df['Decision'].dtypes == 'object': #transform classification problem to regression
 			gbm.classifier(df, config, header, dataset_features)
 			
-		else: #regression problem
+		else: #regression
 			gbm.regressor(df, config, header, dataset_features)
 				
 	elif enableRandomForest == True:
 		randomforest.runForSingleThread(df, config, header, dataset_features)
-		
-		"""
-		#this routing will be handled later
-		if enableMultitasking == False:
-			randomforest.runForSingleThread(df, config, header, dataset_features)
-		else: #parallel
-			from multiprocessing import Pool
-			subsets = []
-			
-			for i in range(0, num_of_trees):
-				
-				file = "outputs/rules/rule_"+str(i)+".py"
-				
-				subset = df.sample(frac=1/num_of_trees)
-				root = 1
-				subsets.append((subset, root, file, config, dataset_features))
-				
-				if debug == False:
-					functions.createFile(file, header)
-			
-			if __name__ == '__main__': #windows returns expection if this control is not applied for multitasking
-				with Pool(num_of_trees) as pool:
-					pool.starmap(Training.buildDecisionTree, subsets)
-		"""
 	else: #regular decision tree building
 
 		root = 1; file = "outputs/rules/rules.py"
