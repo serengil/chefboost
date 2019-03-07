@@ -5,7 +5,7 @@ from multiprocessing import Pool
 from commons import functions
 from training import Training
 	
-def runForSingleThread(df, config, header, dataset_features):
+def apply(df, config, header, dataset_features):
 	
 	debug = config['debug'] 
 	num_of_trees = config['num_of_trees']
@@ -21,7 +21,3 @@ def runForSingleThread(df, config, header, dataset_features):
 			functions.createFile(file, header)
 		
 		Training.buildDecisionTree(subset,root, file, config, dataset_features)
-
-def runForMultitasking(df, config, header, dataset_features):
-	#TODO: pooling expects to run in main. this will be fixed later.
-	return 0
