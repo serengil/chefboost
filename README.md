@@ -30,7 +30,23 @@ Initial tests are run on Python 3.6.4 and Windows 10 OS.
 
 # Outcomes
 
-Built decision trees are stored as python if statements in the outputs/rules directory. 
+Built decision trees are stored as python if statements in the outputs/rules directory. A sample of decision rules is demonstrated below.
+
+```
+def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
+   if Outlook == 'Rain':
+      if Wind == 'Weak':
+         return 'Yes'
+      if Wind == 'Strong':
+         return 'No'
+   if Outlook == 'Sunny':
+      if Humidity == 'High':
+         return 'No'
+      if Humidity == 'Normal':
+         return 'Yes'
+   if Outlook == 'Overcast':
+      return 'Yes'
+ ```
 
 # Prerequisites
 
