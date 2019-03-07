@@ -17,7 +17,7 @@ import pandas as pd
 config = {
 	'algorithm': 'ID3' #ID3, C4.5, CART, Regression
 	, 'enableGBM': False, 'epochs': 10, 'learning_rate': 1
-	, 'enableRandomForest': True, 'num_of_trees': 5, 'enableMultitasking': True
+	, 'enableRandomForest': True, 'num_of_trees': 5
 	, 'enableAdaboost': False, 'debug': False
 }
 
