@@ -62,4 +62,4 @@ You can find detailed documentations about these core algorithms [here](https://
 
 # Licence
 
-MIT License - see [LICENSE](https://github.com/serengil/chefboost/blob/master/LICENSE) for more details.
+Chefboost is licensed under the MIT License - see [LICENSE](https://github.com/serengil/chefboost/blob/master/LICENSE) for more details.
