@@ -29,7 +29,7 @@ Initial tests are run on Python 3.6.4 and Windows 10 OS.
 
 # Outcomes
 
-Built decision trees are stored as python if statements in the outputs/rules/rules.py file. A sample of decision rules is demonstrated below.
+Built decision trees are stored as python if statements in the `outputs/rules/rules.py` file. A sample of decision rules is demonstrated below.
 
 ```
 def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
@@ -62,4 +62,4 @@ You can find detailed documentations about these core algorithms [here](https://
 
 # Licence
 
-Chefboost is licensed under the MIT License - see [LICENSE](https://github.com/serengil/chefboost/blob/master/LICENSE) for more details.
+Chefboost is licensed under the MIT License - see [`LICENSE`](https://github.com/serengil/chefboost/blob/master/LICENSE) for more details.
