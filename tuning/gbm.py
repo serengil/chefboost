@@ -25,6 +25,10 @@ def regressor(df, config, header, dataset_features):
 	
 	base_df = df.copy()
 	
+	#gbm will manipulate actuals. store its raw version.
+	target_values = base_df['Decision'].values
+	num_of_instances = target_values.shape[0]
+	
 	root = 1
 	file = "outputs/rules/rules0.py"
 	if debug == False:
@@ -36,7 +40,10 @@ def regressor(df, config, header, dataset_features):
 	
 	#------------------------------
 	
-	for index in range(1,epochs):	
+	for index in range(1,epochs+1):
+		print("epoch ",index," - ",end='')
+		loss = 0
+		
 		#run data(i-1) and rules(i-1), save data1
 		
 		#dynamic import
@@ -50,6 +57,8 @@ def regressor(df, config, header, dataset_features):
 		#put header in the following file
 		columns = df.shape[1]
 		
+		mae = 0
+		
 		for i, instance in df.iterrows():
 			params = []
 			line = ""
@@ -61,6 +70,27 @@ def regressor(df, config, header, dataset_features):
 			
 			prediction = int(myrules.findDecision(params)) #apply rules(i-1) for data(i-1)
 			actual = instance[columns-1]
+			
+			#-----------------------------------
+			#find loss
+			
+			global_prediction = prediction * 1
+			if index > 1:
+				for j in range(0, index):
+				
+					#dynamic import
+					moduleName = "outputs/rules/rules%s" % (j)
+					fp, pathname, description = imp.find_module(moduleName)
+					myrules = imp.load_module(moduleName, fp, pathname, description) #rules0
+					
+					global_prediction += int(myrules.findDecision(params))
+			
+			#print(index,". target: ",target_values[i]," - prediction: ",global_prediction)
+			target_value = target_values[i]
+			boosted_prediction = global_prediction
+			
+			loss += pow((boosted_prediction - target_value), 2)
+			#-----------------------------------
 			
 			#print(prediction)
 			
@@ -74,9 +104,10 @@ def regressor(df, config, header, dataset_features):
 			instance[columns-1] = gradient
 			
 			df.loc[i] = instance
-		
+			
 		df.to_csv(new_data_set, index=False)
 		#data(i) created
+		
 		#---------------------------------
 		
 		file = "outputs/rules/rules"+str(index)+".py"
@@ -89,6 +120,11 @@ def regressor(df, config, header, dataset_features):
 		df = current_df.copy() #numeric features require this restoration to apply findDecision function
 		
 		#rules(i) created
+		
+		loss = loss / num_of_instances
+		#print("epoch ",index," - loss: ",loss)
+		print("loss: ",loss)
+		
 		#---------------------------------
 
 def classifier(df, config, header, dataset_features):
