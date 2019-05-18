@@ -130,7 +130,7 @@ def regressor(df, config, header, dataset_features):
 		loss = loss / num_of_instances
 		#print("epoch ",index," - loss: ",loss)
 		#print("loss: ",loss)
-		pbar.set_description("Loss %d" % loss)
+		pbar.set_description("Epoch %d - Loss %d" % (index, loss))
 		
 		#---------------------------------
 
