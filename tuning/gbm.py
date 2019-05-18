@@ -167,7 +167,7 @@ def classifier(df, config, header, dataset_features):
 			temp_df[['Decision']].astype('int64')
 			
 			root = 1
-			file = "outputs/rules/rules-for-"+current_class+".py"
+			file = "outputs/rules/rules-for-"+current_class+"-round-"+str(epoch)+".py"
 			
 			if debug == False: functions.createFile(file, header)
 			
@@ -176,7 +176,7 @@ def classifier(df, config, header, dataset_features):
 			#----------------------------
 			
 			#dynamic import
-			moduleName = "outputs/rules/rules-for-"+current_class
+			moduleName = "outputs/rules/rules-for-"+current_class+"-round-"+str(epoch)
 			fp, pathname, description = imp.find_module(moduleName)
 			myrules = imp.load_module(moduleName, fp, pathname, description) #rules0
 			
