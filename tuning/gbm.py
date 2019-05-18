@@ -130,7 +130,7 @@ def regressor(df, config, header, dataset_features):
 		loss = loss / num_of_instances
 		#print("epoch ",index," - loss: ",loss)
 		#print("loss: ",loss)
-		pbar.set_description("Epoch %d - Loss %d" % (index, loss))
+		pbar.set_description("Epoch %d. Loss: %d. Process: " % (index, loss))
 		
 		#---------------------------------
 
@@ -149,6 +149,13 @@ def classifier(df, config, header, dataset_features):
 	boosted_predictions = np.zeros([df.shape[0], len(classes)])
 	
 	pbar = tqdm(range(0, epochs), desc='Boosting')
+	
+	#store actual set, we will use this to calculate loss
+	actual_set = pd.DataFrame(np.zeros([df.shape[0], len(classes)]), columns=classes)
+	for i in range(0, len(classes)):
+		current_class = classes[i]
+		actual_set[current_class] = np.where(df['Decision'] == current_class, 1, 0)
+	actual_set = actual_set.values #transform it to numpy array
 	
 	#for epoch in range(0, epochs):
 	for epoch in pbar:
@@ -189,6 +196,7 @@ def classifier(df, config, header, dataset_features):
 				
 				actual = temp_df.loc[row]['Decision']
 				prediction = myrules.findDecision(features)
+								
 				predictions.append(prediction)
 					
 			#----------------------------
@@ -198,6 +206,8 @@ def classifier(df, config, header, dataset_features):
 				worksheet['F_'+str(i)] = pd.Series(predictions).values
 			
 			boosted_predictions[:,i] = boosted_predictions[:,i] + worksheet['F_'+str(i)].values.astype(np.float32)
+			
+			#print(boosted_predictions[0:5,:])
 			
 			worksheet['P_'+str(i)] = 0
 			
@@ -219,5 +229,26 @@ def classifier(df, config, header, dataset_features):
 		for i in range(0, len(classes)):
 			worksheet['Y-P_'+str(i)] = worksheet['Y_'+str(i)] - worksheet['P_'+str(i)]
 		
+		prediction_set = np.zeros([df.shape[0], len(classes)])
+		for i in range(0, boosted_predictions.shape[0]):
+			predicted_index = np.argmax(boosted_predictions[i])
+			prediction_set[i][predicted_index] = 1
+		
+		#----------------------------
+		#find loss for this epoch: prediction_set vs actual_set
+		classified = 0
+		for i in range(0, actual_set.shape[0]):
+			actual = np.argmax(actual_set[i])
+			prediction = np.argmax(prediction_set[i])
+			#print("actual: ",actual," - prediction: ",prediction)
+			
+			if actual == prediction:
+				classified = classified + 1
+		
+		accuracy = str(100 * classified / actual_set.shape[0]) + "%"
+		
+		#----------------------------
+		
+		#print(worksheet.head())
 		#print("round ",epoch+1)
-		pbar.set_description("Round %d" % (epoch+1))
+		pbar.set_description("Epoch %d. Accuracy: %s. Process: " % (epoch+1, accuracy))
