@@ -54,6 +54,7 @@ Pandas and numpy python libraries are used to load data sets in this repository.
 ```
 pip install pandas
 pip install numpy
+pip install tqdm
 ```
 
 # Documentation
