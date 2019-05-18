@@ -6,6 +6,8 @@ import imp
 from commons import functions
 from training import Preprocess, Training
 
+from tqdm import tqdm
+
 def regressor(df, config, header, dataset_features):
 	
 	debug = config['debug'] 
@@ -40,8 +42,12 @@ def regressor(df, config, header, dataset_features):
 	
 	#------------------------------
 	
-	for index in range(1,epochs+1):
-		print("epoch ",index," - ",end='')
+	pbar = tqdm(range(1,epochs+1), desc='Boosting')
+	
+	#for index in range(1,epochs+1):
+	#for index in tqdm(range(1,epochs+1), desc='Boosting'):
+	for index in pbar:
+		#print("epoch ",index," - ",end='')
 		loss = 0
 		
 		#run data(i-1) and rules(i-1), save data1
@@ -123,7 +129,8 @@ def regressor(df, config, header, dataset_features):
 		
 		loss = loss / num_of_instances
 		#print("epoch ",index," - loss: ",loss)
-		print("loss: ",loss)
+		#print("loss: ",loss)
+		pbar.set_description("Loss %d" % loss)
 		
 		#---------------------------------
 
