@@ -148,7 +148,10 @@ def classifier(df, config, header, dataset_features):
 	
 	boosted_predictions = np.zeros([df.shape[0], len(classes)])
 	
-	for epoch in range(0, epochs):
+	pbar = tqdm(range(0, epochs), desc='Boosting')
+	
+	#for epoch in range(0, epochs):
+	for epoch in pbar:
 		for i in range(0, len(classes)):
 			current_class = classes[i]
 			
@@ -216,4 +219,5 @@ def classifier(df, config, header, dataset_features):
 		for i in range(0, len(classes)):
 			worksheet['Y-P_'+str(i)] = worksheet['Y_'+str(i)] - worksheet['P_'+str(i)]
 		
-		print("round ",epoch+1)
+		#print("round ",epoch+1)
+		pbar.set_description("Round %d" % (epoch+1))
