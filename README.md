@@ -52,9 +52,9 @@ def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
 Pandas and numpy python libraries are used to load data sets in this repository. You might run the following commands to install these packages if you are going to use them first time.
 
 ```
-pip install pandas
-pip install numpy
-pip install tqdm
+pip install pandas==0.22.0
+pip install numpy==1.14.0
+pip install tqdm==4.30.0
 ```
 
 # Documentation
