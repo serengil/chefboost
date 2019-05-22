@@ -8,12 +8,15 @@ from commons import functions
 from training import Preprocess, Training
 from tuning import gbm, adaboost, randomforest
 
+import pathlib
+
 #------------------------
 
 def fit(df, config):
 	
-	#config parameters
+	#initialize params and folders
 	config = initializeParams(config)
+	initializeFolders()
 	
 	debug = config['debug'] 
 	algorithm = config['algorithm']
@@ -95,6 +98,11 @@ def fit(df, config):
 	
 	print("finished in ",time.time() - begin," seconds")	
 
+def initializeFolders():
+	pathlib.Path("outputs").mkdir(parents=True, exist_ok=True)
+	pathlib.Path("outputs/data").mkdir(parents=True, exist_ok=True)
+	pathlib.Path("outputs/rules").mkdir(parents=True, exist_ok=True)
+	
 def initializeParams(config):
 	algorithm = 'ID3'
 	enableRandomForest = False; num_of_trees = 5; enableMultitasking = False
