@@ -25,8 +25,6 @@ df = pd.read_csv("dataset/golf3.txt")
 chef.fit(df, config)
 ```
 
-Initial tests are run on Python 3.6.4 and Windows 10 OS.
-
 # Outcomes
 
 Built decision trees are stored as python if statements in the `outputs/rules/rules.py` file. A sample of decision rules is demonstrated below.
@@ -57,6 +55,13 @@ pip install numpy==1.14.0
 pip install tqdm==4.30.0
 ```
 
+Initial tests are run on the following environment.
+
+ ```
+C:\>python --version
+Python 3.6.4 :: Anaconda, Inc.
+ ```
+ 
 # Documentation
 
 You can find detailed documentations about these core algorithms [here](https://sefiks.com/tag/decision-tree/).
