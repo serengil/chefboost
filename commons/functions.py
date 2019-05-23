@@ -42,7 +42,7 @@ def initializeParams(config):
 	algorithm = 'ID3'
 	enableRandomForest = False; num_of_trees = 5; enableMultitasking = False
 	enableGBM = False; epochs = 10; learning_rate = 1
-	enableAdaboost = False, num_of_weak_classifier = 4
+	enableAdaboost = False; num_of_weak_classifier = 4
 	debug = False
 	
 	for key, value in config.items():
