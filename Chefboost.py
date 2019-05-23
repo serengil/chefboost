@@ -15,7 +15,7 @@ import pathlib
 def fit(df, config):
 	
 	#initialize params and folders
-	config = initializeParams(config)
+	config = functions.initializeParams(config)
 	initializeFolders()
 	
 	debug = config['debug'] 
@@ -102,45 +102,3 @@ def initializeFolders():
 	pathlib.Path("outputs").mkdir(parents=True, exist_ok=True)
 	pathlib.Path("outputs/data").mkdir(parents=True, exist_ok=True)
 	pathlib.Path("outputs/rules").mkdir(parents=True, exist_ok=True)
-	
-def initializeParams(config):
-	algorithm = 'ID3'
-	enableRandomForest = False; num_of_trees = 5; enableMultitasking = False
-	enableGBM = False; epochs = 10; learning_rate = 1
-	enableAdaboost = False
-	debug = False
-	
-	for key, value in config.items():
-		if key == 'debug':
-			debug = value
-		elif key == 'algorithm':
-			algorithm = value
-		#---------------------------------	
-		elif key == 'enableRandomForest':
-			enableRandomForest = value
-		elif key == 'num_of_trees':
-			num_of_trees = value
-		elif key == 'enableMultitasking':
-			enableMultitasking = value
-		#---------------------------------
-		elif key == 'enableGBM':
-			enableGBM = value
-		elif key == 'epochs':
-			epochs = value
-		elif key == 'learning_rate':
-			learning_rate = value
-		#---------------------------------	
-		elif key == 'enableAdaboost':
-			enableAdaboost = value
-			
-	config['debug'] = debug
-	config['algorithm'] = algorithm
-	config['enableRandomForest'] = enableRandomForest
-	config['num_of_trees'] = num_of_trees
-	config['enableMultitasking'] = enableMultitasking
-	config['enableGBM'] = enableGBM
-	config['epochs'] = epochs
-	config['learning_rate'] = learning_rate
-	config['enableAdaboost'] = enableAdaboost
-	
-	return config
