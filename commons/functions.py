@@ -1,4 +1,5 @@
 import numpy as np
+import pathlib
 
 def softmax(w):
 	e = np.exp(np.array(w, dtype=np.float32))
@@ -29,6 +30,13 @@ def storeRule(file,content):
 def createFile(file,content):
 	f = open(file, "w")
 	f.write(content)
+
+def initializeFolders():
+	import sys
+	sys.path.append("..")
+	pathlib.Path("outputs").mkdir(parents=True, exist_ok=True)
+	pathlib.Path("outputs/data").mkdir(parents=True, exist_ok=True)
+	pathlib.Path("outputs/rules").mkdir(parents=True, exist_ok=True)
 
 def initializeParams(config):
 	algorithm = 'ID3'
