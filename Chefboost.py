@@ -8,15 +8,13 @@ from commons import functions
 from training import Preprocess, Training
 from tuning import gbm, adaboost, randomforest
 
-import pathlib
-
 #------------------------
 
 def fit(df, config):
 	
 	#initialize params and folders
 	config = functions.initializeParams(config)
-	initializeFolders()
+	functions.initializeFolders()
 	
 	debug = config['debug'] 
 	algorithm = config['algorithm']
