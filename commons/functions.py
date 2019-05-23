@@ -67,6 +67,8 @@ def initializeParams(config):
 		#---------------------------------	
 		elif key == 'enableAdaboost':
 			enableAdaboost = value
+		elif key == 'num_of_weak_classifier':
+			num_of_weak_classifier = value
 			
 	config['debug'] = debug
 	config['algorithm'] = algorithm
@@ -77,5 +79,6 @@ def initializeParams(config):
 	config['epochs'] = epochs
 	config['learning_rate'] = learning_rate
 	config['enableAdaboost'] = enableAdaboost
+	config['num_of_weak_classifier'] = num_of_weak_classifier
 	
 	return config
