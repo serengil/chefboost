@@ -95,8 +95,3 @@ def fit(df, config):
 		Training.buildDecisionTree(df,root,file, config, dataset_features)
 	
 	print("finished in ",time.time() - begin," seconds")	
-
-def initializeFolders():
-	pathlib.Path("outputs").mkdir(parents=True, exist_ok=True)
-	pathlib.Path("outputs/data").mkdir(parents=True, exist_ok=True)
-	pathlib.Path("outputs/rules").mkdir(parents=True, exist_ok=True)
