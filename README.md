@@ -16,7 +16,7 @@ config = {
 	'algorithm': 'ID3' #ID3, C4.5, CART, Regression
 	, 'enableGBM': False, 'epochs': 10, 'learning_rate': 1
 	, 'enableRandomForest': False, 'num_of_trees': 5, 'enableMultitasking': False
-	, 'enableAdaboost': False
+	, 'enableAdaboost': False, 'num_of_weak_classifier': 4
 	, 'debug': False
 }
 
