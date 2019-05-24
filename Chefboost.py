@@ -30,6 +30,9 @@ def fit(df, config):
 	enableAdaboost = config['enableAdaboost']
 	
 	#------------------------
+	
+	num_of_rows = df.shape[0]; num_of_columns = df.shape[1]
+	
 	if algorithm == 'Regression':
 		if df['Decision'].dtypes == 'object':
 			raise ValueError('Regression trees cannot be applied for nominal target values! You can either change the algorithm or data set.')
@@ -44,6 +47,12 @@ def fit(df, config):
 		debug = False #gbm needs rules files to iterate
 		algorithm = 'Regression'
 		config['algorithm'] = 'Regression'
+	
+	if enableAdaboost == True:
+		for j in range(0, num_of_columns):
+			column_name = df.columns[j]
+			if df[column_name].dtypes  == 'object':
+				raise ValueError('Adaboost must be run on numeric data set for both features and target')
 		
 	#-------------------------
 	
