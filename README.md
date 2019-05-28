@@ -6,7 +6,7 @@ Chefboost is [gradient boosting](https://sefiks.com/2018/10/04/a-step-by-step-gr
 
 # Usage
 
-Basically, you just need to pass the dataset as pandas data frame and tree configurations after importing Chefboost as illustrated below. You just need to set the label of the target column to **Decision**. Besides, chefboost handles both numeric and nominal features and target values in contrast to its alternatives.
+Basically, you just need to pass the dataset as pandas data frame and tree configurations after importing Chefboost as illustrated below. You just need to put the target label to the right. Besides, chefboost handles both numeric and nominal features and target values in contrast to its alternatives.
 
 ```
 import Chefboost as chef
