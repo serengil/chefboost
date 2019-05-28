@@ -216,3 +216,50 @@ def buildDecisionTree(df,root,file, config, dataset_features):
 			buildDecisionTree(subdataset, root, file, config, dataset_features)
 		
 		root = tmp_root * 1
+	
+	#---------------------------------------------
+	
+	if root == 1:
+		if config['enableRandomForest'] != True and config['enableGBM'] != True and config['enableAdaboost'] != True:
+		#this is reguler decision tree. find accuracy here.
+		
+			moduleName = "outputs/rules/rules"
+			fp, pathname, description = imp.find_module(moduleName)
+			myrules = imp.load_module(moduleName, fp, pathname, description) #rules0
+			
+			num_of_features = df.shape[1] - 1
+			instances = df.shape[0]
+			classified = 0; mae = 0; mse = 0
+			for index, instance in raw_df.iterrows():
+				params = []
+				for j in range(0, num_of_features):
+					params.append(instance[j])
+				
+				prediction = myrules.findDecision(params)
+				actual = instance['Decision']
+				
+				if algorithm != 'Regression':
+					if actual == prediction:
+						classified = classified + 1
+				else:
+					mae = mae + abs(actual - prediction)
+					mse = mse + (actual - prediction)*(actual - prediction)
+			
+			if algorithm != 'Regression':
+				accuracy = 100*classified/df.shape[0]
+				print("Accuracy: ", accuracy,"% on ",instances," instances")
+			else:
+				mean = df['Decision'].mean()
+				mae = mae / instances
+				mse = mse / instances; rmse = math.sqrt(mse)
+				
+				print("Mean: ",mean)
+				print("MAE: ",mae)
+				print("RMSE: ",rmse)
+				
+				if mean > 0:
+					print("MAE/Mean: ",100*mae/mean,"%")
+					#print("MSE: ",mse)
+					#print("MSE/mean: ",100*mse/mean,"%")
+					print("RMSE/mean: ",100*rmse/mean,"%")
+					print("Instances: ",instances)
