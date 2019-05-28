@@ -12,6 +12,12 @@ from tuning import gbm, adaboost, randomforest
 
 def fit(df, config):
 	
+	target_label = df.columns[len(df.columns)-1]
+	if target_label != 'Decision':
+		print("Expected: Decision, Existing: ",target_label)
+		raise ValueError('Please confirm that name of the target column is "Decision" and it is put to the right in pandas data frame')
+	
+	#------------------------
 	#initialize params and folders
 	config = functions.initializeParams(config)
 	functions.initializeFolders()
