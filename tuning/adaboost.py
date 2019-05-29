@@ -11,7 +11,6 @@ from tqdm import tqdm
 
 def apply(df, config, header, dataset_features):
 	
-	debug = config['debug']
 	num_of_weak_classifier = config['num_of_weak_classifier']
 	
 	#------------------------
@@ -33,7 +32,7 @@ def apply(df, config, header, dataset_features):
 		root = 1
 		file = "outputs/rules/rules_"+str(i)+".py"
 		
-		if debug == False: functions.createFile(file, header)
+		functions.createFile(file, header)
 		
 		#print(worksheet)
 		Training.buildDecisionTree(worksheet.drop(columns=['Weight'])
