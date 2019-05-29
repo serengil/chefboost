@@ -22,7 +22,7 @@ def fit(df, config):
 	config = functions.initializeParams(config)
 	functions.initializeFolders()
 	
-	debug = config['debug'] 
+	debug = False #we need rules output to check accuracy. remove debug checking steps as to do.
 	algorithm = config['algorithm']
 
 	enableRandomForest = config['enableRandomForest']
