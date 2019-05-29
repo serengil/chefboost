@@ -43,12 +43,9 @@ def initializeParams(config):
 	enableRandomForest = False; num_of_trees = 5; enableMultitasking = False
 	enableGBM = False; epochs = 10; learning_rate = 1
 	enableAdaboost = False; num_of_weak_classifier = 4
-	debug = False
 	
 	for key, value in config.items():
-		if key == 'debug':
-			debug = value
-		elif key == 'algorithm':
+		if key == 'algorithm':
 			algorithm = value
 		#---------------------------------	
 		elif key == 'enableRandomForest':
@@ -70,7 +67,6 @@ def initializeParams(config):
 		elif key == 'num_of_weak_classifier':
 			num_of_weak_classifier = value
 			
-	config['debug'] = debug
 	config['algorithm'] = algorithm
 	config['enableRandomForest'] = enableRandomForest
 	config['num_of_trees'] = num_of_trees
