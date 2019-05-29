@@ -18,11 +18,11 @@ def fit(df, config):
 		raise ValueError('Please confirm that name of the target column is "Decision" and it is put to the right in pandas data frame')
 	
 	#------------------------
+	
 	#initialize params and folders
 	config = functions.initializeParams(config)
 	functions.initializeFolders()
 	
-	debug = False #we need rules output to check accuracy. remove debug checking steps as to do.
 	algorithm = config['algorithm']
 
 	enableRandomForest = config['enableRandomForest']
@@ -50,7 +50,6 @@ def fit(df, config):
 
 	if enableGBM == True:
 		print("Gradient Boosting Machines...")
-		debug = False #gbm needs rules files to iterate
 		algorithm = 'Regression'
 		config['algorithm'] = 'Regression'
 	
@@ -70,21 +69,11 @@ def fit(df, config):
 		header = "def findDecision("
 		num_of_columns = df.shape[1]-1
 		for i in range(0, num_of_columns):
-			if debug == True:
-				if i > 0:
-					header = header + ","
-				header = header + df.columns[i]
-			
 			column_name = df.columns[i]
 			dataset_features[column_name] = df[column_name].dtypes
 
-		if debug == False:
-			header = header + "obj"
-			
+		header = header + "obj"
 		header = header + "):\n"
-
-		if debug == True:
-			print(header,end='')	
 	
 	#------------------------
 	
@@ -106,7 +95,9 @@ def fit(df, config):
 	else: #regular decision tree building
 
 		root = 1; file = "outputs/rules/rules.py"
-		if debug == False: functions.createFile(file, header)
+		functions.createFile(file, header)
 		Training.buildDecisionTree(df,root,file, config, dataset_features)
 	
 	print("finished in ",time.time() - begin," seconds")
+	
+	#-----------------------------------------
