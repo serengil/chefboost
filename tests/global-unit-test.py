@@ -91,7 +91,7 @@ print("-------------------------")
 
 """
 print("Random forest (multitasking)")
-config = {'algorithm': 'ID3', 'enableGBM': False, 'epochs': 10, 'learning_rate': 1, 'enableRandomForest': True, 'num_of_trees': 5, 'enableMultitasking': True, 'enableAdaboost': False, 'debug': False}
+config = {'algorithm': 'ID3', 'enableGBM': False, 'epochs': 10, 'learning_rate': 1, 'enableRandomForest': True, 'num_of_trees': 5, 'enableMultitasking': True, 'enableAdaboost': False}
 cb.fit(pd.read_csv("../dataset/car.data",names=["buying","maint","doors","persons","lug_boot","safety","Decision"]), config)
 """
 print("-------------------------")
