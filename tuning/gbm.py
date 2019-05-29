@@ -10,7 +10,6 @@ from tqdm import tqdm
 
 def regressor(df, config, header, dataset_features):
 	
-	debug = config['debug'] 
 	algorithm = config['algorithm']
 	
 	enableRandomForest = config['enableRandomForest']
@@ -33,8 +32,7 @@ def regressor(df, config, header, dataset_features):
 	
 	root = 1
 	file = "outputs/rules/rules0.py"
-	if debug == False:
-		functions.createFile(file, header)
+	functions.createFile(file, header)
 	
 	Training.buildDecisionTree(df,root,file, config, dataset_features) #generate rules0
 	
@@ -118,8 +116,7 @@ def regressor(df, config, header, dataset_features):
 		
 		file = "outputs/rules/rules"+str(index)+".py"
 		
-		if debug == False:
-			functions.createFile(file, header)
+		functions.createFile(file, header)
 		
 		current_df = df.copy()
 		Training.buildDecisionTree(df,root,file, config, dataset_features)
@@ -137,7 +134,6 @@ def regressor(df, config, header, dataset_features):
 def classifier(df, config, header, dataset_features):
 	print("gradient boosting for classification")
 	
-	debug = config['debug']
 	epochs = config['epochs']
 	
 	temp_df = df.copy()
@@ -176,7 +172,7 @@ def classifier(df, config, header, dataset_features):
 			root = 1
 			file = "outputs/rules/rules-for-"+current_class+"-round-"+str(epoch)+".py"
 			
-			if debug == False: functions.createFile(file, header)
+			functions.createFile(file, header)
 			
 			Training.buildDecisionTree(temp_df,root,file, config, dataset_features)
 			#decision rules created
