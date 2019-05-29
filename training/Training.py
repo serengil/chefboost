@@ -42,7 +42,11 @@ def findDecision(df, config):
 	if algorithm == 'Regression':
 		stdev = df['Decision'].std(ddof=0)
 		
-	entropy = calculateEntropy(df, config)
+	
+	entropy = 0
+	
+	if algorithm == "ID3" or algorithm == "C4.5":
+		entropy = calculateEntropy(df, config)
 	#print("entropy: ",entropy)
 
 	columns = df.shape[1]; instances = df.shape[0]
@@ -129,14 +133,13 @@ def findDecision(df, config):
 	return winner_name
 
 def buildDecisionTree(df,root,file, config, dataset_features):
-	
+
 	if root == 1:
 		if config['enableRandomForest'] != True and config['enableGBM'] != True and config['enableAdaboost'] != True:
 			raw_df = df.copy()
 	
 	algorithm = config['algorithm']
 	enableAdaboost = config['enableAdaboost']
-	debug = config['debug'] 
 	
 	#--------------------------------------
 	
@@ -204,18 +207,13 @@ def buildDecisionTree(df,root,file, config, dataset_features):
 			terminateBuilding = True
 		#-----------------------------------------------
 		
-		if debug == True:
-			print(functions.formatRule(root),"if ",winner_name,compareTo,":")
-		else:
-			functions.storeRule(file,(functions.formatRule(root),"if obj[",str(winner_index),"]",compareTo,":"))
+		functions.storeRule(file,(functions.formatRule(root),"if obj[",str(winner_index),"]",compareTo,":"))
 		
 		#-----------------------------------------------
 		
 		if terminateBuilding == True: #check decision is made
-			if debug == True:
-				print(functions.formatRule(root+1),"return ",charForResp+str(final_decision)+charForResp)
-			else:
-				functions.storeRule(file,(functions.formatRule(root+1),"return ",charForResp+str(final_decision)+charForResp))
+			functions.storeRule(file,(functions.formatRule(root+1),"return ",charForResp+str(final_decision)+charForResp))
+			
 		else: #decision is not made, continue to create branch and leafs
 			root = root + 1 #the following rule will be included by this rule. increase root
 			buildDecisionTree(subdataset, root, file, config, dataset_features)
@@ -227,6 +225,7 @@ def buildDecisionTree(df,root,file, config, dataset_features):
 	if root == 1:
 		if config['enableRandomForest'] != True and config['enableGBM'] != True and config['enableAdaboost'] != True:
 		#this is reguler decision tree. find accuracy here.
+			print("accuracy:")
 		
 			moduleName = "outputs/rules/rules"
 			fp, pathname, description = imp.find_module(moduleName)
