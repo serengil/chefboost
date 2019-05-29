@@ -12,7 +12,6 @@ import imp
 	
 def apply(df, config, header, dataset_features):
 	
-	debug = config['debug'] 
 	num_of_trees = config['num_of_trees']
 	
 	pbar = tqdm(range(0, num_of_trees), desc='Bagging')
@@ -26,8 +25,7 @@ def apply(df, config, header, dataset_features):
 		
 		file = "outputs/rules/rule_"+str(i)+".py"
 		
-		if debug == False:
-			functions.createFile(file, header)
+		functions.createFile(file, header)
 		
 		Training.buildDecisionTree(subset,root, file, config, dataset_features)
 		
@@ -39,7 +37,7 @@ def apply(df, config, header, dataset_features):
 	actual_values = df['Decision'].values
 	num_of_features = df.shape[1] - 1 #discard Decision
 	number_of_instances = df.shape[0]
-	
+		
 	global_predictions = []
 	
 	#if classification get the max number of prediction
@@ -92,8 +90,12 @@ def apply(df, config, header, dataset_features):
 				
 				#print("unique: ",unique_values)
 				#print("counts: ",counts)
-				max_index = np.argmax(np.array(counts))
-				prediction = unique_values[max_index]
+				
+				prediction = None
+				
+				if len(counts) > 0:
+					max_index = np.argmax(np.array(counts))
+					prediction = unique_values[max_index]
 						
 			#print(index,". actual: ",actual," - prediction: ", prediction)
 			if actual == prediction:
