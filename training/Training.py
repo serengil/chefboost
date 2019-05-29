@@ -130,6 +130,10 @@ def findDecision(df, config):
 
 def buildDecisionTree(df,root,file, config, dataset_features):
 	
+	if root == 1:
+		if config['enableRandomForest'] != True and config['enableGBM'] != True and config['enableAdaboost'] != True:
+			raw_df = df.copy()
+	
 	algorithm = config['algorithm']
 	enableAdaboost = config['enableAdaboost']
 	debug = config['debug'] 
