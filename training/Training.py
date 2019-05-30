@@ -207,7 +207,12 @@ def buildDecisionTree(df,root,file, config, dataset_features):
 			terminateBuilding = True
 		#-----------------------------------------------
 		
-		functions.storeRule(file,(functions.formatRule(root),"if obj[",str(winner_index),"]",compareTo,":"))
+		if i == 0:
+			check_condition = "if"
+		else:
+			check_condition = "elif"
+		
+		functions.storeRule(file,(functions.formatRule(root),"",check_condition," obj[",str(winner_index),"]",compareTo,":"))
 		
 		#-----------------------------------------------
 		
