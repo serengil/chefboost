@@ -65,16 +65,20 @@ def fit(df, config):
 	
 	dataset_features = dict() #initialize a dictionary. this is going to be used to check features numeric or nominal. numeric features should be transformed to nominal values based on scales.
 
-	if(True): #header of rules files
-		header = "def findDecision("
-		num_of_columns = df.shape[1]-1
-		for i in range(0, num_of_columns):
-			column_name = df.columns[i]
-			dataset_features[column_name] = df[column_name].dtypes
-
-		header = header + "obj"
-		header = header + "):\n"
+	header = "def findDecision("
+	header = header + "obj"
+	header = header + "): #"
 	
+	num_of_columns = df.shape[1]-1
+	for i in range(0, num_of_columns):
+		column_name = df.columns[i]
+		dataset_features[column_name] = df[column_name].dtypes
+		header = header + "obj[" + str(i) +"]: "+column_name
+		if i != num_of_columns - 1:
+			header = header + ", "
+	
+	header = header + "\n"
+		
 	#------------------------
 	
 	begin = time.time()
