@@ -230,8 +230,6 @@ def buildDecisionTree(df,root,file, config, dataset_features):
 	if root == 1:
 		if config['enableRandomForest'] != True and config['enableGBM'] != True and config['enableAdaboost'] != True:
 		#this is reguler decision tree. find accuracy here.
-			print("accuracy:")
-		
 			moduleName = "outputs/rules/rules"
 			fp, pathname, description = imp.find_module(moduleName)
 			myrules = imp.load_module(moduleName, fp, pathname, description) #rules0
@@ -239,36 +237,82 @@ def buildDecisionTree(df,root,file, config, dataset_features):
 			num_of_features = df.shape[1] - 1
 			instances = df.shape[0]
 			classified = 0; mae = 0; mse = 0
-			for index, instance in raw_df.iterrows():
-				params = []
-				for j in range(0, num_of_features):
-					params.append(instance[j])
-				
-				prediction = myrules.findDecision(params)
-				actual = instance['Decision']
+			
+			if False: #for loop calculation would not perform good
+				for index, instance in raw_df.iterrows():
+					params = []
+					for j in range(0, num_of_features):
+						params.append(instance[j])
+					
+					prediction = myrules.findDecision(params)
+					actual = instance['Decision']
+					
+					if algorithm != 'Regression':
+						if actual == prediction:
+							classified = classified + 1
+					else:
+						mae = mae + abs(actual - prediction)
+						mse = mse + (actual - prediction)*(actual - prediction)
 				
 				if algorithm != 'Regression':
-					if actual == prediction:
-						classified = classified + 1
+					accuracy = 100*classified/instances
+					print("Accuracy: ", accuracy,"% on ",instances," instances")
 				else:
-					mae = mae + abs(actual - prediction)
-					mse = mse + (actual - prediction)*(actual - prediction)
+					mean = df['Decision'].mean()
+					print("Mean: ",mean)
+					
+					mae = mae / instances
+					mse = mse / instances; rmse = math.sqrt(mse)
+					print("MAE: ",mae)
+					print("RMSE: ",rmse)
+					
+					if mean > 0:
+						print("MAE/Mean: ",100*mae/mean,"%")
+						#print("MSE: ",mse)
+						#print("MSE/mean: ",100*mse/mean,"%")
+						print("RMSE/mean: ",100*rmse/mean,"%")
+						print("Instances: ",instances)
+			else: #instead of for loops, pandas functions perform well
+				raw_df['Prediction'] = raw_df.apply(findPrediction, axis=1)
+				if algorithm != 'Regression':
+					idx = raw_df[raw_df['Prediction'] == raw_df['Decision']].index
+					
+					#raw_df['Classified'] = 0
+					#raw_df.loc[idx, 'Classified'] = 1
+					#print(raw_df)
+					
+					accuracy = 100*len(idx)/instances
+					print("Accuracy: ", accuracy,"% on ",instances," instances")
+				else:
+					raw_df['Absolute_Error'] = abs(raw_df['Prediction'] - raw_df['Decision'])
+					raw_df['Absolute_Error_Squared'] = raw_df['Absolute_Error'] * raw_df['Absolute_Error']
+					
+					#print(raw_df)
+					
+					mae = raw_df['Absolute_Error'].sum()/instances
+					print("MAE: ",mae)
+					
+					mse = raw_df['Absolute_Error_Squared'].sum()/instances
+					rmse = math.sqrt(mse)
+					print("RMSE: ",rmse)
+					
+					mean = raw_df['Decision'].mean()
+					print("Mean: ", mean)
+					
+					if mean > 0:
+						print("MAE / Mean: ",100*mae/mean,"%")
+						print("RMSE / Mean: ",100*rmse/mean,"%")
 			
-			if algorithm != 'Regression':
-				accuracy = 100*classified/df.shape[0]
-				print("Accuracy: ", accuracy,"% on ",instances," instances")
-			else:
-				mean = df['Decision'].mean()
-				mae = mae / instances
-				mse = mse / instances; rmse = math.sqrt(mse)
-				
-				print("Mean: ",mean)
-				print("MAE: ",mae)
-				print("RMSE: ",rmse)
-				
-				if mean > 0:
-					print("MAE/Mean: ",100*mae/mean,"%")
-					#print("MSE: ",mse)
-					#print("MSE/mean: ",100*mse/mean,"%")
-					print("RMSE/mean: ",100*rmse/mean,"%")
-					print("Instances: ",instances)
+def findPrediction(row):
+	params = []
+	num_of_features = row.shape[0] - 1
+	for j in range(0, num_of_features):
+		params.append(row[j])
+	
+	moduleName = "outputs/rules/rules"
+	fp, pathname, description = imp.find_module(moduleName)
+	myrules = imp.load_module(moduleName, fp, pathname, description) #rules0
+	
+	prediction = myrules.findDecision(params)
+	return prediction
+	
