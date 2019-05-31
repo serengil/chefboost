@@ -20,7 +20,7 @@ config = {
 	, 'debug': False
 }
 
-df = pd.read_csv("dataset/golf3.txt")
+df = pd.read_csv("dataset/golf.txt")
 
 chef.fit(df, config)
 ```
@@ -34,14 +34,14 @@ def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
    if Outlook == 'Rain':
       if Wind == 'Weak':
          return 'Yes'
-      if Wind == 'Strong':
+      elif Wind == 'Strong':
          return 'No'
-   if Outlook == 'Sunny':
+   elif Outlook == 'Sunny':
       if Humidity == 'High':
          return 'No'
-      if Humidity == 'Normal':
+      elif Humidity == 'Normal':
          return 'Yes'
-   if Outlook == 'Overcast':
+   elif Outlook == 'Overcast':
       return 'Yes'
  ```
 
