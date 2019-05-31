@@ -78,6 +78,6 @@ def apply(df, config, header, dataset_features):
 	#------------------------------
 	final_predictions['Prediction'] = final_predictions['Prediction'].apply(functions.sign)
 	final_predictions['Absolute_Error'] = np.abs(final_predictions['Actual'] - final_predictions['Prediction'])/2
-	print(final_predictions)
+	#print(final_predictions)
 	mae = final_predictions['Absolute_Error'].sum() / final_predictions.shape[0]
 	print("Loss (MAE) found ", mae, " with ",num_of_weak_classifier, ' weak classifiers')
