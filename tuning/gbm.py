@@ -8,6 +8,22 @@ from training import Preprocess, Training
 
 from tqdm import tqdm
 
+def findPrediction(row):
+	columns = row.shape[0]
+	epoch = row['Epoch']
+	
+	params = []
+	for j in range(0, columns-1):
+		params.append(row[j])
+		
+	moduleName = "outputs/rules/rules%s" % (epoch-1)
+	fp, pathname, description = imp.find_module(moduleName)
+	myrules = imp.load_module(moduleName, fp, pathname, description)
+	
+	prediction = int(myrules.findDecision(params)) 
+	
+	return prediction
+
 def regressor(df, config, header, dataset_features):
 	
 	algorithm = config['algorithm']
@@ -63,52 +79,25 @@ def regressor(df, config, header, dataset_features):
 		
 		mae = 0
 		
-		for i, instance in df.iterrows():
-			params = []
-			line = ""
-			for j in range(0, columns-1):
-				params.append(instance[j])
-				if j > 0:
-					line = line + ","
-				line = line + str(instance[j])
-			
-			prediction = int(myrules.findDecision(params)) #apply rules(i-1) for data(i-1)
-			actual = instance[columns-1]
-			
-			#-----------------------------------
-			#find loss
-			
-			global_prediction = prediction * 1
-			if index > 1:
-				for j in range(0, index):
+		#----------------------------------------
+		
+		df['Epoch'] = index
+		df['Prediction'] = df.apply(findPrediction, axis=1)
+		
+		#find loss
+		if index > 1:
+			base_df['Boosted_Prediction'] = 0
+			for j in range(0, index):
+				df['Epoch'] = j + 1
+				base_df['Boosted_Prediction'] += df.apply(findPrediction, axis=1)
 				
-					#dynamic import
-					moduleName = "outputs/rules/rules%s" % (j)
-					fp, pathname, description = imp.find_module(moduleName)
-					myrules = imp.load_module(moduleName, fp, pathname, description) #rules0
-					
-					global_prediction += int(myrules.findDecision(params))
-			
-			#print(index,". target: ",target_values[i]," - prediction: ",global_prediction)
-			target_value = target_values[i]
-			boosted_prediction = global_prediction
-			
-			loss += pow((boosted_prediction - target_value), 2)
-			#-----------------------------------
-			
-			#print(prediction)
-			
-			#loss was ((actual - prediction)^2) / 2
-			#partial derivative of loss function with respect to the prediction is prediction - actual
-			#y' = y' - alpha * gradient = y' - alpha * (prediction - actual) = y' = y' + alpha * (actual - prediction)
-			#whereas y' is prediction and alpha is learning rate
-			
-			gradient = int(learning_rate)*(actual - prediction)
-			
-			instance[columns-1] = gradient
-			
-			df.loc[i] = instance
-			
+				loss = (base_df['Boosted_Prediction'] - base_df['Decision']).pow(2).sum()
+				
+		df['Decision'] = int(learning_rate)*(df['Decision'] - df['Prediction'])
+		df = df.drop(columns = ['Epoch', 'Prediction'])
+		
+		#---------------------------------
+		
 		df.to_csv(new_data_set, index=False)
 		#data(i) created
 		
