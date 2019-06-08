@@ -9,6 +9,23 @@ import math
 
 from tqdm import tqdm
 
+def findPrediction(row):
+	epoch = row['Epoch']
+	row = row.drop(labels=['Epoch'])
+	columns = row.shape[0]
+	
+	params = []
+	for j in range(0, columns-1):
+		params.append(row[j])
+		
+	moduleName = "outputs/rules/rules_%d" % (epoch)
+	fp, pathname, description = imp.find_module(moduleName)
+	myrules = imp.load_module(moduleName, fp, pathname, description)
+	
+	prediction = functions.sign(myrules.findDecision(params))
+	
+	return prediction
+
 def apply(df, config, header, dataset_features):
 	
 	initializeAlphaFile()
@@ -39,21 +56,14 @@ def apply(df, config, header, dataset_features):
 		#print(worksheet)
 		Training.buildDecisionTree(worksheet.drop(columns=['Weight'])
 			, root, file, config, dataset_features)
-			
-		moduleName = "outputs/rules/rules_"+str(i)
-		fp, pathname, description = imp.find_module(moduleName)
-		myrules = imp.load_module(moduleName, fp, pathname, description)
 		
-		predictions = []
-		for index, instance in df.iterrows():
-			params = []
-			for j in range(0, columns-1):
-				params.append(instance[j])
+		#---------------------------------------
 		
-			prediction = functions.sign(myrules.findDecision(params))
-			predictions.append(prediction)
+		df['Epoch'] = i
+		worksheet['Prediction'] = df.apply(findPrediction, axis=1)
+		df = df.drop(columns = ['Epoch'])
 		
-		worksheet['Prediction'] = pd.Series(predictions)
+		#---------------------------------------
 		worksheet['Actual'] = df['Decision']
 		worksheet['Loss'] = abs(worksheet['Actual'] - worksheet['Prediction'])/2
 		worksheet['Weight_Times_Loss'] = worksheet['Loss'] * worksheet['Weight']
