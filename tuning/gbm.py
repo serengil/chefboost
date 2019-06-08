@@ -40,6 +40,10 @@ def regressor(df, config, header, dataset_features):
 	
 	#------------------------------
 	
+	boosted_from = 0; boosted_to = 0
+	
+	#------------------------------
+	
 	base_df = df.copy()
 	
 	#gbm will manipulate actuals. store its raw version.
@@ -90,6 +94,11 @@ def regressor(df, config, header, dataset_features):
 		
 		loss = (base_df['Boosted_Prediction'] - base_df['Decision']).pow(2).sum()
 		
+		if index == 1: 
+			boosted_from = loss / num_of_instances
+		elif index == epochs:
+			boosted_to = loss / num_of_instances
+		
 		df['Decision'] = int(learning_rate)*(df['Decision'] - df['Prediction'])
 		df = df.drop(columns = ['Epoch', 'Prediction'])
 		
@@ -116,6 +125,8 @@ def regressor(df, config, header, dataset_features):
 		pbar.set_description("Epoch %d. Loss: %d. Process: " % (index, loss))
 		
 		#---------------------------------
+	
+	print(num_of_instances," instances are boosted from ",boosted_from," to ",boosted_to," in ",epochs," epochs")
 
 def classifier(df, config, header, dataset_features):
 	print("gradient boosting for classification")
