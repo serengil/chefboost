@@ -11,6 +11,8 @@ from tqdm import tqdm
 
 def apply(df, config, header, dataset_features):
 	
+	initializeAlphaFile()
+	
 	num_of_weak_classifier = config['num_of_weak_classifier']
 	
 	#------------------------
@@ -59,6 +61,13 @@ def apply(df, config, header, dataset_features):
 		epsilon = worksheet['Weight_Times_Loss'].sum()
 		alpha = math.log((1 - epsilon)/epsilon)/2 #use alpha to update weights in the next round
 		
+		#-----------------------------
+		
+		#store alpha
+		addEpochAlpha(i, alpha)
+		
+		#-----------------------------
+		
 		worksheet['Alpha'] = alpha
 		worksheet['New_Weights'] = worksheet['Weight'] * (-alpha * worksheet['Actual'] * worksheet['Prediction']).apply(math.exp)
 		
@@ -81,3 +90,14 @@ def apply(df, config, header, dataset_features):
 	#print(final_predictions)
 	mae = final_predictions['Absolute_Error'].sum() / final_predictions.shape[0]
 	print("Loss (MAE) found ", mae, " with ",num_of_weak_classifier, ' weak classifiers')
+
+def initializeAlphaFile():
+	file = "outputs/rules/alphas.py"
+	header = "def findAlpha(epoch):\n"
+	functions.createFile(file, header)
+
+def addEpochAlpha(epoch, alpha):
+	file = "outputs/rules/alphas.py"
+	content = "   if epoch == "+str(epoch)+":\n"
+	content += "      return "+str(alpha)
+	functions.storeRule(file, content)
