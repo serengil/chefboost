@@ -227,6 +227,7 @@ def buildDecisionTree(df,root,file, config, dataset_features):
 	
 	#---------------------------------------------
 	
+	#calculate accuracy metrics
 	if root == 1:
 		if config['enableRandomForest'] != True and config['enableGBM'] != True and config['enableAdaboost'] != True:
 		#this is reguler decision tree. find accuracy here.
