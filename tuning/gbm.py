@@ -54,6 +54,8 @@ def regressor(df, config, header, dataset_features):
 	
 	df = base_df.copy()
 	
+	base_df['Boosted_Prediction'] = 0
+	
 	#------------------------------
 	
 	pbar = tqdm(range(1,epochs+1), desc='Boosting')
@@ -84,15 +86,10 @@ def regressor(df, config, header, dataset_features):
 		df['Epoch'] = index
 		df['Prediction'] = df.apply(findPrediction, axis=1)
 		
-		#find loss
-		if index > 1:
-			base_df['Boosted_Prediction'] = 0
-			for j in range(0, index):
-				df['Epoch'] = j + 1
-				base_df['Boosted_Prediction'] += df.apply(findPrediction, axis=1)
-				
-				loss = (base_df['Boosted_Prediction'] - base_df['Decision']).pow(2).sum()
-				
+		base_df['Boosted_Prediction'] += df['Prediction']
+		
+		loss = (base_df['Boosted_Prediction'] - base_df['Decision']).pow(2).sum()
+		
 		df['Decision'] = int(learning_rate)*(df['Decision'] - df['Prediction'])
 		df = df.drop(columns = ['Epoch', 'Prediction'])
 		
