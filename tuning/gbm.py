@@ -9,8 +9,9 @@ from training import Preprocess, Training
 from tqdm import tqdm
 
 def findPrediction(row):
-	columns = row.shape[0]
 	epoch = row['Epoch']
+	row = row.drop(labels=['Epoch'])
+	columns = row.shape[0]
 	
 	params = []
 	for j in range(0, columns-1):
