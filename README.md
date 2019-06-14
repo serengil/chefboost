@@ -64,7 +64,7 @@ print(prediction)
 Recursive algorithms such as GBM creates multiple rules in that directory. You need to specify the round index for this case.
 
 ```
-moduleName = "outputs/rules/rules0" #this call rules0.py
+moduleName = "outputs/rules/rules0" #this calls rules0.py
 ```
 
 # Prerequisites
