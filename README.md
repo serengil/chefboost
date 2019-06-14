@@ -45,6 +45,28 @@ def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
       return 'Yes'
  ```
 
+# Testing for custom instances
+
+Decision rules will be stored in `outputs/rules/` folder when you build a decision tree. You can run the built decision tree for new instances as illustrated below.
+
+```
+import imp
+
+moduleName = "outputs/rules/rules" #this will call rules.py
+fp, pathname, description = imp.find_module(moduleName)
+myrules = imp.load_module(moduleName, fp, pathname, description)
+
+prediction = myrules.findDecision(['Overcast', 'Hot', 'High', 'Weak'])
+
+print(prediction)
+```
+
+Recursive algorithms such as GBM or Adaboost creates multiple rules in that directory. You need to specify the round index for this case.
+
+```
+moduleName = "outputs/rules/rules0" #this call rules0.py
+```
+
 # Prerequisites
 
 Pandas and numpy python libraries are used to load data sets in this repository. You might run the following commands to install these packages if you are going to use them first time.
