@@ -61,7 +61,7 @@ prediction = myrules.findDecision(['Overcast', 'Hot', 'High', 'Weak'])
 print(prediction)
 ```
 
-Recursive algorithms such as GBM or Adaboost creates multiple rules in that directory. You need to specify the round index for this case.
+Recursive algorithms such as GBM creates multiple rules in that directory. You need to specify the round index for this case.
 
 ```
 moduleName = "outputs/rules/rules0" #this call rules0.py
