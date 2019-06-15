@@ -50,7 +50,7 @@ def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
 Decision rules will be stored in `outputs/rules/` folder when you build a decision tree. You can run the built decision tree for new instances as illustrated below.
 
 ```
-prediction = chef.predict(models, ['Sunny',85,85,'Weak'])
+prediction = chef.predict(config, models, ['Sunny',85,85,'Weak'])
 ```
 
 Recursive algorithms such as GBM creates multiple rules in that directory. Predictions will be the sum of all trees.
@@ -59,7 +59,7 @@ Recursive algorithms such as GBM creates multiple rules in that directory. Predi
 config = {'enableGBM': True, 'epochs': 7, 'learning_rate': 1}
 df = pd.read_csv("dataset/golf4.txt")
 models = chef.fit(df.copy(), config)
-prediction = chef.predict(models, ['Sunny',85,85,'Weak'])
+prediction = chef.predict(config, models, ['Sunny',85,85,'Weak'])
 ```
 
 Similarly, Random Forest built multiple decision trees under outputs/rules
@@ -67,7 +67,7 @@ Similarly, Random Forest built multiple decision trees under outputs/rules
 ```
 config = {'algorithm': 'ID3', 'enableRandomForest': True, 'num_of_trees': 5}
 models = chef.fit(pd.read_csv("dataset/car.data"), config)
-prediction = chef.predict(models, ['vhigh','vhigh',2,'2','small','low'])
+prediction = chef.predict(config, models, ['vhigh','vhigh',2,'2','small','low'])
 ```
 
 In Adaboost, you also need round alpha values
@@ -75,7 +75,7 @@ In Adaboost, you also need round alpha values
 ```
 config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}
 models, **alphas** = chef.fit(pd.read_csv("dataset/adaboost.txt"), config)
-prediction = chef.predict(models, [4, 3.5], alphas)
+prediction = chef.predict(config, models, [4, 3.5], alphas)
 ```
 
 You can consume built decision trees directly also
@@ -88,6 +88,7 @@ myrules = imp.load_module(moduleName, fp, pathname, description)
 myrules.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 ```
 
+Dispathcher.py will guide you how to build a decision tree and make predictions
 
 # Prerequisites
 
