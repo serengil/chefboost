@@ -1,5 +1,6 @@
 import numpy as np
 import pathlib
+import imp
 
 def load_rule_module(moduleName):
    fp, pathname, description = imp.find_module(moduleName)
