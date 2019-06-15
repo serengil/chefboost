@@ -76,9 +76,28 @@ for i in range(0, epochs):
 print("Boosted prediction: ",prediction)
 ```
 
-In Adaboost, you also need to round predictions and round alpha values
+In Adaboost, you also need to round predictions and round alpha values.
 
+```
+test_set = [4,3.5]
 
+def load_rule_module(moduleName):
+   fp, pathname, description = imp.find_module(moduleName)
+   return imp.load_module(moduleName, fp, pathname, description)
+
+alphas = load_rule_module("outputs/rules/alphas")
+
+prediction = 0
+for i in range(0, 4):
+   myrules = load_rule_module("outputs/rules/rules_%s" % (i))
+   
+   alpha = alphas.findAlpha(i)
+   round_prediction = functions.sign(myrules.findDecision(test_set))
+   
+   prediction += alpha * round_prediction
+
+print("Prediction: "functions.sign(prediction))
+```
 
 # Prerequisites
 
