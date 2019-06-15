@@ -50,27 +50,21 @@ def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
 Decision rules will be stored in `outputs/rules/` folder when you build a decision tree. You can run the built decision tree for new instances as illustrated below.
 
 ```
-import imp
-
-moduleName = "outputs/rules/rules" #this will call rules.py
-fp, pathname, description = imp.find_module(moduleName)
-myrules = imp.load_module(moduleName, fp, pathname, description)
-
+from commons import functions
+myrules = functions.load_rule_module("outputs/rules/rules")
 prediction = myrules.findDecision(['Overcast', 'Hot', 'High', 'Weak'])
-
 print(prediction)
 ```
 
 Recursive algorithms such as GBM creates multiple rules in that directory. You need to specify the round index for this case.
 
 ```
+from commons import functions
+
 epochs = config['num_of_trees']
 prediction = 0
 for i in range(0, epochs):
-   moduleName = "outputs/rules/rules%s" % (i)
-   fp, pathname, description = imp.find_module(moduleName)
-   myrules = imp.load_module(moduleName, fp, pathname, description)
-   
+   myrules = functions.load_rule_module("outputs/rules/rules%s" % (i))
    prediction += myrules.findDecision(['Overcast', 'Hot', 'High', 'Weak'])
 
 print("Boosted prediction: ",prediction)
@@ -79,22 +73,16 @@ print("Boosted prediction: ",prediction)
 In Adaboost, you also need to round predictions and round alpha values.
 
 ```
-import imp
 from commons import functions
-
-epochs = config['num_of_weak_classifier']
 
 test_set = [4, 3.5]
 
-def load_rule_module(moduleName):
-   fp, pathname, description = imp.find_module(moduleName)
-   return imp.load_module(moduleName, fp, pathname, description)
-
-alphas = load_rule_module("outputs/rules/alphas")
+epochs = config['num_of_weak_classifier']
+alphas = functions.load_rule_module("outputs/rules/alphas")
 
 prediction = 0
 for i in range(0, epochs):
-   myrules = load_rule_module("outputs/rules/rules_%s" % (i))
+   myrules = functions.load_rule_module("outputs/rules/rules_%s" % (i))
    
    alpha = alphas.findAlpha(i)
    round_prediction = functions.sign(myrules.findDecision(test_set))
