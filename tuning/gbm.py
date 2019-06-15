@@ -26,6 +26,7 @@ def findPrediction(row):
 	return prediction
 
 def regressor(df, config, header, dataset_features):
+	models = []
 	
 	algorithm = config['algorithm']
 	
@@ -78,6 +79,8 @@ def regressor(df, config, header, dataset_features):
 		fp, pathname, description = imp.find_module(moduleName)
 		myrules = imp.load_module(moduleName, fp, pathname, description) #rules0
 		
+		models.append(myrules)
+		
 		new_data_set = "outputs/data/data%s.csv" % (index)
 		f = open(new_data_set, "w")
 		
@@ -128,6 +131,8 @@ def regressor(df, config, header, dataset_features):
 		#---------------------------------
 	
 	print(num_of_instances," instances are boosted from ",boosted_from," to ",boosted_to," in ",epochs," epochs")
+	
+	return models
 
 def classifier(df, config, header, dataset_features):
 	print("gradient boosting for classification")

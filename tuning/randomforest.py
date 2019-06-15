@@ -12,6 +12,8 @@ import imp
 	
 def apply(df, config, header, dataset_features):
 	
+	models = []
+	
 	num_of_trees = config['num_of_trees']
 	
 	pbar = tqdm(range(0, num_of_trees), desc='Bagging')
@@ -23,11 +25,18 @@ def apply(df, config, header, dataset_features):
 		
 		root = 1
 		
-		file = "outputs/rules/rule_"+str(i)+".py"
+		moduleName = "outputs/rules/rule_"+str(i)
+		file = moduleName+".py"
 		
 		functions.createFile(file, header)
 		
 		Training.buildDecisionTree(subset,root, file, config, dataset_features)
+		
+		#--------------------------------
+		
+		fp, pathname, description = imp.find_module(moduleName)
+		myrules = imp.load_module(moduleName, fp, pathname, description)
+		models.append(myrules)
 		
 	#-------------------------------
 	#check regression or classification
@@ -102,3 +111,5 @@ def apply(df, config, header, dataset_features):
 				classified = classified + 1
 		
 		print("Accuracy: ",100*classified/number_of_instances,"% on ",number_of_instances," instances")
+	
+	return models

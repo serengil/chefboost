@@ -134,6 +134,8 @@ def findDecision(df, config):
 
 def buildDecisionTree(df,root,file, config, dataset_features):
 
+	models = []
+
 	if root == 1:
 		if config['enableRandomForest'] != True and config['enableGBM'] != True and config['enableAdaboost'] != True:
 			raw_df = df.copy()
@@ -234,6 +236,7 @@ def buildDecisionTree(df,root,file, config, dataset_features):
 			moduleName = "outputs/rules/rules"
 			fp, pathname, description = imp.find_module(moduleName)
 			myrules = imp.load_module(moduleName, fp, pathname, description) #rules0
+			models.append(myrules)
 			
 			num_of_features = df.shape[1] - 1
 			instances = df.shape[0]
@@ -269,6 +272,8 @@ def buildDecisionTree(df,root,file, config, dataset_features):
 				if mean > 0:
 					print("MAE / Mean: ",100*mae/mean,"%")
 					print("RMSE / Mean: ",100*rmse/mean,"%")
+	
+	return models
 			
 def findPrediction(row):
 	params = []

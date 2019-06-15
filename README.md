@@ -22,7 +22,7 @@ config = {
 
 df = pd.read_csv("dataset/golf.txt")
 
-chef.fit(df, config)
+models = chef.fit(df, config)
 ```
 
 # Outcomes
@@ -50,47 +50,44 @@ def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
 Decision rules will be stored in `outputs/rules/` folder when you build a decision tree. You can run the built decision tree for new instances as illustrated below.
 
 ```
-from commons import functions
-myrules = functions.load_rule_module("outputs/rules/rules")
-prediction = myrules.findDecision(['Overcast', 'Hot', 'High', 'Weak'])
-print(prediction)
+prediction = chef.predict(models, ['Sunny',85,85,'Weak'])
 ```
 
-Recursive algorithms such as GBM creates multiple rules in that directory. You need to specify the round index for this case.
+Recursive algorithms such as GBM creates multiple rules in that directory. Predictions will be the sum of all trees.
 
 ```
-from commons import functions
-
-epochs = config['num_of_trees']
-prediction = 0
-for i in range(0, epochs):
-   myrules = functions.load_rule_module("outputs/rules/rules%s" % (i))
-   prediction += myrules.findDecision(['Overcast', 'Hot', 'High', 'Weak'])
-
-print("Boosted prediction: ",prediction)
+config = {'enableGBM': True, 'epochs': 7, 'learning_rate': 1}
+df = pd.read_csv("dataset/golf4.txt")
+models = chef.fit(df.copy(), config)
+prediction = chef.predict(models, ['Sunny',85,85,'Weak'])
 ```
 
-In Adaboost, you also need to round predictions and round alpha values.
+Similarly, Random Forest built multiple decision trees under outputs/rules
 
 ```
-from commons import functions
-
-test_set = [4, 3.5]
-
-epochs = config['num_of_weak_classifier']
-alphas = functions.load_rule_module("outputs/rules/alphas")
-
-prediction = 0
-for i in range(0, epochs):
-   myrules = functions.load_rule_module("outputs/rules/rules_%s" % (i))
-   
-   alpha = alphas.findAlpha(i)
-   round_prediction = functions.sign(myrules.findDecision(test_set))
-   
-   prediction += alpha * round_prediction
-
-print("Prediction: ", functions.sign(prediction))
+config = {'algorithm': 'ID3', 'enableRandomForest': True, 'num_of_trees': 5}
+models = chef.fit(pd.read_csv("dataset/car.data"), config)
+prediction = chef.predict(models, ['vhigh','vhigh',2,'2','small','low'])
 ```
+
+In Adaboost, you also need round alpha values
+
+```
+config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}
+models, **alphas** = chef.fit(pd.read_csv("dataset/adaboost.txt"), config)
+prediction = chef.predict(models, [4, 3.5], alphas)
+```
+
+You can consume built decision trees directly also
+
+```
+moduleName = "outputs/rules/rules" #this will load outputs/rules/rules.py
+fp, pathname, description = imp.find_module(moduleName)
+myrules = imp.load_module(moduleName, fp, pathname, description)
+
+myrules.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
+```
+
 
 # Prerequisites
 

@@ -27,6 +27,8 @@ def findPrediction(row):
 	return prediction
 
 def apply(df, config, header, dataset_features):
+
+	models = []; alphas = []
 	
 	initializeAlphaFile()
 	
@@ -59,6 +61,13 @@ def apply(df, config, header, dataset_features):
 		
 		#---------------------------------------
 		
+		moduleName = "outputs/rules/rules_"+str(i)
+		fp, pathname, description = imp.find_module(moduleName)
+		myrules = imp.load_module(moduleName, fp, pathname, description)
+		models.append(myrules)
+		
+		#---------------------------------------
+		
 		df['Epoch'] = i
 		worksheet['Prediction'] = df.apply(findPrediction, axis=1)
 		df = df.drop(columns = ['Epoch'])
@@ -70,6 +79,7 @@ def apply(df, config, header, dataset_features):
 		
 		epsilon = worksheet['Weight_Times_Loss'].sum()
 		alpha = math.log((1 - epsilon)/epsilon)/2 #use alpha to update weights in the next round
+		alphas.append(alpha)
 		
 		#-----------------------------
 		
@@ -100,6 +110,8 @@ def apply(df, config, header, dataset_features):
 	#print(final_predictions)
 	mae = final_predictions['Absolute_Error'].sum() / final_predictions.shape[0]
 	print("Loss (MAE) found ", mae, " with ",num_of_weak_classifier, ' weak classifiers')
+	
+	return models, alphas
 
 def initializeAlphaFile():
 	file = "outputs/rules/alphas.py"

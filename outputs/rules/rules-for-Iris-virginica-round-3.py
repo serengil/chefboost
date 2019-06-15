@@ -1,0 +1,26 @@
+def findDecision(obj): #obj[0]: Sepal length, obj[1]: Sepal width, obj[2]: Petal length, obj[3]: Petal width
+   if obj[2]<=4.7:
+      if obj[3]<=1.6:
+         if obj[0]<=5.7:
+            if obj[1]<=3.8:
+               return -0.2571633458137512
+            elif obj[1]>3.8:
+               return -0.2571633458137512
+         elif obj[0]>5.7:
+            if obj[1]<=3.8:
+               return -0.2571633458137512
+            elif obj[1]>3.8:
+               return -0.2571633458137512
+      elif obj[3]>1.6:
+         return 0.692272424697876
+   elif obj[2]>4.7:
+      if obj[3]>1.6:
+         if obj[0]>5.7:
+            if obj[1]<=3.8:
+               return 0.4589692950248718
+         elif obj[0]<=5.7:
+            return 0.45112109184265137
+      elif obj[3]<=1.6:
+         if obj[0]>5.7:
+            if obj[1]<=3.8:
+               return 0.5673732459545135
