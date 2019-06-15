@@ -82,7 +82,7 @@ In Adaboost, you also need to round predictions and round alpha values.
 import imp
 from commons import functions
 
-test_set = [4,3.5]
+test_set = [4, 3.5]
 
 def load_rule_module(moduleName):
    fp, pathname, description = imp.find_module(moduleName)
@@ -99,7 +99,7 @@ for i in range(0, 4):
    
    prediction += alpha * round_prediction
 
-print("Prediction: "functions.sign(prediction))
+print("Prediction: ", functions.sign(prediction))
 ```
 
 # Prerequisites
