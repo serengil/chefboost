@@ -91,10 +91,12 @@ def fit(df, config):
 	elif enableGBM == True:
 		
 		if df['Decision'].dtypes == 'object': #transform classification problem to regression
-			gbm.classifier(df, config, header, dataset_features)
+			models, classes = gbm.classifier(df, config, header, dataset_features)
+			classification = True
 			
 		else: #regression
 			models = gbm.regressor(df, config, header, dataset_features)
+			classification = False
 				
 	elif enableRandomForest == True:
 		models = randomforest.apply(df, config, header, dataset_features)
@@ -108,28 +110,50 @@ def fit(df, config):
 	
 	if enableAdaboost == True:
 		return models, alphas
+	elif enableGBM == True and classification == True:
+		return models, classes
 	else:
 		return models
 	
 	#-----------------------------------------
 
-def predict(models, param, alphas=[]):
+def predict(config, models, param, alphas=[]):
+	
+	enableGBM = config['enableGBM']
+	adaboost = config['enableAdaboost']
+	
+	#-----------------------
+	
 	classification = False
 	prediction = 0
 	prediction_classes = []
 	
-	adaboost = False
-	if len(alphas) > 0: adaboost = True
+	#-----------------------
+	
+	if enableGBM == True:
+		
+		if len(models) == config['epochs']:
+			classification = False
+		else:
+			classification = True
+			prediction_classes = [0 for i in alphas]
+		
+	#-----------------------
 	
 	if len(models) > 1: #boosting
 		index = 0
 		for model in models:
 			if adaboost != True:
+				
 				custom_prediction = model.findDecision(param)
 				
 				if custom_prediction != None:
 					if type(custom_prediction) != str: #regression
-						prediction += custom_prediction
+						
+						if enableGBM == True and classification == True:
+							prediction_classes[index % len(alphas)] += custom_prediction
+						else:
+							prediction += custom_prediction
 					else:
 						classification = True
 						prediction_classes.append(custom_prediction)
@@ -146,14 +170,17 @@ def predict(models, param, alphas=[]):
 	if classification == False:
 		return prediction
 	else:
-		unique_labels = np.unique(prediction_classes)
-		prediction_counts = []
-		
-		for i in range(0, len(unique_labels)):
-			count = 0
-			for j in prediction_classes:
-				if j == unique_labels[i]:
-					count = count + 1
-			prediction_counts.append(count)
-		
-		return unique_labels[np.argmax(prediction_counts)]
+		if enableGBM == True and classification == True:
+			return alphas[np.argmax(prediction_classes)]
+		else:
+			unique_labels = np.unique(prediction_classes)
+			prediction_counts = []
+			
+			for i in range(0, len(unique_labels)):
+				count = 0
+				for j in prediction_classes:
+					if j == unique_labels[i]:
+						count = count + 1
+				prediction_counts.append(count)
+			
+			return unique_labels[np.argmax(prediction_counts)]

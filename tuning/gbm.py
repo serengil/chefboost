@@ -135,6 +135,9 @@ def regressor(df, config, header, dataset_features):
 	return models
 
 def classifier(df, config, header, dataset_features):
+	
+	models = []
+	
 	print("gradient boosting for classification")
 	
 	epochs = config['epochs']
@@ -185,6 +188,8 @@ def classifier(df, config, header, dataset_features):
 			moduleName = "outputs/rules/rules-for-"+current_class+"-round-"+str(epoch)
 			fp, pathname, description = imp.find_module(moduleName)
 			myrules = imp.load_module(moduleName, fp, pathname, description) #rules0
+			
+			models.append(myrules)
 			
 			num_of_columns = df.shape[1]
 			
@@ -251,3 +256,5 @@ def classifier(df, config, header, dataset_features):
 		#print(worksheet.head())
 		#print("round ",epoch+1)
 		pbar.set_description("Epoch %d. Accuracy: %s. Process: " % (epoch+1, accuracy))
+	
+	return models, classes
