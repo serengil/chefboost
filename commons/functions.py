@@ -1,6 +1,10 @@
 import numpy as np
 import pathlib
 
+def load_rule_module(moduleName):
+   fp, pathname, description = imp.find_module(moduleName)
+   return imp.load_module(moduleName, fp, pathname, description)
+
 def softmax(w):
 	e = np.exp(np.array(w, dtype=np.float32))
 	dist = e / np.sum(e)
