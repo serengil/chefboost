@@ -74,7 +74,7 @@ In Adaboost, you also need round alpha values
 
 ```
 config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}
-models, **alphas** = chef.fit(pd.read_csv("dataset/adaboost.txt"), config)
+models, alphas = chef.fit(pd.read_csv("dataset/adaboost.txt"), config)
 prediction = chef.predict(config, models, [4, 3.5], alphas)
 ```
 
