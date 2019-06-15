@@ -64,8 +64,21 @@ print(prediction)
 Recursive algorithms such as GBM creates multiple rules in that directory. You need to specify the round index for this case.
 
 ```
-moduleName = "outputs/rules/rules0" #this calls rules0.py
+epochs = config['num_of_trees']
+prediction = 0
+for i in range(0, epochs):
+   moduleName = "outputs/rules/rules%s" % (i)
+   fp, pathname, description = imp.find_module(moduleName)
+   myrules = imp.load_module(moduleName, fp, pathname, description)
+   
+   prediction += myrules.findDecision(['Overcast', 'Hot', 'High', 'Weak'])
+
+print("Boosted prediction: ",prediction)
 ```
+
+In Adaboost, you also need to round predictions and round alpha values
+
+
 
 # Prerequisites
 
@@ -86,7 +99,7 @@ Python 3.6.4 :: Anaconda, Inc.
  
 # Documentation
 
-You can find detailed documentations about these core algorithms [here](https://sefiks.com/tag/decision-tree/).
+You can find detailed documentations about these core algorithms [here](https://sefiks.com/tag/decision-tree/). Besides, this YouTube [playlist](https://www.youtube.com/playlist?list=PLsS_1RYmYQQHp_xZObt76dpacY543GrJD) guides you how to use Chefboost step by step.
 
 # Licence
 
