@@ -79,6 +79,9 @@ print("Boosted prediction: ",prediction)
 In Adaboost, you also need to round predictions and round alpha values.
 
 ```
+import imp
+from commons import functions
+
 test_set = [4,3.5]
 
 def load_rule_module(moduleName):
