@@ -82,6 +82,8 @@ In Adaboost, you also need to round predictions and round alpha values.
 import imp
 from commons import functions
 
+epochs = config['num_of_weak_classifier']
+
 test_set = [4, 3.5]
 
 def load_rule_module(moduleName):
@@ -91,7 +93,7 @@ def load_rule_module(moduleName):
 alphas = load_rule_module("outputs/rules/alphas")
 
 prediction = 0
-for i in range(0, 4):
+for i in range(0, epochs):
    myrules = load_rule_module("outputs/rules/rules_%s" % (i))
    
    alpha = alphas.findAlpha(i)
