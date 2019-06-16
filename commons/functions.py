@@ -2,7 +2,7 @@ import numpy as np
 import pathlib
 import imp
 
-def load_rule_module(moduleName):
+def restoreModel(moduleName):
    fp, pathname, description = imp.find_module(moduleName)
    return imp.load_module(moduleName, fp, pathname, description)
 

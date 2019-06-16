@@ -76,9 +76,9 @@ You can consume built decision trees directly as illustrated below. In this way,
 ```
 from commons import functions
 moduleName = "outputs/rules/rules" #this will load outputs/rules/rules.py
-model = functions.load_rule_module(moduleName)
+model = functions.restoreModel(moduleName)
 
-model.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
+prediction = model.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 ```
 
 **Dispathcher.py** will guide you how to build a decision tree and make predictions
