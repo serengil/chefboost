@@ -12,16 +12,8 @@ Basically, you just need to pass the dataset as pandas data frame and tree confi
 import Chefboost as chef
 import pandas as pd
 
-config = {
-	'algorithm': 'ID3' #ID3, C4.5, CART, Regression
-	, 'enableGBM': False, 'epochs': 10, 'learning_rate': 1
-	, 'enableRandomForest': False, 'num_of_trees': 5, 'enableMultitasking': False
-	, 'enableAdaboost': False, 'num_of_weak_classifier': 4
-	, 'debug': False
-}
-
+config = {'algorithm': 'ID3' #ID3, C4.5, CART, Regression}
 df = pd.read_csv("dataset/golf.txt")
-
 models = chef.fit(df, config)
 ```
 
@@ -50,7 +42,8 @@ def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
 Decision rules will be stored in `outputs/rules/` folder when you build a decision tree. You can run the built decision tree for new instances as illustrated below.
 
 ```
-prediction = chef.predict(config, models, ['Sunny',85,85,'Weak'])
+test_instance = ['Sunny',85,85,'Weak']
+prediction = chef.predict(config, models, test_instance)
 ```
 
 Recursive algorithms such as GBM creates multiple rules in that directory. Predictions will be the sum of all trees.
@@ -78,7 +71,7 @@ models, alphas = chef.fit(pd.read_csv("dataset/adaboost.txt"), config)
 prediction = chef.predict(config, models, [4, 3.5], alphas)
 ```
 
-You can consume built decision trees directly also
+You can consume built decision trees directly as illustrated below
 
 ```
 moduleName = "outputs/rules/rules" #this will load outputs/rules/rules.py
@@ -88,7 +81,7 @@ myrules = imp.load_module(moduleName, fp, pathname, description)
 myrules.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 ```
 
-Dispathcher.py will guide you how to build a decision tree and make predictions
+**Dispathcher.py** will guide you how to build a decision tree and make predictions
 
 # Prerequisites
 
