@@ -42,7 +42,7 @@ def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
 Decision rules will be stored in `outputs/rules/` folder when you build a decision tree. You can run the built decision tree for new instances as illustrated below.
 
 ```
-test_instance = ['Sunny',85,85,'Weak']
+test_instance = ['Sunny', 'Hot', 'High', 'Weak']
 prediction = chef.predict(config, models, test_instance)
 ```
 
