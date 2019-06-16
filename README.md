@@ -71,14 +71,14 @@ models, alphas = chef.fit(pd.read_csv("dataset/adaboost.txt"), config)
 prediction = chef.predict(config, models, [4, 3.5], alphas)
 ```
 
-You can consume built decision trees directly as illustrated below. In this way, you can use already built decision trees later or apply transfer learning.
+You can consume built decision trees directly as illustrated below. In this way, you can restore already built decision trees and skip learning steps, or apply **transfer learning**.
 
 ```
+from commons import functions
 moduleName = "outputs/rules/rules" #this will load outputs/rules/rules.py
-fp, pathname, description = imp.find_module(moduleName)
-myrules = imp.load_module(moduleName, fp, pathname, description)
+model = functions.load_rule_module(moduleName)
 
-myrules.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
+model.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 ```
 
 **Dispathcher.py** will guide you how to build a decision tree and make predictions
