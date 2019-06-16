@@ -137,6 +137,9 @@ def predict(config, models, param, alphas=[]):
 		else:
 			classification = True
 			prediction_classes = [0 for i in alphas]
+			
+			if len(alphas) == 0:
+				raise ValueError('Predict of GBM classification expects classes as input.\nSample usage:\n models, classes = chef.fit(...)\n prediction = chef.predict(config, models, test_set, classes)')
 		
 	#-----------------------
 	
