@@ -102,7 +102,7 @@ Python 3.6.4 :: Anaconda, Inc.
  
 # Documentation
 
-You can find detailed documentations about these core algorithms [here](https://sefiks.com/tag/decision-tree/). Besides, this YouTube [playlist](https://www.youtube.com/playlist?list=PLsS_1RYmYQQHp_xZObt76dpacY543GrJD) guides you how to use Chefboost step by step.
+You can find detailed documentations about these core algorithms [here](https://sefiks.com/tag/decision-tree/). Besides, this YouTube [playlist](https://www.youtube.com/playlist?list=PLsS_1RYmYQQHp_xZObt76dpacY543GrJD) guides you how to use Chefboost step by step. Also, you can enroll this [course](https://www.udemy.com/decision-trees-for-machine-learning/?couponCode=DTML-BLOG-18) and follow curriculum if you wonder how this framework is developed from scratch.
 
 # Licence
 
