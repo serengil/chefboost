@@ -14,7 +14,7 @@ import pandas as pd
 
 config = {'algorithm': 'ID3'} #This is regular ID3 algoritm. Candidate algorithms are ID3, C4.5, CART, Regression
 df = pd.read_csv("dataset/golf.txt")
-models = chef.fit(df, config)
+model = chef.fit(df, config)
 ```
 
 # Outcomes
@@ -42,7 +42,7 @@ def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
 Decision rules will be stored in `outputs/rules/` folder when you build a decision tree. You can run the built decision tree for new instances as illustrated below.
 
 ```
-prediction = chef.predict(config, models, ['Sunny', 'Hot', 'High', 'Weak'])
+prediction = chef.predict(model, ['Sunny', 'Hot', 'High', 'Weak'])
 ```
 
 Recursive algorithms such as GBM, Random Forest or Adaboost create several rules in that directory. Predictions will be the sum of all  tree predictions. Chefboost.predict method handles to find recursive predictions. **Dispathcher.py** will guide you how to build a decision tree and make predictions
@@ -50,8 +50,8 @@ Recursive algorithms such as GBM, Random Forest or Adaboost create several rules
 ```
 config = {'enableGBM': True, 'epochs': 7, 'learning_rate': 1}
 df = pd.read_csv("dataset/golf4.txt")
-models = chef.fit(df.copy(), config)
-prediction = chef.predict(config, models, ['Sunny',85,85,'Weak'])
+model = chef.fit(df, config)
+prediction = chef.predict(model, ['Sunny',85,85,'Weak'])
 ```
 
 You can consume built decision trees directly as well. In this way, you can restore already built decision trees and skip learning steps, or apply **transfer learning**. Loaded model offers you findDecision method to find prediction.
