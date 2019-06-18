@@ -83,41 +83,48 @@ def fit(df, config):
 	
 	begin = time.time()
 	
-	models = []; alphas = []
+	trees = []; alphas = []
 
 	if enableAdaboost == True:
-		models, alphas = adaboost.apply(df, config, header, dataset_features)
+		trees, alphas = adaboost.apply(df, config, header, dataset_features)
 
 	elif enableGBM == True:
 		
 		if df['Decision'].dtypes == 'object': #transform classification problem to regression
-			models, classes = gbm.classifier(df, config, header, dataset_features)
+			trees, alphas = gbm.classifier(df, config, header, dataset_features)
 			classification = True
 			
 		else: #regression
-			models = gbm.regressor(df, config, header, dataset_features)
+			trees = gbm.regressor(df, config, header, dataset_features)
 			classification = False
 				
 	elif enableRandomForest == True:
-		models = randomforest.apply(df, config, header, dataset_features)
+		trees = randomforest.apply(df, config, header, dataset_features)
 	else: #regular decision tree building
 
 		root = 1; file = "outputs/rules/rules.py"
 		functions.createFile(file, header)
-		models = Training.buildDecisionTree(df,root,file, config, dataset_features)
+		trees = Training.buildDecisionTree(df,root,file, config, dataset_features)
 	
 	print("finished in ",time.time() - begin," seconds")
 	
-	if enableAdaboost == True:
-		return models, alphas
-	elif enableGBM == True and classification == True:
-		return models, classes
-	else:
-		return models
+	obj = {
+		"trees": trees,
+		"alphas": alphas,
+		"config": config
+	}
+	
+	return obj
 	
 	#-----------------------------------------
 
-def predict(config, models, param, alphas=[]):
+def predict(model, param):
+	
+	trees = model["trees"]
+	config = model["config"]
+	alphas = model["alphas"]
+	
+	#-----------------------
 	
 	enableGBM = config['enableGBM']
 	adaboost = config['enableAdaboost']
@@ -132,23 +139,20 @@ def predict(config, models, param, alphas=[]):
 	
 	if enableGBM == True:
 		
-		if len(models) == config['epochs']:
+		if len(trees) == config['epochs']:
 			classification = False
 		else:
 			classification = True
 			prediction_classes = [0 for i in alphas]
-			
-			if len(alphas) == 0:
-				raise ValueError('Predict of GBM classification expects classes as input.\nSample usage:\n models, classes = chef.fit(...)\n prediction = chef.predict(config, models, test_set, classes)')
 		
 	#-----------------------
 	
-	if len(models) > 1: #boosting
+	if len(trees) > 1: #boosting
 		index = 0
-		for model in models:
+		for tree in trees:
 			if adaboost != True:
 				
-				custom_prediction = model.findDecision(param)
+				custom_prediction = tree.findDecision(param)
 				
 				if custom_prediction != None:
 					if type(custom_prediction) != str: #regression
@@ -161,14 +165,14 @@ def predict(config, models, param, alphas=[]):
 						classification = True
 						prediction_classes.append(custom_prediction)
 			else:
-				prediction += alphas[index] * functions.sign(model.findDecision(param))
+				prediction += alphas[index] * functions.sign(tree.findDecision(param))
 			index = index + 1
 		
 		if adaboost == True:
 			prediction = functions.sign(prediction)
 	else: #regular decision tree
-		model = models[0]
-		prediction = model.findDecision(param)
+		tree = trees[0]
+		prediction = tree.findDecision(param)
 	
 	if classification == False:
 		return prediction
