@@ -12,8 +12,9 @@ Basically, you just need to pass the dataset as pandas data frame and tree confi
 import Chefboost as chef
 import pandas as pd
 
-config = {'algorithm': 'ID3'}
 df = pd.read_csv("dataset/golf.txt")
+
+config = {'algorithm': 'ID3'}
 model = chef.fit(df, config)
 ```
 
