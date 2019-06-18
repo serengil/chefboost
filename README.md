@@ -80,14 +80,14 @@ Chefboost supports several decision tree, bagging and boosting algorithms. You j
 
 # Model save and restoration
 
-You might want to store your model.
+You might want to save your model.
 
 ```
 model = chef.fit(df.copy(), config)
 chef.save_model(model, "model.pkl")
 ```
 
-In this way, you can restore it later.
+In this way, you can use the same model later to just make predictions. Restoration requires to store files under `outputs/rules`.
 
 ```
 model = chef.load_model("model.pkl")
