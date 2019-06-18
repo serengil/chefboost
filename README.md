@@ -64,6 +64,24 @@ tree = functions.restoreTree(moduleName)
 prediction = tree.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 ```
 
+# Configurations Samples
+
+Regular Decision Trees
+
+```config = {'algorithm': 'C4.5'} #ID3, C4.5, CART or Regression```
+
+Gradient Boosting
+
+```config = {'enableGBM': True, 'epochs': 7, 'learning_rate': 1}```
+
+Random Forest
+
+```config = {'enableRandomForest': True, 'num_of_trees': 5}```
+
+Adaboost
+
+```config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}```
+
 # Prerequisites
 
 Pandas and numpy python libraries are used to load data sets in this repository. You might run the following commands to install these packages if you are going to use them first time.
