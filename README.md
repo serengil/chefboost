@@ -54,12 +54,12 @@ model = chef.fit(df, config)
 prediction = chef.predict(model, ['Sunny',85,85,'Weak'])
 ```
 
-You can consume built decision trees directly as well. In this way, you can restore already built decision trees and skip learning steps, or apply **transfer learning**. Loaded model offers you findDecision method to find prediction.
+You can consume built decision trees directly as well. In this way, you can restore already built decision trees and skip learning steps, or apply **transfer learning**. Loaded trees offer you findDecision method to find prediction.
 
 ```
 from commons import functions
 moduleName = "outputs/rules/rules" #this will load outputs/rules/rules.py
-tree = functions.restoreModel(moduleName)
+tree = functions.restoreTree(moduleName)
 
 prediction = tree.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 ```
