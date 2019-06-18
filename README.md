@@ -12,7 +12,7 @@ Basically, you just need to pass the dataset as pandas data frame and tree confi
 import Chefboost as chef
 import pandas as pd
 
-config = {'algorithm': 'ID3'} # Candidate algorithms are ID3, C4.5, CART, Regression
+config = {'algorithm': 'ID3'}
 df = pd.read_csv("dataset/golf.txt")
 model = chef.fit(df, config)
 ```
@@ -39,46 +39,41 @@ def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
 
 # Testing for custom instances
 
-Decision rules will be stored in `outputs/rules/` folder when you build a decision tree. You can run the built decision tree for new instances as illustrated below.
+Decision rules will be stored in `outputs/rules/` folder when you build decision trees. You can run the built decision tree for new instances as illustrated below.
 
 ```
+model = chef.fit(df, config)
 prediction = chef.predict(model, ['Sunny', 'Hot', 'High', 'Weak'])
 ```
 
-Recursive algorithms such as GBM, Random Forest or Adaboost create several rules in that directory. Predictions will be the sum of all  tree predictions. Chefboost.predict method handles to find recursive predictions. **Dispathcher.py** will guide you how to build a decision tree and make predictions
-
-```
-config = {'enableGBM': True, 'epochs': 7, 'learning_rate': 1}
-df = pd.read_csv("dataset/golf4.txt")
-model = chef.fit(df, config)
-prediction = chef.predict(model, ['Sunny',85,85,'Weak'])
-```
-
-You can consume built decision trees directly as well. In this way, you can restore already built decision trees and skip learning steps, or apply **transfer learning**. Loaded trees offer you findDecision method to find prediction.
+You can consume built decision trees directly as well. In this way, you can restore already built decision trees and skip learning steps, or apply **transfer learning**. Loaded trees offer you findDecision method to test for new instances.
 
 ```
 from commons import functions
 moduleName = "outputs/rules/rules" #this will load outputs/rules/rules.py
 tree = functions.restoreTree(moduleName)
-
 prediction = tree.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 ```
 
-# Configurations Samples
+**Dispathcher.py** will guide you how to build a different decision trees and make predictions.
 
-Regular Decision Trees
+# Sample Configurations
 
-```config = {'algorithm': 'C4.5'} #ID3, C4.5, CART or Regression```
+Chefboost supports several decision tree, bagging and boosting algorithms. You just need to pass the configuration to use different algorithms.
 
-Gradient Boosting
+**Regular Decision Trees**
+
+```config = {'algorithm': 'C4.5'} #Candidates are ID3, C4.5, CART or Regression```
+
+**Gradient Boosting**
 
 ```config = {'enableGBM': True, 'epochs': 7, 'learning_rate': 1}```
 
-Random Forest
+**Random Forest**
 
 ```config = {'enableRandomForest': True, 'num_of_trees': 5}```
 
-Adaboost
+**Adaboost**
 
 ```config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}```
 
