@@ -2,7 +2,7 @@ import numpy as np
 import pathlib
 import imp
 
-def restoreModel(moduleName):
+def restoreTree(moduleName):
    fp, pathname, description = imp.find_module(moduleName)
    return imp.load_module(moduleName, fp, pathname, description)
 
