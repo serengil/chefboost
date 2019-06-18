@@ -3,6 +3,7 @@ import math
 import numpy as np
 import time
 import imp
+import pickle
 
 from commons import functions
 from training import Preprocess, Training
@@ -191,3 +192,32 @@ def predict(model, param):
 				prediction_counts.append(count)
 			
 			return unique_labels[np.argmax(prediction_counts)]
+
+def save_model(base_model, file_name="model.pkl"):
+	
+	model = base_model.copy()
+	
+	#modules cannot be saved. Save its reference instead.
+	module_names = []
+	for tree in model["trees"]:
+		module_names.append(tree.__name__)
+
+	model["trees"] = module_names
+	
+	f = open("outputs/rules/"+file_name, "wb")
+	pickle.dump(model,f)
+	f.close()
+	
+def load_model(file_name="model.pkl"):
+	f = open('outputs/rules/'+file_name, 'rb')
+	model = pickle.load(f)
+	
+	#restore modules from its references
+	modules = []
+	for model_name in model["trees"]:
+		module = functions.restoreTree(model_name)
+		modules.append(module)
+	
+	model["trees"] = modules
+	
+	return model

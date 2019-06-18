@@ -78,6 +78,22 @@ Chefboost supports several decision tree, bagging and boosting algorithms. You j
 
 ```config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}```
 
+# Model save and restoration
+
+You might want to store your model.
+
+```
+model = chef.fit(df.copy(), config)
+chef.save_model(model, "model.pkl")
+```
+
+In this way, you can restore it later.
+
+```
+model = chef.load_model("model.pkl")
+prediction = chef.predict(model, ['Sunny',85,85,'Weak'])
+```
+
 # Prerequisites
 
 Pandas and numpy python libraries are used to load data sets in this repository. You might run the following commands to install these packages if you are going to use them first time.

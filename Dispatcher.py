@@ -9,7 +9,14 @@ config = {'enableGBM': True, 'epochs': 7, 'learning_rate': 1}
 
 df = pd.read_csv("dataset/golf4.txt")
 model = chef.fit(df.copy(), config)
+
+chef.save_model(model)
+
 prediction = chef.predict(model, ['Sunny',85,85,'Weak'])
+print("Prediction: ",prediction)
+
+restored_model = chef.load_model("model.pkl")
+prediction = chef.predict(restored_model, ['Sunny',85,85,'Weak'])
 print("Prediction: ",prediction)
 
 #------------------------------------
