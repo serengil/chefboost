@@ -46,7 +46,7 @@ test_instance = ['Sunny', 'Hot', 'High', 'Weak']
 prediction = chef.predict(config, models, test_instance)
 ```
 
-Recursive algorithms such as GBM creates multiple rules in that directory. Predictions will be the sum of all trees.
+Recursive algorithms such as GBM, Random Forest or Adaboost create several rules in that directory. Predictions will be the sum of all  tree predictions. Chefboost.predict method handles to find recursive predictions.
 
 ```
 config = {'enableGBM': True, 'epochs': 7, 'learning_rate': 1}
@@ -55,23 +55,7 @@ models = chef.fit(df.copy(), config)
 prediction = chef.predict(config, models, ['Sunny',85,85,'Weak'])
 ```
 
-Similarly, Random Forest built multiple decision trees under outputs/rules
-
-```
-config = {'algorithm': 'ID3', 'enableRandomForest': True, 'num_of_trees': 5}
-models = chef.fit(pd.read_csv("dataset/car.data"), config)
-prediction = chef.predict(config, models, ['vhigh','vhigh',2,'2','small','low'])
-```
-
-In Adaboost, you also need round alpha values
-
-```
-config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}
-models, alphas = chef.fit(pd.read_csv("dataset/adaboost.txt"), config)
-prediction = chef.predict(config, models, [4, 3.5], alphas)
-```
-
-You can consume built decision trees directly as illustrated below. In this way, you can restore already built decision trees and skip learning steps, or apply **transfer learning**.
+You can consume built decision trees directly as well. In this way, you can restore already built decision trees and skip learning steps, or apply **transfer learning**. Loaded model offers you findDecision method to find prediction.
 
 ```
 from commons import functions
