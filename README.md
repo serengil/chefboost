@@ -12,7 +12,7 @@ Basically, you just need to pass the dataset as pandas data frame and tree confi
 import Chefboost as chef
 import pandas as pd
 
-config = {'algorithm': 'ID3'} #candidate algorithms: #ID3, C4.5, CART, Regression
+config = {'algorithm': 'ID3'} #This is regular ID3 algoritm. Candidate algorithms are ID3, C4.5, CART, Regression
 df = pd.read_csv("dataset/golf.txt")
 models = chef.fit(df, config)
 ```
@@ -42,11 +42,10 @@ def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
 Decision rules will be stored in `outputs/rules/` folder when you build a decision tree. You can run the built decision tree for new instances as illustrated below.
 
 ```
-test_instance = ['Sunny', 'Hot', 'High', 'Weak']
-prediction = chef.predict(config, models, test_instance)
+prediction = chef.predict(config, models, ['Sunny', 'Hot', 'High', 'Weak'])
 ```
 
-Recursive algorithms such as GBM, Random Forest or Adaboost create several rules in that directory. Predictions will be the sum of all  tree predictions. Chefboost.predict method handles to find recursive predictions.
+Recursive algorithms such as GBM, Random Forest or Adaboost create several rules in that directory. Predictions will be the sum of all  tree predictions. Chefboost.predict method handles to find recursive predictions. **Dispathcher.py** will guide you how to build a decision tree and make predictions
 
 ```
 config = {'enableGBM': True, 'epochs': 7, 'learning_rate': 1}
@@ -64,8 +63,6 @@ model = functions.restoreModel(moduleName)
 
 prediction = model.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 ```
-
-**Dispathcher.py** will guide you how to build a decision tree and make predictions
 
 # Prerequisites
 
