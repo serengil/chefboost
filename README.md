@@ -59,9 +59,9 @@ You can consume built decision trees directly as well. In this way, you can rest
 ```
 from commons import functions
 moduleName = "outputs/rules/rules" #this will load outputs/rules/rules.py
-model = functions.restoreModel(moduleName)
+tree = functions.restoreModel(moduleName)
 
-prediction = model.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
+prediction = tree.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 ```
 
 # Prerequisites
