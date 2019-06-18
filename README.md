@@ -58,6 +58,22 @@ prediction = tree.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 
 **Dispathcher.py** will guide you how to build a different decision trees and make predictions.
 
+# Model save and restoration
+
+You might want to save your model.
+
+```
+model = chef.fit(df.copy(), config)
+chef.save_model(model, "model.pkl")
+```
+
+In this way, you can use the same model later to just make predictions. Restoration requires to store files under `outputs/rules`.
+
+```
+model = chef.load_model("model.pkl")
+prediction = chef.predict(model, ['Sunny',85,85,'Weak'])
+```
+
 # Sample Configurations
 
 Chefboost supports several decision tree, bagging and boosting algorithms. You just need to pass the configuration to use different algorithms.
@@ -77,22 +93,6 @@ Chefboost supports several decision tree, bagging and boosting algorithms. You j
 **Adaboost**
 
 ```config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}```
-
-# Model save and restoration
-
-You might want to save your model.
-
-```
-model = chef.fit(df.copy(), config)
-chef.save_model(model, "model.pkl")
-```
-
-In this way, you can use the same model later to just make predictions. Restoration requires to store files under `outputs/rules`.
-
-```
-model = chef.load_model("model.pkl")
-prediction = chef.predict(model, ['Sunny',85,85,'Weak'])
-```
 
 # Prerequisites
 
