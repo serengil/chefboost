@@ -78,7 +78,7 @@ prediction = chef.predict(model, ['Sunny',85,85,'Weak'])
 
 Chefboost supports several decision tree, bagging and boosting algorithms. You just need to pass the configuration to use different algorithms.
 
-**Regular Decision Trees** - Candidate algorithms are `ID3`, `C4.5`, `CART` and Regression
+**Regular Decision Trees** - Candidate algorithms are `ID3`, `C4.5`, `CART` and `Regression`
 
 ```config = {'algorithm': 'C4.5'}```
 
