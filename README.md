@@ -60,21 +60,21 @@ prediction = tree.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 
 # Model save and restoration
 
-You might want to save your model.
+You can save your trained models.
 
 ```
 model = chef.fit(df.copy(), config)
 chef.save_model(model, "model.pkl")
 ```
 
-In this way, you can use the same model later to just make predictions. Restoration requires to store files under `outputs/rules`.
+In this way, you can use the same model later to just make predictions. This skips the training steps. Restoration requires to store .py and .pkl files under `outputs/rules`.
 
 ```
 model = chef.load_model("model.pkl")
 prediction = chef.predict(model, ['Sunny',85,85,'Weak'])
 ```
 
-# Sample Configurations
+# Sample configurations
 
 Chefboost supports several decision tree, bagging and boosting algorithms. You just need to pass the configuration to use different algorithms.
 
