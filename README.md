@@ -115,6 +115,14 @@ Python 3.6.4 :: Anaconda, Inc.
 
 You can find detailed documentations about these core algorithms [here](https://sefiks.com/tag/decision-tree/). Besides, this YouTube [playlist](https://www.youtube.com/playlist?list=PLsS_1RYmYQQHp_xZObt76dpacY543GrJD) guides you how to use Chefboost step by step. Also, you can enroll this [course](https://www.udemy.com/decision-trees-for-machine-learning/?couponCode=DTML-BLOG-18) and follow the curriculum if you wonder the theory of decision trees and how this framework is developed from scratch.
 
+# Support
+
+You can support this work 
+
+<button type="submit" class="btn btn-sm btn-with-count js-toggler-target" aria-label="Unstar this repository" title="Star serengil/chefboost" data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;STAR_BUTTON&quot;,&quot;repository_id&quot;:174140678,&quot;client_id&quot;:&quot;1760231341.1547113473&quot;,&quot;originating_request_id&quot;:&quot;2969:4D2D:D030E:132228:5D123514&quot;,&quot;originating_url&quot;:&quot;https://github.com/serengil/chefboost/edit/master/README.md&quot;,&quot;referrer&quot;:&quot;https://github.com/serengil/chefboost&quot;,&quot;user_id&quot;:18491038}}" data-hydro-click-hmac="8c57155525b7f6707d56a9a2c409f44c63e775ff08cd639df86f5e4c5e449890" data-ga-click="Repository, click star button, action:blob#edit; text:Star">        <svg class="octicon octicon-star v-align-text-bottom" viewBox="0 0 14 16" version="1.1" width="14" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74L14 6z"></path></svg>
+        Star
+</button>
+
 # Licence
 
 Chefboost is licensed under the MIT License - see [`LICENSE`](https://github.com/serengil/chefboost/blob/master/LICENSE) for more details.
