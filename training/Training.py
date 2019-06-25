@@ -195,7 +195,7 @@ def buildDecisionTree(df,root,file, config, dataset_features):
 		
 		if enableAdaboost == True:
 			#final_decision = subdataset['Decision'].value_counts().idxmax()
-			final_decision = subdataset['Decision'].mean() #get average
+			final_decision = functions.sign(subdataset['Decision'].mean()) #get average
 			terminateBuilding = True
 		elif len(subdataset['Decision'].value_counts().tolist()) == 1:
 			final_decision = subdataset['Decision'].value_counts().keys().tolist()[0] #all items are equal in this case
