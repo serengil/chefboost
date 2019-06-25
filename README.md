@@ -43,8 +43,9 @@ def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
 Decision rules will be stored in `outputs/rules/` folder when you build decision trees. You can run the built decision tree for new instances as illustrated below.
 
 ```python
+test_instance = ['Sunny', 'Hot', 'High', 'Weak']
 model = chef.fit(df, config)
-prediction = chef.predict(model, ['Sunny', 'Hot', 'High', 'Weak'])
+prediction = chef.predict(model, test_instance)
 ```
 
 You can consume built decision trees directly as well. In this way, you can restore already built decision trees and skip learning steps, or apply **transfer learning**. Loaded trees offer you findDecision method to test for new instances.
