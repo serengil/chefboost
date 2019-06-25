@@ -117,11 +117,52 @@ You can find detailed documentations about these core algorithms [here](https://
 
 # Support
 
-You can support this work 
+You can support this work by starring.
 
-<button type="submit" class="btn btn-sm btn-with-count js-toggler-target" aria-label="Unstar this repository" title="Star serengil/chefboost" data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;STAR_BUTTON&quot;,&quot;repository_id&quot;:174140678,&quot;client_id&quot;:&quot;1760231341.1547113473&quot;,&quot;originating_request_id&quot;:&quot;2969:4D2D:D030E:132228:5D123514&quot;,&quot;originating_url&quot;:&quot;https://github.com/serengil/chefboost/edit/master/README.md&quot;,&quot;referrer&quot;:&quot;https://github.com/serengil/chefboost&quot;,&quot;user_id&quot;:18491038}}" data-hydro-click-hmac="8c57155525b7f6707d56a9a2c409f44c63e775ff08cd639df86f5e4c5e449890" data-ga-click="Repository, click star button, action:blob#edit; text:Star">        <svg class="octicon octicon-star v-align-text-bottom" viewBox="0 0 14 16" version="1.1" width="14" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74L14 6z"></path></svg>
-        Star
-</button>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<img id="github-star" src="http://placehold.it/50/000000/ffffff"></img>
+<div id="github-overlay">
+  <input id="github-username" type="username" name="username" placeholder="Username">
+  <input id="github-password" type="password" name="password" placeholder="Password">
+  <a id="github-submit" href="#">Star It</a>
+</div>
+<script>
+  $(document).ready(function() {
+    $("#github-star").click(function() {
+      $("#github-overlay").css("display", "block");
+    });
+    $("#github-submit").click(function(e) {
+      e.preventDefault();
+      $.ajax({
+        type: "PUT",
+        url: "user/starred/:owner/:repo",
+        username: $("#github-username").val(),
+        password: $("#github-password").val(),
+        success: function(data) {
+          $("#github-overlay").css("display", "none");
+          $("#github-star").attr("src", "http://placehold.it/50/e8117f/ffffff");
+        }
+      });
+      return false;
+    });
+  });
+</script>
+<style>
+  #github-overlay {
+    display: none;
+    position: absolute;
+    top: 25%;
+    bottom: 25%;
+    left: 25%;
+    right: 25%;
+  }
+  #github-submit {
+    display: block;
+  }
+  #github-star:hover {
+    cursor: pointer;
+  }
+</style>
 
 # Licence
 
