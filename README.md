@@ -117,52 +117,7 @@ You can find detailed documentations about these core algorithms [here](https://
 
 # Support
 
-You can support this work by starring.
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<img id="github-star" src="http://placehold.it/50/000000/ffffff"></img>
-<div id="github-overlay">
-  <input id="github-username" type="username" name="username" placeholder="Username">
-  <input id="github-password" type="password" name="password" placeholder="Password">
-  <a id="github-submit" href="#">Star It</a>
-</div>
-<script>
-  $(document).ready(function() {
-    $("#github-star").click(function() {
-      $("#github-overlay").css("display", "block");
-    });
-    $("#github-submit").click(function(e) {
-      e.preventDefault();
-      $.ajax({
-        type: "PUT",
-        url: "user/starred/:owner/:repo",
-        username: $("#github-username").val(),
-        password: $("#github-password").val(),
-        success: function(data) {
-          $("#github-overlay").css("display", "none");
-          $("#github-star").attr("src", "http://placehold.it/50/e8117f/ffffff");
-        }
-      });
-      return false;
-    });
-  });
-</script>
-<style>
-  #github-overlay {
-    display: none;
-    position: absolute;
-    top: 25%;
-    bottom: 25%;
-    left: 25%;
-    right: 25%;
-  }
-  #github-submit {
-    display: block;
-  }
-  #github-star:hover {
-    cursor: pointer;
-  }
-</style>
+You can support this work by just starring.
 
 # Licence
 
