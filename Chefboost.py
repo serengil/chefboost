@@ -166,7 +166,7 @@ def predict(model, param):
 						classification = True
 						prediction_classes.append(custom_prediction)
 			else:
-				prediction += alphas[index] * functions.sign(tree.findDecision(param))
+				prediction += alphas[index] * tree.findDecision(param)
 			index = index + 1
 		
 		if adaboost == True:
