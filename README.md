@@ -8,7 +8,7 @@
 
 Basically, you just need to pass the dataset as pandas data frame and tree configurations after importing Chefboost as illustrated below. You just need to put the target label to the right. Besides, chefboost handles both numeric and nominal features and target values in contrast to its alternatives.
 
-```
+```python
 import Chefboost as chef
 import pandas as pd
 
@@ -22,7 +22,7 @@ model = chef.fit(df, config)
 
 Built decision trees are stored as python if statements in the `outputs/rules/rules.py` file. A sample of decision rules is demonstrated below.
 
-```
+```python
 def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
    if Outlook == 'Rain':
       if Wind == 'Weak':
@@ -42,14 +42,14 @@ def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
 
 Decision rules will be stored in `outputs/rules/` folder when you build decision trees. You can run the built decision tree for new instances as illustrated below.
 
-```
+```python
 model = chef.fit(df, config)
 prediction = chef.predict(model, ['Sunny', 'Hot', 'High', 'Weak'])
 ```
 
 You can consume built decision trees directly as well. In this way, you can restore already built decision trees and skip learning steps, or apply **transfer learning**. Loaded trees offer you findDecision method to test for new instances.
 
-```
+```python
 from commons import functions
 moduleName = "outputs/rules/rules" #this will load outputs/rules/rules.py
 tree = functions.restoreTree(moduleName)
@@ -62,14 +62,14 @@ prediction = tree.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 
 You can save your trained models.
 
-```
+```python
 model = chef.fit(df.copy(), config)
 chef.save_model(model, "model.pkl")
 ```
 
 In this way, you can use the same model later to just make predictions. This skips the training steps. Restoration requires to store .py and .pkl files under `outputs/rules`.
 
-```
+```python
 model = chef.load_model("model.pkl")
 prediction = chef.predict(model, ['Sunny',85,85,'Weak'])
 ```
@@ -80,7 +80,9 @@ Chefboost supports several decision tree, bagging and boosting algorithms. You j
 
 **Regular Decision Trees** - Candidate algorithms are `ID3`, `C4.5`, `CART` and `Regression`
 
-```config = {'algorithm': 'C4.5'}```
+```python
+config = {'algorithm': 'C4.5'}
+```
 
 **Gradient Boosting**
 
