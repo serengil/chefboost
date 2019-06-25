@@ -86,15 +86,21 @@ config = {'algorithm': 'C4.5'}
 
 **Gradient Boosting**
 
-```config = {'enableGBM': True, 'epochs': 7, 'learning_rate': 1}```
+```python
+config = {'enableGBM': True, 'epochs': 7, 'learning_rate': 1}
+```
 
 **Random Forest**
 
-```config = {'enableRandomForest': True, 'num_of_trees': 5}```
+```python
+config = {'enableRandomForest': True, 'num_of_trees': 5}
+```
 
 **Adaboost**
 
-```config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}```
+```python
+config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}
+```
 
 # Prerequisites
 
