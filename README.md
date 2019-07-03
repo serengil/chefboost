@@ -126,7 +126,7 @@ You can find detailed documentations about these core algorithms [here](https://
 
 # Support
 
-You can support this work by just starring.
+There are many ways to support a project - starring the GitHub repos is one.
 
 # Licence
 
