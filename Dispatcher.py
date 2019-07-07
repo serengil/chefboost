@@ -44,6 +44,16 @@ print(prediction)
 #------------------------------------
 
 #regular decision tree
+config = {'algorithm': 'ID3'}
+model = chef.fit(pd.read_csv("dataset/golf2.txt"), config)
+
+prediction = chef.predict(model, ['Sunny',85,85,'Weak'])
+#prediction = model[0].findDecision(['Sunny',85,85,'Weak'])
+print(prediction)
+
+#------------------------------------
+
+#regular decision tree
 config = {'algorithm': 'CART'}
 model = chef.fit(pd.read_csv("dataset/golf.txt"), config)
 
