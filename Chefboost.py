@@ -24,7 +24,16 @@ def fit(df, config):
 	config = functions.initializeParams(config)
 	functions.initializeFolders()
 	
+	#------------------------
+	
 	algorithm = config['algorithm']
+	
+	valid_algorithms = ['ID3', 'C4.5', 'CART', 'Regression']
+	
+	if algorithm not in valid_algorithms:
+		raise ValueError('Invalid algorithm passed. You passed ', algorithm," but valid algorithms are ",valid_algorithms)
+	
+	#------------------------
 
 	enableRandomForest = config['enableRandomForest']
 	num_of_trees = config['num_of_trees']
