@@ -81,22 +81,22 @@ Chefboost supports several decision tree, bagging and boosting algorithms. You j
 
 **Regular Decision Trees**
 
-ID3 [`Video`](https://youtu.be/Z93qE5eb6eg)
+***ID3*** [`Video`](https://youtu.be/Z93qE5eb6eg)
 ```python
 config = {'algorithm': 'ID3'}
 ```
 
-C4.5 [`Video`](https://youtu.be/kjhQHmtDaAA)
+***C4.5*** [`Video`](https://youtu.be/kjhQHmtDaAA)
 ```python
 config = {'algorithm': 'C4.5'}
 ```
 
-CART [`Video`](https://youtu.be/CSApBetgukM)
+***CART*** [`Video`](https://youtu.be/CSApBetgukM)
 ```python
 config = {'algorithm': 'CART'}
 ```
 
-Regression [`Video`](https://youtu.be/pCQ2RCa20Bg)
+***Regression*** [`Video`](https://youtu.be/pCQ2RCa20Bg)
 ```python
 config = {'algorithm': 'Regression'}
 ```
