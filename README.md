@@ -120,6 +120,16 @@ C:\>python --version
 Python 3.6.4 :: Anaconda, Inc.
  ```
  
+ # Installation
+ 
+ You can run the following command in the command prompt to install Chefboost. If git is not recognized as command in your environment you can download **[this link]**(https://github.com/serengil/chefboost/archive/master.zip).
+ 
+ ```
+ https://github.com/serengil/chefboost.git
+ ```
+ 
+Then, you should create your notebook in the same directory with Chefboost.py.
+ 
 # Documentation
 
 This YouTube [playlist](https://www.youtube.com/playlist?list=PLsS_1RYmYQQHp_xZObt76dpacY543GrJD) guides you how to use Chefboost step by step for different algorithms. You can also find the detailed documentations about these core algorithms [here](https://sefiks.com/tag/decision-tree/). 
