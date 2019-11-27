@@ -122,7 +122,7 @@ Python 3.6.4 :: Anaconda, Inc.
  
  # Installation
  
- You can run the following command in the command prompt to install Chefboost. If git is not recognized as command in your environment you can download **[this link]**(https://github.com/serengil/chefboost/archive/master.zip).
+ You can run the following command in the command prompt to install Chefboost. If git is not recognized as command in your environment you can download [this link](https://github.com/serengil/chefboost/archive/master.zip).
  
  ```
  git clone https://github.com/serengil/chefboost.git
