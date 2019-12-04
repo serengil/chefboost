@@ -10,6 +10,9 @@ def processContinuousFeatures(algorithm, df, column_name, entropy, config):
 	
 	subset_gainratios = []; subset_gains = []; subset_ginis = []; subset_red_stdevs = []
 	
+	if len(unique_values) == 1:
+		return df
+	
 	for i in range(0, len(unique_values)-1):
 		threshold = unique_values[i]
 		
