@@ -11,6 +11,8 @@ def processContinuousFeatures(algorithm, df, column_name, entropy, config):
 	subset_gainratios = []; subset_gains = []; subset_ginis = []; subset_red_stdevs = []
 	
 	if len(unique_values) == 1:
+		winner_threshold = unique_values[0]
+		df[column_name] = np.where(df[column_name] <= winner_threshold, "<="+str(winner_threshold), ">"+str(winner_threshold))
 		return df
 	
 	for i in range(0, len(unique_values)-1):
