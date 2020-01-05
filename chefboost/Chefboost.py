@@ -5,9 +5,9 @@ import time
 import imp
 import pickle
 
-from commons import functions
-from training import Preprocess, Training
-from tuning import gbm, adaboost, randomforest
+from chefboost.commons import functions
+from chefboost.training import Preprocess, Training
+from chefboost.tuning import gbm, adaboost, randomforest
 
 #------------------------
 

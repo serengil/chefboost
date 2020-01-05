@@ -3,8 +3,8 @@ import numpy as np
 
 import imp
 
-from commons import functions
-from training import Preprocess, Training
+from chefboost.commons import functions
+from chefboost.training import Preprocess, Training
 
 from tqdm import tqdm
 

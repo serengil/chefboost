@@ -3,8 +3,8 @@ import numpy as np
 
 from multiprocessing import Pool
 
-from commons import functions
-from training import Training
+from chefboost.commons import functions
+from chefboost.training import Training
 
 from tqdm import tqdm
 

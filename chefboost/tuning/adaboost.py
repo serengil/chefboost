@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 
-from commons import functions
-from training import Training
+from chefboost.commons import functions
+from chefboost.training import Training
 
 import imp
 import math

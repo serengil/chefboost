@@ -3,3 +3,12 @@ __pycache__/*
 commons/__pycache__/*
 training/__pycache__/*
 tuning/__pycache__/*
+build/
+dist/
+Pipfile
+Pipfile.lock
+.mypy_cache/
+.vscode/
+.idea/
+chefboost.egg-info/
+tests/outputs/
