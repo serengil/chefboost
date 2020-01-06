@@ -119,16 +119,14 @@ Initial tests are run on the following environment.
 C:\>python --version
 Python 3.6.4 :: Anaconda, Inc.
  ```
+
+# Installation
  
- # Installation
+Chefboost can be installed [from PyPI](https://pypi.org/project/chefboost/0.0.1/).
  
- You can run the following command in the command prompt to install Chefboost. If git is not recognized as command in your environment you can download [this link](https://github.com/serengil/chefboost/archive/master.zip).
- 
- ```
- git clone https://github.com/serengil/chefboost.git
- ```
- 
-Then, you should create your notebook in the same directory with Chefboost.py.
+```
+pip install chefboost
+```
  
 # Documentation
 
