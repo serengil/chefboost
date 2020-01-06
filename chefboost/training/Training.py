@@ -1,8 +1,8 @@
 import math
 import imp
 
-from training import Preprocess
-from commons import functions
+from chefboost.training import Preprocess
+from chefboost.commons import functions
 
 def calculateEntropy(df, config):
 	

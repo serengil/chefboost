@@ -2,7 +2,7 @@ import numpy as np
 
 import math
 
-from training import Training
+from chefboost.training import Training
 
 def processContinuousFeatures(algorithm, df, column_name, entropy, config):
 	unique_values = sorted(df[column_name].unique())
