@@ -103,29 +103,20 @@ config = {'enableRandomForest': True, 'num_of_trees': 5}
 config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}
 ```
 
-# Prerequisites
-
-Pandas and numpy python libraries are used to load data sets in this repository. You might run the following commands to install these packages if you are going to use them first time.
-
-```
-pip install pandas==0.22.0
-pip install numpy==1.14.0
-pip install tqdm==4.30.0
-```
-
-Initial tests are run on the following environment.
-
- ```
-C:\>python --version
-Python 3.6.4 :: Anaconda, Inc.
- ```
-
 # Installation
  
 Chefboost can be installed [from PyPI](https://pypi.org/project/chefboost/0.0.1/).
  
 ```
 pip install chefboost
+```
+
+Initial tests are run for Python 3.6.4 on Windows 10 but this is an OS-independent framework. Even though pip handles to install dependent libraries, the framework basically needs the following dependencies.
+
+```
+pip install pandas==0.22.0
+pip install numpy==1.14.0
+pip install tqdm==4.30.0
 ```
  
 # Documentation
@@ -136,7 +127,7 @@ Besides, you can enroll this online course - [**Decision Trees for Machine Learn
 
 # Support
 
-There are many ways to support a project - starring the GitHub repos is one.
+There are many ways to support a project - starring the GitHub repos is just one.
 
 # Licence
 
