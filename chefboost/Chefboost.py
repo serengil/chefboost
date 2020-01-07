@@ -230,3 +230,6 @@ def load_model(file_name="model.pkl"):
 	model["trees"] = modules
 	
 	return model
+
+def restoreTree(moduleName):
+	return functions.restoreTree(moduleName)
