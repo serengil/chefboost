@@ -9,7 +9,7 @@
 Basically, you just need to pass the dataset as pandas data frame and tree configurations after importing Chefboost as illustrated below. You just need to put the target label to the right. Besides, chefboost handles both numeric and nominal features and target values in contrast to its alternatives.
 
 ```python
-import Chefboost as chef
+from chefboost import Chefboost as chef
 import pandas as pd
 
 df = pd.read_csv("dataset/golf.txt")
@@ -51,9 +51,8 @@ prediction = chef.predict(model, test_instance)
 You can consume built decision trees directly as well. In this way, you can restore already built decision trees and skip learning steps, or apply **transfer learning**. Loaded trees offer you findDecision method to test for new instances.
 
 ```python
-from commons import functions
 moduleName = "outputs/rules/rules" #this will load outputs/rules/rules.py
-tree = functions.restoreTree(moduleName)
+tree = chef.restoreTree(moduleName)
 prediction = tree.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 ```
 
