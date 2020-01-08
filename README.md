@@ -12,12 +12,6 @@ The easiest way to install Chefboost framework is to download it from [from PyPI
 pip install chefboost
 ```
 
-Alternatively, you can download the source code directly as illustrated below
-
-```
-git clone https://github.com/serengil/chefboost.git
-```
-
 Initial tests are run for Python 3.6.4 on Windows 10 but this is an OS-independent framework. Even though pip handles to install dependent libraries, the framework basically needs the following dependencies.
 
 ```
