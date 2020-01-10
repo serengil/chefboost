@@ -126,7 +126,7 @@ Besides, you can enroll this online course - [**Decision Trees for Machine Learn
 
 # Support
 
-There are many ways to support a project - starring the GitHub repos is just one.
+There are many ways to support a project - starring⭐️ the GitHub repos is just one.
 
 # Licence
 
