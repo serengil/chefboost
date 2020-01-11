@@ -5,14 +5,22 @@
 **Chefboost** is a lightweight [gradient boosting](https://sefiks.com/2018/10/04/a-step-by-step-gradient-boosting-decision-tree-example/), [random forest](https://sefiks.com/2017/11/19/how-random-forests-can-keep-you-from-decision-tree/) and [adaboost](https://sefiks.com/2018/11/02/a-step-by-step-adaboost-example/) enabled decision tree framework including regular [ID3](https://sefiks.com/2017/11/20/a-step-by-step-id3-decision-tree-example/), [C4.5](https://sefiks.com/2018/05/13/a-step-by-step-c4-5-decision-tree-example/), [CART](https://sefiks.com/2018/08/27/a-step-by-step-cart-decision-tree-example/) and [regression tree](https://sefiks.com/2018/08/28/a-step-by-step-regression-decision-tree-example/) algorithms **with categorical features support**. It is lightweight, you just need to write **a few lines of code** to build decision trees with Chefboost.
 
 # Installation
- 
-The easiest way to install Chefboost framework is to download it from [from PyPI](https://pypi.org/project/chefboost/0.0.1/).
+
+The easiest way to install Chefboost framework is to download it from [from PyPI](https://pypi.org/project/chefboost/0.0.1/). Its latest version is 0.0.1.
  
 ```
 pip install chefboost
 ```
 
-Initial tests are run for Python 3.6.4 on Windows 10 but this is an OS-independent framework. Even though pip handles to install dependent libraries, the framework basically needs the following dependencies.
+Alternatively, you can directly download the source code from this repository.
+
+```
+git clone https://github.com/serengil/chefboost.git
+```
+
+Installation guideline is also captured as a [video](https://youtu.be/YYF993HTHf8).
+
+Initial tests are run for Python 3.6.4 on Windows 10 but this is an OS-independent framework. Even though pip handles to install dependent libraries, the framework basically needs the following dependencies. You might need the following library requirements if you install the source code from github.
 
 ```
 pip install pandas==0.22.0
@@ -126,7 +134,7 @@ Besides, you can enroll this online course - [**Decision Trees for Machine Learn
 
 # Support
 
-There are many ways to support a project - starring⭐️ the GitHub repos is just one.
+There are many ways to support a project - ⭐️starring the GitHub repos is just one.
 
 # Licence
 
