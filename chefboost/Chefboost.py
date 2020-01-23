@@ -21,13 +21,25 @@ def fit(df, config):
 	#------------------------
 	#handle NaN values
 	
+	nan_values = []
+	
 	for column in df.columns:
 		if df[column].dtypes != 'object':
 			min_value = df[column].min()
 			idx = df[df[column].isna()].index
+			
+			nan_value = []
+			nan_value.append(column)
+			
 			if idx.shape[0] > 0:
 				df.loc[idx, column] = min_value - 1
-				print("NaN values are replaced to ", min_value - 1, " in column ", column)
+				nan_value.append(min_value - 1)
+				min_value - 1
+				#print("NaN values are replaced to ", min_value - 1, " in column ", column)
+			else:
+				nan_value.append(None)
+			
+			nan_values.append(nan_value)
 	
 	#------------------------
 	
@@ -86,9 +98,7 @@ def fit(df, config):
 	
 	dataset_features = dict() #initialize a dictionary. this is going to be used to check features numeric or nominal. numeric features should be transformed to nominal values based on scales.
 
-	header = "def findDecision("
-	header = header + "obj"
-	header = header + "): #"
+	header = "def findDecision(obj): #"
 	
 	num_of_columns = df.shape[1]-1
 	for i in range(0, num_of_columns):
@@ -132,7 +142,8 @@ def fit(df, config):
 	obj = {
 		"trees": trees,
 		"alphas": alphas,
-		"config": config
+		"config": config,
+		"nan_values": nan_values
 	}
 	
 	return obj
@@ -144,7 +155,25 @@ def predict(model, param):
 	trees = model["trees"]
 	config = model["config"]
 	alphas = model["alphas"]
+	nan_values = model["nan_values"]
 	
+	#-----------------------
+	#handle missing values
+	
+	column_index = 0
+	for column in nan_values:
+		column_name = column[0]
+		missing_value = column[1]
+		
+		if pd.isna(missing_value) != True:
+			#print("missing values will be replaced with ",missing_value," in ",column_name," column")
+			
+			if pd.isna(param[column_index]):
+				param[column_index] = missing_value
+			
+		column_index = column_index + 1
+			
+	#print("instance: ", param)
 	#-----------------------
 	
 	enableGBM = config['enableGBM']
