@@ -12,7 +12,7 @@ The easiest way to install Chefboost framework is to download it from [from PyPI
 pip install chefboost
 ```
 
-Alternatively, you can directly download the source code from this repository.
+Alternatively, you can directly download the source code from this repository. GitHub repo might be newer than the PyPI version.
 
 ```
 git clone https://github.com/serengil/chefboost.git
