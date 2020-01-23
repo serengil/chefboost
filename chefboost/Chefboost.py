@@ -19,6 +19,17 @@ def fit(df, config):
 		raise ValueError('Please confirm that name of the target column is "Decision" and it is put to the right in pandas data frame')
 	
 	#------------------------
+	#handle NaN values
+	
+	for column in df.columns:
+		if df[column].dtypes != 'object':
+			min_value = df[column].min()
+			idx = df[df[column].isna()].index
+			if idx.shape[0] > 0:
+				df.loc[idx, column] = min_value - 1
+				print("NaN values are replaced to ", min_value - 1, " in column ", column)
+	
+	#------------------------
 	
 	#initialize params and folders
 	config = functions.initializeParams(config)
