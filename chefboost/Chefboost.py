@@ -4,6 +4,8 @@ import numpy as np
 import time
 import imp
 import pickle
+import os
+from os import path
 
 from chefboost.commons import functions
 from chefboost.training import Preprocess, Training
@@ -67,6 +69,7 @@ def fit(df, config):
 	learning_rate = config['learning_rate']
 
 	enableAdaboost = config['enableAdaboost']
+	enableParallelism = config['enableParallelism']
 	
 	#------------------------
 	raw_df = df.copy()
@@ -87,6 +90,7 @@ def fit(df, config):
 		config['algorithm'] = 'Regression'
 	
 	if enableAdaboost == True:
+		enableParallelism = False
 		for j in range(0, num_of_columns):
 			column_name = df.columns[j]
 			if df[column_name].dtypes  == 'object':
@@ -135,8 +139,14 @@ def fit(df, config):
 
 		root = 1; file = "outputs/rules/rules.py"
 		functions.createFile(file, header)
-		trees = Training.buildDecisionTree(df,root,file, config, dataset_features)
-	
+		
+		if enableParallelism == True:
+			json_file = "outputs/rules/rules.json"
+			functions.createFile(json_file, "[\n")
+			
+		trees = Training.buildDecisionTree(df,root,file, config, dataset_features
+			, 0, 0, 'root')
+		
 	print("finished in ",time.time() - begin," seconds")
 	
 	obj = {
