@@ -12,11 +12,11 @@ Pipfile.lock
 .idea/
 chefboost.egg-info/
 tests/outputs/
-chefboost/__pycache__
-chefboost/commons/__pycache__
+chefboost/__pycache__/*
+chefboost/commons/__pycache__/*
 chefboost/commons/__init__.py
-chefboost/training/__pycache__
+chefboost/training/__pycache__/*
 chefboost/training/__init__.py
-chefboost/tuning/__pycache__
+chefboost/tuning/__pycache__/*
 chefboost/tuning/__init__.py
 chefboost/__init__.py
