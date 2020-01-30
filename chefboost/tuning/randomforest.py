@@ -26,11 +26,15 @@ def apply(df, config, header, dataset_features):
 		root = 1
 		
 		moduleName = "outputs/rules/rule_"+str(i)
-		file = moduleName+".py"
+		file = moduleName+".py"; json_file = moduleName+".json"
 		
 		functions.createFile(file, header)
+		functions.createFile(json_file, "[\n")
 		
-		Training.buildDecisionTree(subset,root, file, config, dataset_features)
+		Training.buildDecisionTree(subset,root, file, config, dataset_features
+			, parent_level = 0, leaf_id = 0, parents = 'root')
+		
+		functions.storeRule(json_file,"{}]")
 		
 		#--------------------------------
 		
