@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="chefboost",  
-    version="0.0.2",
+    version="0.0.3",
     author="Sefik Ilkin Serengil",
     author_email="serengil@gmail.com",
     description="Lightweight Decision Tree Framework",
