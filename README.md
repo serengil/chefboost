@@ -6,7 +6,7 @@
 
 # Installation
 
-The easiest way to install Chefboost framework is to download it from [from PyPI](https://pypi.org/project/chefboost/0.0.1/). Its latest version is 0.0.1.
+The easiest way to install Chefboost framework is to download it from [from PyPI](https://pypi.org/project/chefboost). Its latest version is 0.0.2.
  
 ```
 pip install chefboost
