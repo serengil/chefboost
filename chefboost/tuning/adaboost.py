@@ -57,7 +57,8 @@ def apply(df, config, header, dataset_features):
 		
 		#print(worksheet)
 		Training.buildDecisionTree(worksheet.drop(columns=['Weight'])
-			, root, file, config, dataset_features)
+			, root, file, config, dataset_features
+			, parent_level = 0, leaf_id = 0, parents = 'root')
 		
 		#---------------------------------------
 		

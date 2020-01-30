@@ -5,10 +5,10 @@ import sys
 from chefboost import Chefboost as cb
 
 #----------------------------------------------
-parallelism_cases = [False, True]
+parallelism_cases = [True, False]
 
 for enableParallelism in parallelism_cases:
-
+  
   print("ID3 for nominal features and target:")
   config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
   cb.fit(pd.read_csv("dataset/golf.txt"), config)
@@ -66,15 +66,15 @@ for enableParallelism in parallelism_cases:
   print("CART for nominal features and target (large data set)")
   config = {'algorithm': 'CART', 'enableParallelism': enableParallelism}
   cb.fit(pd.read_csv("dataset/car.data", names=["buying", "maint", "doors", "persons", "lug_boot", "safety", "Decision"]), config)
-
+  
   print("-------------------------")
 
   print("Adaboost")
-  config = {'algorithm': 'ID3', 'enableAdaboost': True, 'enableParallelism': enableParallelism}
+  config = {'algorithm': 'ID3', 'enableAdaboost': True, 'enableParallelism': True}
   cb.fit(pd.read_csv("dataset/adaboost.txt"), config)
 
   print("-------------------------")
-
+  
   print("Regular GBM")
   config = {'algorithm': 'CART', 'enableGBM': True, 'epochs': 10, 'learning_rate': 1, 'enableParallelism': enableParallelism}
   cb.fit(pd.read_csv("dataset/golf4.txt"), config)
@@ -92,7 +92,7 @@ for enableParallelism in parallelism_cases:
   cb.fit(pd.read_csv("dataset/car.data", names=["buying", "maint", "doors", "persons", "lug_boot", "safety", "Decision"]), config)
 
   print("-------------------------")
-
+  
   """
   print("Random forest (multitasking)")
   config = {'algorithm': 'ID3', 'enableGBM': False, 'epochs': 10, 'learning_rate': 1, 'enableRandomForest': True, 'num_of_trees': 5, 'enableMultitasking': True, 'enableAdaboost': False}

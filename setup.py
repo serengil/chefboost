@@ -1,11 +1,11 @@
 import setuptools
 
-with open("README.md", "r") as fh:
+with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="chefboost",  
-    version="0.0.1",
+    version="0.0.2",
     author="Sefik Ilkin Serengil",
     author_email="serengil@gmail.com",
     description="Lightweight Decision Tree Framework",

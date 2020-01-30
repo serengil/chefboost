@@ -223,6 +223,7 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			#final_decision = subdataset['Decision'].value_counts().idxmax()
 			final_decision = functions.sign(subdataset['Decision'].mean()) #get average
 			terminateBuilding = True
+			enableParallelism = False
 		elif len(subdataset['Decision'].value_counts().tolist()) == 1:
 			final_decision = subdataset['Decision'].value_counts().keys().tolist()[0] #all items are equal in this case
 			terminateBuilding = True

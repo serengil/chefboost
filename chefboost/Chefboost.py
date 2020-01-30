@@ -90,7 +90,7 @@ def fit(df, config):
 		config['algorithm'] = 'Regression'
 	
 	if enableAdaboost == True:
-		enableParallelism = False
+		#enableParallelism = False
 		for j in range(0, num_of_columns):
 			column_name = df.columns[j]
 			if df[column_name].dtypes  == 'object':
