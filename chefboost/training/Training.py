@@ -1,8 +1,21 @@
 import math
 import imp
+import uuid
+import json
+import numpy as np
+import copy
 
 from chefboost.training import Preprocess
 from chefboost.commons import functions
+
+def listToString(my_list):
+	my_text = "["
+	for i in range(0, len(my_list)):
+		my_text += "\""+my_list[i]+"\""
+		if i < len(my_list) - 1:
+			my_text += ", "
+	my_text += "]"
+	return my_text
 
 def calculateEntropy(df, config):
 	
@@ -132,8 +145,13 @@ def findDecision(df, config):
 
 	return winner_name
 
-def buildDecisionTree(df,root,file, config, dataset_features):
+def createBranch():
+	return 0
 
+def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root'):
+	
+	json_file = file.split(".")[0]+".json"
+	
 	models = []
 
 	if root == 1:
@@ -142,15 +160,16 @@ def buildDecisionTree(df,root,file, config, dataset_features):
 	
 	algorithm = config['algorithm']
 	enableAdaboost = config['enableAdaboost']
+	enableParallelism = config['enableParallelism']
 	
 	#--------------------------------------
 	
-	#print(df.shape)
 	charForResp = "'"
 	if algorithm == 'Regression':
 		charForResp = ""
 
 	tmp_root = root * 1
+	parents_raw = copy.copy(parents)
 	
 	df_copy = df.copy()
 	
@@ -175,7 +194,14 @@ def buildDecisionTree(df,root,file, config, dataset_features):
 			df[column_name] = df_copy[column_name]
 	
 	classes = df[winner_name].value_counts().keys().tolist()
-
+		
+	#-----------------------------------------------------
+	
+	#TO-DO: This block could be paralellised
+	
+	#-----------------------------------------------------
+	
+	#serial approach
 	for i in range(0,len(classes)):
 		current_class = classes[i]
 		subdataset = df[df[winner_name] == current_class]
@@ -214,25 +240,69 @@ def buildDecisionTree(df,root,file, config, dataset_features):
 		else:
 			check_condition = "elif"
 		
-		functions.storeRule(file,(functions.formatRule(root),"",check_condition," obj[",str(winner_index),"]",compareTo,":"))
+		check_rule = check_condition+" obj["+str(winner_index)+"]"+compareTo+":"
+		
+		if enableParallelism != True:
+			functions.storeRule(file,(functions.formatRule(root),"",check_rule))
+		else:
+			leaf_id = str(uuid.uuid1())
+			
+			sample_rule = "   {\n"
+			sample_rule += "      \"current_level\": "+str(root)+",\n"
+			sample_rule += "      \"leaf_id\": \""+str(leaf_id)+"\",\n"
+			sample_rule += "      \"parents\": \""+parents+"\",\n"
+			sample_rule += "      \"rule\": \""+check_rule+"\"\n"
+			sample_rule += "   },"
+
+			functions.storeRule(json_file, sample_rule)
 		
 		#-----------------------------------------------
 		
 		if terminateBuilding == True: #check decision is made
-			functions.storeRule(file,(functions.formatRule(root+1),"return ",charForResp+str(final_decision)+charForResp))
 			
+			parents = copy.copy(leaf_id)
+			leaf_id = str(uuid.uuid1())
+			
+			decision_rule = "return "+charForResp+str(final_decision)+charForResp
+			
+			if enableParallelism != True:
+				#serial
+				functions.storeRule(file,(functions.formatRule(root+1),decision_rule))
+			else:
+				#parallel
+				sample_rule = "   {\n"
+				sample_rule += "      \"current_level\": "+str(root+1)+",\n"
+				sample_rule += "      \"leaf_id\": \""+str(leaf_id)+"\",\n"
+				sample_rule += "      \"parents\": \""+parents+"\",\n"
+				sample_rule += "      \"rule\": \""+decision_rule+"\"\n"
+				sample_rule += "   }, "
+				
+				functions.storeRule(json_file, sample_rule)
+		
 		else: #decision is not made, continue to create branch and leafs
 			root = root + 1 #the following rule will be included by this rule. increase root
-			buildDecisionTree(subdataset, root, file, config, dataset_features)
-		
+			
+			parents = copy.copy(leaf_id)
+			
+			buildDecisionTree(subdataset, root, file, config, dataset_features
+				, root-1, leaf_id, parents)
+						
 		root = tmp_root * 1
+		parents = copy.copy(parents_raw)
 	
 	#---------------------------------------------
 	
 	#calculate accuracy metrics
 	if root == 1:
+		
+		if enableParallelism == True:
+			file_name = file.split(".py")[0].split("/")[2]
+			functions.storeRule(json_file, "{}]")
+			reconstructRules(file_name+".json")
+		
 		if config['enableRandomForest'] != True and config['enableGBM'] != True and config['enableAdaboost'] != True:
 		#this is reguler decision tree. find accuracy here.
+			
 			moduleName = "outputs/rules/rules"
 			fp, pathname, description = imp.find_module(moduleName)
 			myrules = imp.load_module(moduleName, fp, pathname, description) #rules0
@@ -288,3 +358,63 @@ def findPrediction(row):
 	prediction = myrules.findDecision(params)
 	return prediction
 	
+"""
+If you set parelellisim True, then branches will be created parallel. Rules are stored in a json file randomly. This program reconstructs built rules in a tree form. In this way, we can build decision trees faster.
+"""
+
+def reconstructRules(source):
+	
+	#print("Reconstructing ",source)
+	
+	file_name = source.split(".json")[0]
+	file_name = "outputs/rules/"+file_name+".py"
+	source = "outputs/rules/"+source
+	
+	functions.createFile(file_name, "#This rule was reconstructed from "+source+"\n")
+	
+	with open(source, 'r') as f:
+		rules = json.load(f)
+
+	#print(rules)
+
+	def padleft(rule, level):
+		for i in range(0, level):
+			rule = "\t"+rule
+		return rule
+
+	#print("def findDecision(obj):")
+
+	max_level = 0
+
+	rule_set = []
+	#json file might not store rules respectively
+	for instance in rules:
+		if len(instance) > 0:
+			rule = []
+			rule.append(instance["current_level"])
+			rule.append(instance["leaf_id"])
+			rule.append(instance["parents"])
+			rule.append(instance["rule"])
+			rule_set.append(rule)
+			#print(padleft(instance["rule"], instance["current_level"]))
+
+	df = np.array(rule_set)
+	
+	def extractRules(df, parent = 'root', level=1):
+	
+		level_raw = level * 1; parent_raw = copy.copy(parent)
+		
+		for i in range(0 ,df.shape[0]):
+			leaf_id = df[i][1]
+			parent_id = df[i][2]
+			rule = df[i][3]
+			
+			if parent_id == parent:
+				functions.storeRule(file_name, padleft(rule, level))
+				
+				level = level + 1; parent = copy.copy(leaf_id)
+				extractRules(df, parent, level)
+				level = level_raw * 1; parent = copy.copy(parent_raw) #restore
+			
+	functions.storeRule(file_name, "def findDecision(obj):")
+	extractRules(df)
