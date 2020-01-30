@@ -53,10 +53,14 @@ def regressor(df, config, header, dataset_features):
 	num_of_instances = target_values.shape[0]
 	
 	root = 1
-	file = "outputs/rules/rules0.py"
+	file = "outputs/rules/rules0.py"; json_file = "outputs/rules/rules0.json"
 	functions.createFile(file, header)
+	functions.createFile(json_file, "[\n")
 	
-	Training.buildDecisionTree(df,root,file, config, dataset_features) #generate rules0
+	Training.buildDecisionTree(df,root,file, config, dataset_features
+		, parent_level = 0, leaf_id = 0, parents = 'root') #generate rules0
+	
+	#functions.storeRule(json_file," {}]")
 	
 	df = base_df.copy()
 	
@@ -114,11 +118,17 @@ def regressor(df, config, header, dataset_features):
 		#---------------------------------
 		
 		file = "outputs/rules/rules"+str(index)+".py"
+		json_file = "outputs/rules/rules"+str(index)+".json"
 		
 		functions.createFile(file, header)
+		functions.createFile(json_file, "[\n")
 		
 		current_df = df.copy()
-		Training.buildDecisionTree(df,root,file, config, dataset_features)
+		Training.buildDecisionTree(df,root,file, config, dataset_features
+			, parent_level = 0, leaf_id = 0, parents = 'root')
+		
+		#functions.storeRule(json_file," {}]")
+		
 		df = current_df.copy() #numeric features require this restoration to apply findDecision function
 		
 		#rules(i) created
@@ -130,7 +140,7 @@ def regressor(df, config, header, dataset_features):
 		
 		#---------------------------------
 	
-	print(num_of_instances," instances are boosted from ",boosted_from," to ",boosted_to," in ",epochs," epochs")
+	print("MSE of ",num_of_instances," instances are boosted from ",boosted_from," to ",boosted_to," in ",epochs," epochs")
 	
 	return models
 
@@ -141,6 +151,7 @@ def classifier(df, config, header, dataset_features):
 	print("gradient boosting for classification")
 	
 	epochs = config['epochs']
+	enableParallelism = config['enableParallelism']
 	
 	temp_df = df.copy()
 	original_dataset = df.copy()
@@ -176,11 +187,18 @@ def classifier(df, config, header, dataset_features):
 			temp_df[['Decision']].astype('int64')
 			
 			root = 1
-			file = "outputs/rules/rules-for-"+current_class+"-round-"+str(epoch)+".py"
+			file_base = "outputs/rules/rules-for-"+current_class+"-round-"+str(epoch)
 			
+			file = file_base+".py"
 			functions.createFile(file, header)
 			
-			Training.buildDecisionTree(temp_df,root,file, config, dataset_features)
+			if enableParallelism == True:
+				json_file = file_base+".json"
+				functions.createFile(json_file, "[\n")
+			
+			Training.buildDecisionTree(temp_df, root, file, config, dataset_features
+				, parent_level = 0, leaf_id = 0, parents = 'root')
+				
 			#decision rules created
 			#----------------------------
 			
