@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.0.3",
     author="Sefik Ilkin Serengil",
     author_email="serengil@gmail.com",
-    description="Lightweight Decision Tree Framework",
+    description="Lightweight Decision Tree Framework Supporting GBM, Random Forest and Adaboost",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/serengil/chefboost",

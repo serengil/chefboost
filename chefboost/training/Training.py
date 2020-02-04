@@ -4,19 +4,26 @@ import uuid
 import json
 import numpy as np
 import copy
+import multiprocessing
+import os
+import multiprocessing.pool
 
 from chefboost.training import Preprocess
 from chefboost.commons import functions
 
-def listToString(my_list):
-	my_text = "["
-	for i in range(0, len(my_list)):
-		my_text += "\""+my_list[i]+"\""
-		if i < len(my_list) - 1:
-			my_text += ", "
-	my_text += "]"
-	return my_text
+#----------------------------------------
 
+class NoDaemonProcess(multiprocessing.Process):
+    # make 'daemon' attribute always return False
+    def _get_daemon(self):
+        return False
+    def _set_daemon(self, value):
+        pass
+    daemon = property(_get_daemon, _set_daemon)
+
+class MyPool(multiprocessing.pool.Pool):
+    Process = NoDaemonProcess
+#----------------------------------------
 def calculateEntropy(df, config):
 	
 	algorithm = config['algorithm']
@@ -145,31 +152,128 @@ def findDecision(df, config):
 
 	return winner_name
 
-def createBranch():
-	return 0
-
-def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root'):
-	
-	json_file = file.split(".")[0]+".json"
-	
-	models = []
-
-	if root == 1:
-		if config['enableRandomForest'] != True and config['enableGBM'] != True and config['enableAdaboost'] != True:
-			raw_df = df.copy()
+def createBranch(config, current_class, subdataset, numericColumn, branch_index, winner_index, root, parents, file, dataset_features):
 	
 	algorithm = config['algorithm']
 	enableAdaboost = config['enableAdaboost']
 	enableParallelism = config['enableParallelism']
 	
-	#--------------------------------------
-	
 	charForResp = "'"
 	if algorithm == 'Regression':
 		charForResp = ""
-
+	
+	#---------------------------
+	
+	json_file = file.split(".")[0]+".json"
+	
 	tmp_root = root * 1
 	parents_raw = copy.copy(parents)
+	
+	#---------------------------
+	
+	if numericColumn == True:
+		compareTo = current_class #current class might be <=x or >x in this case
+	else:
+		compareTo = " == '"+str(current_class)+"'"
+	
+	#print(subdataset)
+	
+	terminateBuilding = False
+	
+	#-----------------------------------------------
+	#can decision be made?
+	
+	if enableAdaboost == True:
+		#final_decision = subdataset['Decision'].value_counts().idxmax()
+		final_decision = functions.sign(subdataset['Decision'].mean()) #get average
+		terminateBuilding = True
+		enableParallelism = False
+	elif len(subdataset['Decision'].value_counts().tolist()) == 1:
+		final_decision = subdataset['Decision'].value_counts().keys().tolist()[0] #all items are equal in this case
+		terminateBuilding = True
+	elif subdataset.shape[1] == 1: #if decision cannot be made even though all columns dropped
+		final_decision = subdataset['Decision'].value_counts().idxmax() #get the most frequent one
+		terminateBuilding = True
+	elif algorithm == 'Regression' and subdataset.shape[0] < 5: #pruning condition
+	#elif algorithm == 'Regression' and subdataset['Decision'].std(ddof=0)/global_stdev < 0.4: #pruning condition
+		final_decision = subdataset['Decision'].mean() #get average
+		terminateBuilding = True
+	#-----------------------------------------------
+	
+	if enableParallelism == True:
+		check_condition = "if" #TODO: elif checks might be above than if statements in parallel
+	else:	
+		if branch_index == 0:
+			check_condition = "if"
+		else:
+			check_condition = "elif"
+	
+	check_rule = check_condition+" obj["+str(winner_index)+"]"+compareTo+":"
+	
+	leaf_id = str(uuid.uuid1())
+	custom_rule_file = "outputs/rules/"+str(leaf_id)+".txt"
+		
+	if enableParallelism != True:
+		functions.storeRule(file,(functions.formatRule(root),"",check_rule))
+	else:
+
+		sample_rule = "   {\n"
+		sample_rule += "      \"current_level\": "+str(root)+",\n"
+		sample_rule += "      \"leaf_id\": \""+str(leaf_id)+"\",\n"
+		sample_rule += "      \"parents\": \""+parents+"\",\n"
+		sample_rule += "      \"rule\": \""+check_rule+"\"\n"
+		sample_rule += "   }"
+	
+		functions.createFile(custom_rule_file, "")
+		functions.storeRule(custom_rule_file, sample_rule)
+	
+	#-----------------------------------------------
+	
+	if terminateBuilding == True: #check decision is made
+		
+		parents = copy.copy(leaf_id)
+		leaf_id = str(uuid.uuid1())
+		
+		decision_rule = "return "+charForResp+str(final_decision)+charForResp
+		
+		if enableParallelism != True:
+			#serial
+			functions.storeRule(file,(functions.formatRule(root+1),decision_rule))
+		else:
+			#parallel
+			sample_rule = "   , {\n"
+			sample_rule += "      \"current_level\": "+str(root+1)+",\n"
+			sample_rule += "      \"leaf_id\": \""+str(leaf_id)+"\",\n"
+			sample_rule += "      \"parents\": \""+parents+"\",\n"
+			sample_rule += "      \"rule\": \""+decision_rule+"\"\n"
+			sample_rule += "   }"
+			
+			functions.storeRule(custom_rule_file, sample_rule)
+	
+	else: #decision is not made, continue to create branch and leafs
+		root = root + 1 #the following rule will be included by this rule. increase root
+		parents = copy.copy(leaf_id)
+		
+		buildDecisionTree(subdataset, root, file, config, dataset_features
+			, root-1, leaf_id, parents)
+					
+		root = tmp_root * 1
+		parents = copy.copy(parents_raw)
+
+def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root'):
+			
+	models = []
+	
+	enableParallelism = config['enableParallelism']
+	algorithm = config['algorithm']
+	
+	json_file = file.split(".")[0]+".json"
+
+	if root == 1:
+		if config['enableRandomForest'] != True and config['enableGBM'] != True and config['enableAdaboost'] != True:
+			raw_df = df.copy()
+	
+	#--------------------------------------
 	
 	df_copy = df.copy()
 	
@@ -197,99 +301,36 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 		
 	#-----------------------------------------------------
 	
-	#TO-DO: This block could be paralellised
+	#TO-DO: you should specify the number of cores in config
+	num_cores = int(multiprocessing.cpu_count()/2) #allocate half of your total cores
 	
-	#-----------------------------------------------------
+	input_params = []
 	
 	#serial approach
 	for i in range(0,len(classes)):
 		current_class = classes[i]
 		subdataset = df[df[winner_name] == current_class]
 		subdataset = subdataset.drop(columns=[winner_name])
+		branch_index = i * 1
 		
-		if numericColumn == True:
-			compareTo = current_class #current class might be <=x or >x in this case
-		else:
-			compareTo = " == '"+str(current_class)+"'"
-		
-		#print(subdataset)
-		
-		terminateBuilding = False
-		
-		#-----------------------------------------------
-		#can decision be made?
-		
-		if enableAdaboost == True:
-			#final_decision = subdataset['Decision'].value_counts().idxmax()
-			final_decision = functions.sign(subdataset['Decision'].mean()) #get average
-			terminateBuilding = True
-			enableParallelism = False
-		elif len(subdataset['Decision'].value_counts().tolist()) == 1:
-			final_decision = subdataset['Decision'].value_counts().keys().tolist()[0] #all items are equal in this case
-			terminateBuilding = True
-		elif subdataset.shape[1] == 1: #if decision cannot be made even though all columns dropped
-			final_decision = subdataset['Decision'].value_counts().idxmax() #get the most frequent one
-			terminateBuilding = True
-		elif algorithm == 'Regression' and subdataset.shape[0] < 5: #pruning condition
-		#elif algorithm == 'Regression' and subdataset['Decision'].std(ddof=0)/global_stdev < 0.4: #pruning condition
-			final_decision = subdataset['Decision'].mean() #get average
-			terminateBuilding = True
-		#-----------------------------------------------
-		
-		if i == 0:
-			check_condition = "if"
-		else:
-			check_condition = "elif"
-		
-		check_rule = check_condition+" obj["+str(winner_index)+"]"+compareTo+":"
-		
+		#create branches serially
 		if enableParallelism != True:
-			functions.storeRule(file,(functions.formatRule(root),"",check_rule))
+			createBranch(config, current_class, subdataset, numericColumn, branch_index, winner_index, root, parents, file, dataset_features)
 		else:
-			leaf_id = str(uuid.uuid1())
-			
-			sample_rule = "   {\n"
-			sample_rule += "      \"current_level\": "+str(root)+",\n"
-			sample_rule += "      \"leaf_id\": \""+str(leaf_id)+"\",\n"
-			sample_rule += "      \"parents\": \""+parents+"\",\n"
-			sample_rule += "      \"rule\": \""+check_rule+"\"\n"
-			sample_rule += "   },"
-
-			functions.storeRule(json_file, sample_rule)
+			input_params.append((config, current_class, subdataset, numericColumn, branch_index, winner_index, root, parents, file, dataset_features))
+	
+	#create branches in parallel
+	if enableParallelism == True:
+		"""
+		#this usage causes trouble for recursive functions
+		with Pool(number_of_cpus) as pool:
+			pool.starmap(createBranch, input_params)
+		"""
 		
-		#-----------------------------------------------
-		
-		if terminateBuilding == True: #check decision is made
-			
-			parents = copy.copy(leaf_id)
-			leaf_id = str(uuid.uuid1())
-			
-			decision_rule = "return "+charForResp+str(final_decision)+charForResp
-			
-			if enableParallelism != True:
-				#serial
-				functions.storeRule(file,(functions.formatRule(root+1),decision_rule))
-			else:
-				#parallel
-				sample_rule = "   {\n"
-				sample_rule += "      \"current_level\": "+str(root+1)+",\n"
-				sample_rule += "      \"leaf_id\": \""+str(leaf_id)+"\",\n"
-				sample_rule += "      \"parents\": \""+parents+"\",\n"
-				sample_rule += "      \"rule\": \""+decision_rule+"\"\n"
-				sample_rule += "   }, "
-				
-				functions.storeRule(json_file, sample_rule)
-		
-		else: #decision is not made, continue to create branch and leafs
-			root = root + 1 #the following rule will be included by this rule. increase root
-			
-			parents = copy.copy(leaf_id)
-			
-			buildDecisionTree(subdataset, root, file, config, dataset_features
-				, root-1, leaf_id, parents)
-						
-		root = tmp_root * 1
-		parents = copy.copy(parents_raw)
+		pool = MyPool(num_cores)
+		results = pool.starmap(createBranch, input_params)
+		pool.close()
+		pool.join()
 	
 	#---------------------------------------------
 	
@@ -297,10 +338,44 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	if root == 1:
 		
 		if enableParallelism == True:
-			file_name = file.split(".py")[0].split("/")[2]
-			functions.storeRule(json_file, "{}]")
-			reconstructRules(file_name+".json")
-		
+
+			#custom rules are stored in .txt files. merge them all in a json file
+			
+			functions.createFile(json_file, "[\n")
+			
+			custom_rules = []
+			
+			file_index = 0
+			for file in os.listdir(os.getcwd()+"/outputs/rules"):
+				if file.endswith(".txt"):
+					custom_rules.append(os.getcwd()+"/outputs/rules/"+file)
+					#print(file) #this file stores a custom rule
+					f = open(os.getcwd()+"/outputs/rules/"+file, "r")
+					custom_rule = f.read()
+					
+					if file_index > 0:
+						custom_rule = ", "+custom_rule
+					
+					functions.storeRule(json_file, custom_rule)
+					f.close()
+					file_index = file_index + 1
+					
+			functions.storeRule(json_file, "]")
+			
+			#-----------------------------------
+			
+			#custom rules are already merged in a json file. clear messy custom rules
+			#TO-DO: if random forest trees are handled in parallel, this would be a problem. You cannot know the related tree of a rule. You should store a global tree id in a rule.
+			
+			for file in custom_rules:
+				os.remove(file)
+			
+			#-----------------------------------
+			
+			reconstructRules(json_file)
+			
+			#-----------------------------------
+			
 		if config['enableRandomForest'] != True and config['enableGBM'] != True and config['enableAdaboost'] != True:
 		#this is reguler decision tree. find accuracy here.
 			
@@ -343,7 +418,7 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 				if mean > 0:
 					print("MAE / Mean: ",100*mae/mean,"%")
 					print("RMSE / Mean: ",100*rmse/mean,"%")
-	
+		
 	return models
 			
 def findPrediction(row):
@@ -368,8 +443,7 @@ def reconstructRules(source):
 	#print("Reconstructing ",source)
 	
 	file_name = source.split(".json")[0]
-	file_name = "outputs/rules/"+file_name+".py"
-	source = "outputs/rules/"+source
+	file_name = file_name+".py"
 	
 	functions.createFile(file_name, "#This rule was reconstructed from "+source+"\n")
 	
