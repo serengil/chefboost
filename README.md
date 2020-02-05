@@ -16,6 +16,8 @@ Alternatively, you can directly download the source code from this repository. *
 
 ```
 git clone https://github.com/serengil/chefboost.git
+cd chefboost
+pip install -e .
 ```
 
 Installation guideline is also captured as a [video](https://youtu.be/YYF993HTHf8).
