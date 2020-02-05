@@ -4,6 +4,8 @@ import math
 
 from chefboost.training import Training
 
+
+#TO-DO: this causes very long running when unique numbers are high. Find a workaround for this.
 def processContinuousFeatures(algorithm, df, column_name, entropy, config):
 	unique_values = sorted(df[column_name].unique())
 	#print(column_name,"->",unique_values)
