@@ -62,7 +62,7 @@ def fit(df, config):
 
 	enableRandomForest = config['enableRandomForest']
 	num_of_trees = config['num_of_trees']
-	enableMultitasking = config['enableMultitasking']
+	enableMultitasking = config['enableMultitasking'] #no longer used. check to remove this variable.
 
 	enableGBM = config['enableGBM']
 	epochs = config['epochs']
@@ -70,6 +70,11 @@ def fit(df, config):
 
 	enableAdaboost = config['enableAdaboost']
 	enableParallelism = config['enableParallelism']
+	
+	#this will handle basic decision stumps. parallelism is not required.
+	if enableRandomForest == True:
+		config['enableParallelism'] = False
+		enableParallelism = False
 	
 	#------------------------
 	raw_df = df.copy()
