@@ -80,7 +80,7 @@ tree = chef.restoreTree(moduleName)
 prediction = tree.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 ```
 
-**Dispathcher.py** will guide you how to build a different decision trees and make predictions.
+**tests/global-unit-test.py** will guide you how to build a different decision trees and make predictions.
 
 # Model save and restoration
 
