@@ -1,6 +1,6 @@
 # chefboost
 
-[![Downloads](https://pepy.tech/badge/chefboost)](https://pepy.tech/project/chefboost)
+<p align="center">[![Downloads](https://pepy.tech/badge/chefboost)](https://pepy.tech/project/chefboost)</p>
 
 <p align="center"><img src="https://raw.githubusercontent.com/serengil/chefboost/master/icon/chefboost.jpg" width="200" height="200"></p>
 
