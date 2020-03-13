@@ -140,6 +140,10 @@ pip install tqdm==4.30.0
 
 There are many ways to support a project - starring⭐️ the GitHub repos is just one.
 
+You can also support this project through Patreon.
+
+<a href="https://www.patreon.com/bePatron?u=31795557"><img src="https://c5.patreon.com/external/logo/become_a_patron_button.png"></img></a>
+
 # Licence
 
 Chefboost is licensed under the MIT License - see [`LICENSE`](https://github.com/serengil/chefboost/blob/master/LICENSE) for more details.
