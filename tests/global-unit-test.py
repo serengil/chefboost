@@ -13,7 +13,7 @@ if __name__ == '__main__':
 		print("enableParallelism is set to ",enableParallelism)
 		print("*************************")
 		
-		print("ID3 for nominal features and target:")
+		print("ID3 for nominal features and nominal target:")
 		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
 		model = cb.fit(pd.read_csv("dataset/golf.txt"), config)
 		
@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
 		print("-------------------------")
 		
-		print("ID3 for nominal/numeric features and target:")
+		print("ID3 for nominal/numeric features and nominal target:")
 		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
 		model = cb.fit(pd.read_csv("dataset/golf2.txt"), config)
 		
@@ -40,14 +40,26 @@ if __name__ == '__main__':
 
 		print("-------------------------")
 		
-		print("C4.5 for nominal/numeric features and target:")
+		print("C4.5 for nominal/numeric features and nominal target:")
 		config = {'algorithm': 'C4.5', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/golf2.txt"), config)
 
 		print("-------------------------")
 
-		print("CART for nominal/numeric features and target:")
+		print("CART for nominal/numeric features and nominal target:")
 		config = {'algorithm': 'CART', 'enableParallelism': enableParallelism}
+		cb.fit(pd.read_csv("dataset/golf2.txt"), config)
+		
+		print("-------------------------")
+		
+		print("CHAID for nominal features and nominal target:")
+		config = {'algorithm': 'CHAID', 'enableParallelism': enableParallelism}
+		cb.fit(pd.read_csv("dataset/golf.txt"), config)
+		
+		print("-------------------------")
+		
+		print("CHAID for nominal/numeric features and nominal target:")
+		config = {'algorithm': 'CHAID', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/golf2.txt"), config)
 
 		print("-------------------------")
@@ -92,6 +104,12 @@ if __name__ == '__main__':
 
 		print("CART for nominal features and target (large data set)")
 		config = {'algorithm': 'CART', 'enableParallelism': enableParallelism}
+		cb.fit(pd.read_csv("dataset/car.data", names=["buying", "maint", "doors", "persons", "lug_boot", "safety", "Decision"]), config)
+		
+		print("-------------------------")
+		
+		print("CHAID for nominal features and target (large data set)")
+		config = {'algorithm': 'CHAID', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/car.data", names=["buying", "maint", "doors", "persons", "lug_boot", "safety", "Decision"]), config)
 		
 		print("-------------------------")

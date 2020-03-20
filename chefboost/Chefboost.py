@@ -11,6 +11,10 @@ from chefboost.commons import functions
 from chefboost.training import Preprocess, Training
 from chefboost.tuning import gbm, adaboost, randomforest
 
+#from commons import functions
+#from training import Preprocess, Training
+#from tuning import gbm, adaboost, randomforest
+
 #------------------------
 
 def fit(df, config):
@@ -53,7 +57,7 @@ def fit(df, config):
 	
 	algorithm = config['algorithm']
 	
-	valid_algorithms = ['ID3', 'C4.5', 'CART', 'Regression']
+	valid_algorithms = ['ID3', 'C4.5', 'CART', 'CHAID', 'Regression']
 	
 	if algorithm not in valid_algorithms:
 		raise ValueError('Invalid algorithm passed. You passed ', algorithm," but valid algorithms are ",valid_algorithms)

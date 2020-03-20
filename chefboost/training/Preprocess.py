@@ -3,14 +3,14 @@ import numpy as np
 import math
 
 from chefboost.training import Training
-
+#from training import Training
 
 #TO-DO: this causes very long running when unique numbers are high. Find a workaround for this.
 def processContinuousFeatures(algorithm, df, column_name, entropy, config):
 	unique_values = sorted(df[column_name].unique())
 	#print(column_name,"->",unique_values)
 	
-	subset_gainratios = []; subset_gains = []; subset_ginis = []; subset_red_stdevs = []
+	subset_gainratios = []; subset_gains = []; subset_ginis = []; subset_red_stdevs = []; subset_chi_squares = []
 	
 	if len(unique_values) == 1:
 		winner_threshold = unique_values[0]
@@ -54,6 +54,30 @@ def processContinuousFeatures(algorithm, df, column_name, entropy, config):
 			
 			subset_ginis.append(gini)
 		
+		elif algorithm == "CHAID":
+			#subset1 = high, subset2 = normal
+			
+			unique_decisions = df['Decision'].unique() #Yes, No
+			num_of_decisions = len(unique_decisions) #2
+			
+			subset1_expected = subset1.shape[0] / num_of_decisions
+			subset2_expected = subset2.shape[0] / num_of_decisions
+			
+			chi_square = 0
+			for d in unique_decisions: #Yes, No
+				
+				#decision = Yes
+				subset1_d = subset1[subset1["Decision"] == d] #high, yes
+				subset2_d = subset2[subset2["Decision"] == d] #normal, yes
+				
+				subset1_d_chi_square = math.sqrt(((subset1_d.shape[0] - subset1_expected) * (subset1_d.shape[0] - subset1_expected))/subset1_expected)
+				
+				subset2_d_chi_square = math.sqrt(((subset2_d.shape[0] - subset2_expected) * (subset2_d.shape[0] - subset2_expected))/subset2_expected)
+				
+				chi_square = chi_square + subset1_d_chi_square + subset2_d_chi_square
+			
+			subset_chi_squares.append(chi_square)
+		
 		#----------------------------------
 		elif algorithm == 'Regression':
 			superset_stdev = df['Decision'].std(ddof=0)
@@ -72,6 +96,8 @@ def processContinuousFeatures(algorithm, df, column_name, entropy, config):
 		winner_one = subset_gains.index(max(subset_gains))
 	elif algorithm == "CART":
 		winner_one = subset_ginis.index(min(subset_ginis))
+	elif algorithm == "CHAID":
+		winner_one = subset_chi_squares.index(max(subset_chi_squares))
 	elif algorithm == "Regression":
 		winner_one = subset_red_stdevs.index(max(subset_red_stdevs))
 		

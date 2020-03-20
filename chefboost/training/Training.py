@@ -56,12 +56,12 @@ def calculateEntropy(df, config):
 def findDecision(df, config):
 	
 	algorithm = config['algorithm']
+	decision_classes = df["Decision"].unique()
 	
 	#-----------------------------
 	
 	if algorithm == 'Regression':
 		stdev = df['Decision'].std(ddof=0)
-		
 	
 	entropy = 0
 	
@@ -71,7 +71,7 @@ def findDecision(df, config):
 
 	columns = df.shape[1]; instances = df.shape[0]
 
-	gains = []; gainratios = []; ginis = []; reducted_stdevs = []
+	gains = []; gainratios = []; ginis = []; reducted_stdevs = []; chi_squared_values = []
 
 	for i in range(0, columns-1):
 		column_name = df.columns[i]
@@ -84,7 +84,7 @@ def findDecision(df, config):
 		
 		classes = df[column_name].value_counts()
 		
-		gain = entropy * 1; splitinfo = 0; gini = 0; weighted_stdev = 0
+		gain = entropy * 1; splitinfo = 0; gini = 0; weighted_stdev = 0; chi_squared_value = 0
 		
 		for j in range(0, len(classes)):
 			current_class = classes.keys().tolist()[j]
@@ -114,6 +114,18 @@ def findDecision(df, config):
 				
 				gini = gini + (subset_instances / instances) * subgini
 			
+			elif algorithm == 'CHAID':
+				num_of_decisions = len(decision_classes)
+				
+				expected = subset_instances / num_of_decisions
+				
+				for d in decision_classes:
+					num_of_d = subdataset[subdataset["Decision"] == d].shape[0]
+					
+					chi_square_of_d = math.sqrt(((num_of_d - expected) * (num_of_d - expected)) / expected)
+					
+					chi_squared_value += chi_square_of_d
+				
 			elif algorithm == 'Regression':
 				subset_stdev = subdataset['Decision'].std(ddof=0)
 				weighted_stdev = weighted_stdev + (subset_instances/instances)*subset_stdev
@@ -135,6 +147,9 @@ def findDecision(df, config):
 		elif algorithm == "CART":
 			ginis.append(gini)
 		
+		elif algorithm == "CHAID":
+			chi_squared_values.append(chi_squared_value)
+		
 		elif algorithm == 'Regression':
 			reducted_stdev = stdev - weighted_stdev
 			reducted_stdevs.append(reducted_stdev)
@@ -146,6 +161,8 @@ def findDecision(df, config):
 		winner_index = gainratios.index(max(gainratios))
 	elif algorithm == "CART":
 		winner_index = ginis.index(min(ginis))
+	elif algorithm == "CHAID":
+		winner_index = chi_squared_values.index(max(chi_squared_values))
 	elif algorithm == "Regression":
 		winner_index = reducted_stdevs.index(max(reducted_stdevs))
 	winner_name = df.columns[winner_index]
