@@ -128,13 +128,7 @@ pip install -e .
 
 Installation guideline is also captured as a [video](https://youtu.be/YYF993HTHf8).
 
-Initial tests are run for Python 3.6.4 on Windows 10 but this is an OS-independent framework. Even though pip handles to install dependent libraries, the framework basically needs the following dependencies. You might need the following library requirements if you install the source code from github.
-
-```
-pip install pandas==0.22.0
-pip install numpy==1.14.0
-pip install tqdm==4.30.0
-```
+Initial tests are run for Python 3.6.4 on Windows 10 but this is an OS-independent framework. Even though pip handles to install dependent libraries, the framework basically needs some dependencies. You might need the install [these dependencies](https://github.com/serengil/chefboost/blob/master/requirements.txt) if you'll install the source code from github.
 
 # Support
 
