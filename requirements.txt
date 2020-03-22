@@ -1,0 +1,3 @@
+pip install pandas==0.22.0
+pip install numpy==1.14.0
+pip install tqdm==4.30.0
