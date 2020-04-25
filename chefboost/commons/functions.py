@@ -65,13 +65,12 @@ def initializeFolders():
 	
 	#------------------------------------
 	
-
 def initializeParams(config):
 	algorithm = 'ID3'
 	enableRandomForest = False; num_of_trees = 5; enableMultitasking = False
 	enableGBM = False; epochs = 10; learning_rate = 1
 	enableAdaboost = False; num_of_weak_classifier = 4
-	enableParallelism = True
+	enableParallelism = False
 	
 	for key, value in config.items():
 		if key == 'algorithm':

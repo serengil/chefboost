@@ -7,6 +7,7 @@ import copy
 import multiprocessing
 import os
 import multiprocessing.pool
+import pandas as pd
 
 from chefboost.training import Preprocess
 from chefboost.commons import functions
@@ -335,6 +336,26 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			createBranch(config, current_class, subdataset, numericColumn, branch_index, winner_index, root, parents, file, dataset_features)
 		else:
 			input_params.append((config, current_class, subdataset, numericColumn, branch_index, winner_index, root, parents, file, dataset_features))
+	
+	#---------------------------
+	#add else condition in the decision tree
+	if enableParallelism != True:
+		
+		if df.Decision.dtypes == 'object': #classification
+			pivot = pd.DataFrame(subdataset.Decision.value_counts()).reset_index()
+			pivot = pivot.rename(columns = {"Decision": "Instances","index": "Decision"})
+			pivot = pivot.sort_values(by = ["Instances"], ascending = False).reset_index()
+			
+			else_decision = "return '%s'" % (pivot.iloc[0].Decision)
+			
+			functions.storeRule(file,(functions.formatRule(root), "else:"))
+			functions.storeRule(file,(functions.formatRule(root+1), else_decision))
+		else: #regression
+			else_decision = "return %s" % (subdataset.Decision.mean())
+			functions.storeRule(file,(functions.formatRule(root), "else:"))
+			functions.storeRule(file,(functions.formatRule(root+1), else_decision))
+		
+	#---------------------------
 	
 	#create branches in parallel
 	if enableParallelism == True:

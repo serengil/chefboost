@@ -9,9 +9,18 @@ if __name__ == '__main__':
 
 	for enableParallelism in parallelism_cases:
 		
+		
 		print("*************************")
 		print("enableParallelism is set to ",enableParallelism)
 		print("*************************")
+		
+		config = {'algorithm': 'C4.5'}
+		model = cb.fit(pd.read_csv("dataset/none_train.txt"), config)
+		test_set = pd.read_csv("dataset/none_test.txt")		
+		instance = test_set.iloc[3]
+		print(instance.values, "->", cb.predict(model, instance))
+		
+		print("--------------------------")
 		
 		print("ID3 for nominal features and nominal target:")
 		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
@@ -63,11 +72,11 @@ if __name__ == '__main__':
 		cb.fit(pd.read_csv("dataset/golf2.txt"), config)
 
 		print("-------------------------")
-
+		
 		print("regression tree for nominal features, numeric target")
 		config = {'algorithm': 'Regression', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/golf3.txt"), config)
-
+		
 		print("-------------------------")
 
 		print("regression tree for nominal/numeric features, numeric target")
@@ -79,23 +88,24 @@ if __name__ == '__main__':
 		print("algorithm must be regression tree for numetic target. set any other algorithm.")
 		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/golf4.txt"), config)
-
+		
 		print("-------------------------")
 
 		print("ID3 for nominal features and target (large data set)")
 		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
-		model = cb.fit(pd.read_csv("dataset/car.data", names=["buying", "maint", "doors", "persons", "lug_boot", "safety", "Decision"]), config)
+		model = cb.fit(pd.read_csv("dataset/car.data"
+			, names=["buying", "maint", "doors", "persons", "lug_boot", "safety", "Decision"]), config)
 		
 		instance = ['vhigh','vhigh',2,'2','small','low']
 		prediction = cb.predict(model, instance)
 		print(prediction)
 		
-		instance = ['high','high',4,'more','big','high']
+		instance = ['high','high','4','more','big','high']
 		prediction = cb.predict(model, instance)
 		print(prediction)
-
+		
 		print("-------------------------")
-
+		
 		print("C4.5 for nominal features and target (large data set)")
 		config = {'algorithm': 'C4.5', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/car.data", names=["buying", "maint", "doors", "persons", "lug_boot", "safety", "Decision"]), config)
@@ -159,6 +169,6 @@ if __name__ == '__main__':
 		print("prediction for ",instance," is ",prediction)
 		
 		print("-------------------------")
-
+		
 	print("-------------------------")
 	print("unit tests completed successfully...")

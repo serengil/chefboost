@@ -1,0 +1,13 @@
+Is_Home_or_Away,Is_Opponent_in_AP25_Preseason,Media
+Home,Out,NBC
+Home,In,NBC
+Away,Out,ESPN
+Away,Out,FOX
+Home,Out,NBC
+Away,Out,ABC
+Home,In,NBC
+Home,Out,NBC
+Home,Out,NBC
+Away,In,ABC
+Home,Out,NBC
+Away,In,ABC
