@@ -116,7 +116,7 @@ config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}
 
 ## Paralellism
 
-Chefboost offers parallelism to speed model building up. Branches of a decision tree will be created in parallel actually. You should pass enableParallelism argument as True in the configuration. Its default value is False.
+Chefboost offers parallelism to speed model building up. Branches of a decision tree will be created in parallel in this way. You should pass enableParallelism argument as True in the configuration. Its default value is False.
 
 ```python
 if __name__ == '__main__':
