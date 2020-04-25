@@ -339,22 +339,55 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	
 	#---------------------------
 	#add else condition in the decision tree
-	if enableParallelism != True:
+	
+	if df.Decision.dtypes == 'object': #classification
+		pivot = pd.DataFrame(subdataset.Decision.value_counts()).reset_index()
+		pivot = pivot.rename(columns = {"Decision": "Instances","index": "Decision"})
+		pivot = pivot.sort_values(by = ["Instances"], ascending = False).reset_index()
 		
-		if df.Decision.dtypes == 'object': #classification
-			pivot = pd.DataFrame(subdataset.Decision.value_counts()).reset_index()
-			pivot = pivot.rename(columns = {"Decision": "Instances","index": "Decision"})
-			pivot = pivot.sort_values(by = ["Instances"], ascending = False).reset_index()
-			
-			else_decision = "return '%s'" % (pivot.iloc[0].Decision)
-			
+		else_decision = "return '%s'" % (pivot.iloc[0].Decision)
+		
+		if enableParallelism != True:
 			functions.storeRule(file,(functions.formatRule(root), "else:"))
 			functions.storeRule(file,(functions.formatRule(root+1), else_decision))
-		else: #regression
-			else_decision = "return %s" % (subdataset.Decision.mean())
+		else: #parallelism
+			leaf_id = str(uuid.uuid1())
+			custom_rule_file = "outputs/rules/"+str(leaf_id)+".txt"
+			
+			check_rule = "else: "+else_decision
+			
+			sample_rule = "   {\n"
+			sample_rule += "      \"current_level\": "+str(root)+",\n"
+			sample_rule += "      \"leaf_id\": \""+str(leaf_id)+"\",\n"
+			sample_rule += "      \"parents\": \""+parents+"\",\n"
+			sample_rule += "      \"rule\": \""+check_rule+"\"\n"
+			sample_rule += "   }"
+			
+			functions.createFile(custom_rule_file, "")
+			functions.storeRule(custom_rule_file, sample_rule)
+			
+	else: #regression
+		else_decision = "return %s" % (subdataset.Decision.mean())
+		
+		if enableParallelism != True:
 			functions.storeRule(file,(functions.formatRule(root), "else:"))
 			functions.storeRule(file,(functions.formatRule(root+1), else_decision))
-		
+		else:
+			leaf_id = str(uuid.uuid1())
+			custom_rule_file = "outputs/rules/"+str(leaf_id)+".txt"
+			
+			check_rule = "else: "+else_decision
+			
+			sample_rule = "   {\n"
+			sample_rule += "      \"current_level\": "+str(root)+",\n"
+			sample_rule += "      \"leaf_id\": \""+str(leaf_id)+"\",\n"
+			sample_rule += "      \"parents\": \""+parents+"\",\n"
+			sample_rule += "      \"rule\": \""+check_rule+"\"\n"
+			sample_rule += "   }"
+			
+			functions.createFile(custom_rule_file, "")
+			functions.storeRule(custom_rule_file, sample_rule)
+	
 	#---------------------------
 	
 	#create branches in parallel
@@ -517,17 +550,50 @@ def reconstructRules(source):
 	
 		level_raw = level * 1; parent_raw = copy.copy(parent)
 		
+		else_rule = ""
+		
+		leaf_idx = 0
 		for i in range(0 ,df.shape[0]):
 			leaf_id = df[i][1]
 			parent_id = df[i][2]
 			rule = df[i][3]
 			
 			if parent_id == parent:
-				functions.storeRule(file_name, padleft(rule, level))
 				
-				level = level + 1; parent = copy.copy(leaf_id)
-				extractRules(df, parent, level)
-				level = level_raw * 1; parent = copy.copy(parent_raw) #restore
+				if_statement = False
+				if rule[0:2] == "if":
+					if_statement = True
+				
+				else_statement = False
+				if rule[0:5] == "else:":
+					else_statement = True
+					else_rule = rule
+				
+				#------------------------
+				
+				if else_statement != True:
+				
+					if if_statement == True and leaf_idx > 0:
+						rule = "el"+rule
+					
+					#print(padleft(rule, level), "(", leaf_idx,")")
+					
+					functions.storeRule(file_name, padleft(rule, level))
+					
+					level = level + 1; parent = copy.copy(leaf_id)
+					extractRules(df, parent, level)
+					level = level_raw * 1; parent = copy.copy(parent_raw) #restore
+					
+					leaf_idx = leaf_idx + 1
+		
+		#add else statement
+		
+		if else_rule != "":
+			#print(padleft(else_rule, level))
+			functions.storeRule(file_name, padleft(else_rule, level))
 			
+	#------------------------------------
+	
+	#print("def findDecision(obj):")
 	functions.storeRule(file_name, "def findDecision(obj):")
 	extractRules(df)

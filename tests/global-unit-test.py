@@ -4,17 +4,18 @@ from chefboost import Chefboost as cb
 
 #----------------------------------------------
 parallelism_cases = [False]
+#parallelism_cases = [False, True]
 
 if __name__ == '__main__':
 
 	for enableParallelism in parallelism_cases:
 		
-		
 		print("*************************")
 		print("enableParallelism is set to ",enableParallelism)
 		print("*************************")
 		
-		config = {'algorithm': 'C4.5'}
+		print("Is there any none predictions?")
+		config = {'algorithm': 'C4.5', 'enableParallelism': enableParallelism}
 		model = cb.fit(pd.read_csv("dataset/none_train.txt"), config)
 		test_set = pd.read_csv("dataset/none_test.txt")		
 		instance = test_set.iloc[3]
@@ -36,7 +37,7 @@ if __name__ == '__main__':
 		prediction = cb.predict(restored_model, instance)
 		
 		print("prediction for ", instance, "is ", prediction)
-
+		
 		print("-------------------------")
 		
 		print("ID3 for nominal/numeric features and nominal target:")
@@ -105,7 +106,7 @@ if __name__ == '__main__':
 		print(prediction)
 		
 		print("-------------------------")
-		
+	
 		print("C4.5 for nominal features and target (large data set)")
 		config = {'algorithm': 'C4.5', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/car.data", names=["buying", "maint", "doors", "persons", "lug_boot", "safety", "Decision"]), config)
