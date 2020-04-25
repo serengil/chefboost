@@ -113,7 +113,19 @@ config = {'enableRandomForest': True, 'num_of_trees': 5}
 ```python
 config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}
 ```
- 
+
+## Paralellism
+
+Chefboost offers parallelism to speed model building up. Branches of a decision tree will be created in parallel actually. You should pass enableParallelism argument as True in the configuration. Its default value is False.
+
+```python
+if __name__ == '__main__':
+   config = {'algorithm': 'C4.5', 'enableParallelism': True}
+   model = chef.fit(df, config)
+```
+
+Notice that you have to locate training step in an if block and it should check you are in main.
+
 # Documentation
 
 This YouTube [playlist](https://www.youtube.com/playlist?list=PLsS_1RYmYQQHp_xZObt76dpacY543GrJD) guides you how to use Chefboost step by step for different algorithms. You can also find the detailed documentations about these core algorithms [here](https://sefiks.com/tag/decision-tree/). 
