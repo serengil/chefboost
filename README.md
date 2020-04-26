@@ -41,10 +41,14 @@ def findDecision(Outlook, Temperature, Humidity, Wind, Decision):
          return 'Yes'
       elif Wind == 'Strong':
          return 'No'
+      else:
+         return 'No'
    elif Outlook == 'Sunny':
       if Humidity == 'High':
          return 'No'
       elif Humidity == 'Normal':
+         return 'Yes'
+      else:
          return 'Yes'
    elif Outlook == 'Overcast':
       return 'Yes'
