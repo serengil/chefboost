@@ -35,7 +35,7 @@ model = chef.fit(df, config)
 Built decision trees are stored as python if statements in the `tests/outputs/rules` directory. A sample of decision rules is demonstrated below.
 
 ```python
-def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
+def findDecision(Outlook, Temperature, Humidity, Wind, Decision):
    if Outlook == 'Rain':
       if Wind == 'Weak':
          return 'Yes'
@@ -47,6 +47,8 @@ def findDecision(Outlook,Temperature,Humidity,Wind,Decision):
       elif Humidity == 'Normal':
          return 'Yes'
    elif Outlook == 'Overcast':
+      return 'Yes'
+   else:
       return 'Yes'
  ```
 
