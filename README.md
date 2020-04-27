@@ -148,10 +148,10 @@ This returns feature importance values in the pandas data frame format.
 
 | feature     | final_importance |
 | ---         | ---              |
-| Wind        | 2.439472         |
-| Humidity    | 1.060420         |
-| Temperature | 0.790112         |
-| Outlook     | -0.290003        |
+| Wind        | 0.609868         |
+| Humidity    | 0.265105         |
+| Temperature | 0.197528         |
+| Outlook     | -0.072501        |
 
 # Documentation
 

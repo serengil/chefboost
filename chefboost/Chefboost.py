@@ -318,6 +318,8 @@ def feature_importance():
 			df = df.drop(columns = ["importance"])
 
 		df = df.sort_values(by = ["final_importance"], ascending = False).reset_index(drop = True)
+		df.final_importance = df.final_importance / df.final_importance.sum()
+
 		return df
 
 	else:
