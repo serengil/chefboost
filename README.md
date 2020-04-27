@@ -132,6 +132,27 @@ if __name__ == '__main__':
 
 Notice that you have to locate training step in an if block and it should check you are in main.
 
+## Feature Importance
+
+Decision trees are inherently interpretable and explainable algorithms. Still we can add some extra layers to explain the built models. Herein, [feature importance](https://sefiks.com/2020/04/06/feature-importance-in-decision-trees/) is one of the most common way to make transparent models.
+
+```python
+if __name__ == '__main__':
+   config = {'algorithm': 'C4.5', 'enableParallelism': True}
+   model = chef.fit(df, config)
+   fi = chef.feature_importance()
+   print(fi)
+```
+
+This returns feature importance values in the pandas data frame format.
+
+| feature     | final_importance |
+| ---         | ---              |
+| Wind        | 2.439472         |
+| Humidity    | 1.060420         |
+| Temperature | 0.790112         |
+| Outlook     | -0.290003        |
+
 # Documentation
 
 This YouTube [playlist](https://www.youtube.com/playlist?list=PLsS_1RYmYQQHp_xZObt76dpacY543GrJD) guides you how to use Chefboost step by step for different algorithms. You can also find the detailed documentations about these core algorithms [here](https://sefiks.com/tag/decision-tree/). 
