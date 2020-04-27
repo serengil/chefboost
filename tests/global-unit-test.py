@@ -2,8 +2,12 @@ import pandas as pd
 import sys
 from chefboost import Chefboost as cb
 
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 500)
+pd.set_option('display.width', 1000)
+
 #----------------------------------------------
-parallelism_cases = [False]
+parallelism_cases = [True]
 #parallelism_cases = [False, True]
 
 if __name__ == '__main__':
@@ -14,14 +18,13 @@ if __name__ == '__main__':
 		print("enableParallelism is set to ",enableParallelism)
 		print("*************************")
 		
-		print("Is there any none predictions?")
-		config = {'algorithm': 'C4.5', 'enableParallelism': enableParallelism}
-		model = cb.fit(pd.read_csv("dataset/none_train.txt"), config)
-		test_set = pd.read_csv("dataset/none_test.txt")		
-		instance = test_set.iloc[3]
-		print(instance.values, "->", cb.predict(model, instance))
+		print("-------------------------")
 		
-		print("--------------------------")
+		print("ID3 for label encoded features and nominal target:")
+		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
+		model = cb.fit(pd.read_csv("dataset/golf_le.txt"), config)
+		
+		print("-------------------------")
 		
 		print("ID3 for nominal features and nominal target:")
 		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
@@ -136,8 +139,8 @@ if __name__ == '__main__':
 		print("-------------------------")
 		
 		print("Regular GBM")
-		config = {'algorithm': 'CART', 'enableGBM': True, 'epochs': 10, 'learning_rate': 1, 'enableParallelism': enableParallelism}
-		model = cb.fit(pd.read_csv("dataset/golf4.txt"), config)
+		#config = {'algorithm': 'CART', 'enableGBM': True, 'epochs': 3, 'learning_rate': 1, 'enableParallelism': enableParallelism}
+		#model = cb.fit(pd.read_csv("dataset/golf4.txt"), config)
 		
 		instance = ['Sunny',85,85,'Weak']
 		prediction = cb.predict(model, instance)
@@ -168,6 +171,15 @@ if __name__ == '__main__':
 
 		prediction = cb.predict(model, instance)
 		print("prediction for ",instance," is ",prediction)
+		
+		print("-------------------------")
+		
+		print("Is there any none predictions?")
+		config = {'algorithm': 'C4.5', 'enableParallelism': enableParallelism}
+		model = cb.fit(pd.read_csv("dataset/none_train.txt"), config)
+		test_set = pd.read_csv("dataset/none_test.txt")		
+		instance = test_set.iloc[3]
+		print(instance.values, "->", cb.predict(model, instance))
 		
 		print("-------------------------")
 		

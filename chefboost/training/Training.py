@@ -158,19 +158,25 @@ def findDecision(df, config):
 	#print(df)
 	if algorithm == "ID3":
 		winner_index = gains.index(max(gains))
+		metric = entropy
 	elif algorithm == "C4.5":
 		winner_index = gainratios.index(max(gainratios))
+		metric = entropy
 	elif algorithm == "CART":
 		winner_index = ginis.index(min(ginis))
+		metric = min(ginis)
 	elif algorithm == "CHAID":
 		winner_index = chi_squared_values.index(max(chi_squared_values))
+		metric = max(chi_squared_values)
 	elif algorithm == "Regression":
 		winner_index = reducted_stdevs.index(max(reducted_stdevs))
+		metric = max(reducted_stdevs)
 	winner_name = df.columns[winner_index]
 
-	return winner_name
+	return winner_name, df.shape[0], metric
 
-def createBranch(config, current_class, subdataset, numericColumn, branch_index, winner_index, root, parents, file, dataset_features):
+def createBranch(config, current_class, subdataset, numericColumn, branch_index
+	, winner_index, root, parents, file, dataset_features, num_of_instances, metric):
 	
 	algorithm = config['algorithm']
 	enableAdaboost = config['enableAdaboost']
@@ -239,7 +245,10 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index,
 		sample_rule += "      \"current_level\": "+str(root)+",\n"
 		sample_rule += "      \"leaf_id\": \""+str(leaf_id)+"\",\n"
 		sample_rule += "      \"parents\": \""+parents+"\",\n"
-		sample_rule += "      \"rule\": \""+check_rule+"\"\n"
+		sample_rule += "      \"rule\": \""+check_rule+"\",\n"
+		sample_rule += "      \"feature_idx\": "+str(winner_index)+",\n"
+		sample_rule += "      \"instances\": "+str(num_of_instances)+",\n"
+		sample_rule += "      \"metric\": "+str(metric)+"\n"
 		sample_rule += "   }"
 	
 		functions.createFile(custom_rule_file, "")
@@ -263,7 +272,11 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index,
 			sample_rule += "      \"current_level\": "+str(root+1)+",\n"
 			sample_rule += "      \"leaf_id\": \""+str(leaf_id)+"\",\n"
 			sample_rule += "      \"parents\": \""+parents+"\",\n"
-			sample_rule += "      \"rule\": \""+decision_rule+"\"\n"
+			sample_rule += "      \"rule\": \""+decision_rule+"\",\n"
+			sample_rule += "      \"feature_idx\": "+str(winner_index)+",\n"
+			sample_rule += "      \"instances\": "+str(num_of_instances)+",\n"
+			sample_rule += "      \"metric\": 0\n"
+
 			sample_rule += "   }"
 			
 			functions.storeRule(custom_rule_file, sample_rule)
@@ -295,7 +308,7 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	
 	df_copy = df.copy()
 	
-	winner_name = findDecision(df, config)
+	winner_name, num_of_instances, metric = findDecision(df, config)
 	
 	#find winner index, this cannot be returned by find decision because columns dropped in previous steps
 	j = 0 
@@ -320,7 +333,8 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	#-----------------------------------------------------
 	
 	#TO-DO: you should specify the number of cores in config
-	num_cores = int(multiprocessing.cpu_count()/2) #allocate half of your total cores
+	#num_cores = int(multiprocessing.cpu_count()/2) #allocate half of your total cores
+	num_cores = 1
 	
 	input_params = []
 	
@@ -333,9 +347,11 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 		
 		#create branches serially
 		if enableParallelism != True:
-			createBranch(config, current_class, subdataset, numericColumn, branch_index, winner_index, root, parents, file, dataset_features)
+			createBranch(config, current_class, subdataset, numericColumn, branch_index
+				, winner_index, root, parents, file, dataset_features, num_of_instances, metric)
 		else:
-			input_params.append((config, current_class, subdataset, numericColumn, branch_index, winner_index, root, parents, file, dataset_features))
+			input_params.append((config, current_class, subdataset, numericColumn, branch_index
+				, winner_index, root, parents, file, dataset_features, num_of_instances, metric))
 	
 	#---------------------------
 	#add else condition in the decision tree
@@ -360,7 +376,10 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			sample_rule += "      \"current_level\": "+str(root)+",\n"
 			sample_rule += "      \"leaf_id\": \""+str(leaf_id)+"\",\n"
 			sample_rule += "      \"parents\": \""+parents+"\",\n"
-			sample_rule += "      \"rule\": \""+check_rule+"\"\n"
+			sample_rule += "      \"rule\": \""+check_rule+"\",\n"
+			sample_rule += "      \"feature_idx\": -1,\n"
+			sample_rule += "      \"instances\": "+str(df.shape[0])+",\n"
+			sample_rule += "      \"metric\": 0\n"
 			sample_rule += "   }"
 			
 			functions.createFile(custom_rule_file, "")
@@ -444,6 +463,9 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			#-----------------------------------
 			
 			reconstructRules(json_file)
+
+			#feature importance should be calculated by demand?
+			feature_importance(json_file, dataset_features)
 			
 			#-----------------------------------
 			
@@ -597,3 +619,90 @@ def reconstructRules(source):
 	#print("def findDecision(obj):")
 	functions.storeRule(file_name, "def findDecision(obj):")
 	extractRules(df)
+
+	#------------------------------------
+
+def feature_importance(source, features):
+	
+	with open(source, 'r') as f:
+		rules = json.load(f)
+	
+	rule_set = []
+	for instance in rules:
+		if len(instance) > 0:
+			rule = []
+			if "metric" in list(instance.keys()):
+				rule.append(instance["current_level"])
+				rule.append(instance["leaf_id"])
+				rule.append(instance["parents"])
+				rule.append(instance["rule"])
+				rule.append(instance["feature_idx"])
+				rule.append(instance["instances"])
+				rule.append(instance["metric"])
+				rule_set.append(rule)
+	
+	df = pd.DataFrame(rule_set
+		, columns = ["current_level", "leaf_id", "parents", "rule", "feature_idx", "instances", "metric"])
+
+	feature_importances = []
+	feature_idx = 0
+	for feature in features:
+
+		#print("Feature ", feature)
+		
+		feature_nodes = df[df.feature_idx == feature_idx]
+		feature_nodes = feature_nodes.merge(df, left_on = ["leaf_id"], right_on = ["parents"], how = "left")
+		feature_nodes = feature_nodes[(feature_nodes.feature_idx_y != -1)] #discard else conditions
+
+		#----------------------------------
+
+		pivot = feature_nodes.groupby(by = ["parents_y"])[["parents_x", "metric_x", "instances_x", "metric_y", "instances_y"]].min()
+
+		parents = pivot.parents_x.unique()
+
+		importance = 0
+
+		#print("Feature ", feature, ": ")
+
+		for parent in parents:
+			node_importance = 0
+			child = pivot[pivot.parents_x == parent]
+
+			parent_effect = (child.iloc[0].metric_x * child.iloc[0].instances_x)
+			node_importance = node_importance + parent_effect
+
+			#print(child.iloc[0].metric_x," x ", child.iloc[0].instances_x, end = '')
+
+			for index, instance in child.iterrows():
+				#print(" - ", instance.metric_y, " x ", instance.instances_y, end = '')
+				node_importance = node_importance - (instance.metric_y * instance.instances_y)
+
+			#importance = importance + (parent_effect - child_effect)
+
+			#print(" = ",node_importance)
+			importance = importance + node_importance
+
+		#print("Importance of feature ", feature," is ", importance,". \n")
+
+		feature_importance = []
+		feature_importance.append(feature)
+		feature_importance.append(importance)
+		feature_importances.append(feature_importance)
+
+		feature_idx = feature_idx + 1
+
+	#---------------------------------
+
+	feature_importances = pd.DataFrame(feature_importances, columns = ["feature", "importance"])
+	feature_importances = feature_importances.sort_values(by = ["importance"], ascending = False).reset_index(drop = True)
+	
+	#print(feature_importances)
+	
+	feature_importances.importance = (feature_importances.importance) / feature_importances.importance.sum()
+
+	target = source.split(".")[0]+"_fi.csv"
+
+	feature_importances.to_csv(target, index = False)
+
+	#print(feature_importances)
+	

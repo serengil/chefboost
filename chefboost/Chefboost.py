@@ -292,3 +292,34 @@ def load_model(file_name="model.pkl"):
 
 def restoreTree(moduleName):
 	return functions.restoreTree(moduleName)
+
+def feature_importance():
+
+	df_initialized = False
+
+	feature_importance_files = []
+
+	for file in os.listdir("outputs/rules"):
+		if file.endswith("_fi.csv"):
+			feature_importance_files.append("outputs/rules/%s" % (file))
+	
+	if len(feature_importance_files) > 0:
+		for file in feature_importance_files:
+			fi = pd.read_csv(file)
+
+			if df_initialized == False:
+				df = pd.DataFrame(fi.feature.values, columns = ["feature"])
+				df["final_importance"] = 0
+				df_initialized = True
+			
+			df = df.merge(fi, on = ["feature"], how = 'left')
+
+			df.final_importance = df.final_importance + df.importance
+			df = df.drop(columns = ["importance"])
+
+		df = df.sort_values(by = ["final_importance"], ascending = False).reset_index(drop = True)
+		return df
+
+	else:
+		print("Feature importance calculation is enabled when parallelised fitting. It seems that fit function didn't called parallelised. No file found like outputs/rules/rules_fi.csv")
+		return None
