@@ -89,6 +89,11 @@ def fit(df, config):
 			raise ValueError('Regression trees cannot be applied for nominal target values! You can either change the algorithm or data set.')
 
 	if df['Decision'].dtypes != 'object': #this must be regression tree even if it is not mentioned in algorithm
+		
+		if algorithm != 'Regression':
+			print("WARNING: You set the algorithm to ", algorithm," but the Decision column of your data set has non-object type.")
+			print("That's why, the algorithm is set to Regression to handle the data set.")
+		
 		algorithm = 'Regression'
 		config['algorithm'] = 'Regression'
 		global_stdev = df['Decision'].std(ddof=0)
