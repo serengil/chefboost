@@ -153,9 +153,11 @@ This returns feature importance values in the pandas data frame format.
 | Temperature | 0.197528         |
 | Outlook     | -0.072501        |
 
-# Documentation
+# E-Learning
 
-This YouTube [playlist](https://www.youtube.com/playlist?list=PLsS_1RYmYQQHp_xZObt76dpacY543GrJD) guides you how to use Chefboost step by step for different algorithms. You can also find the detailed documentations about these core algorithms [here](https://sefiks.com/tag/decision-tree/). 
+This [playlist](https://www.youtube.com/playlist?list=PLsS_1RYmYQQHp_xZObt76dpacY543GrJD) guides you how to use Chefboost step by step for different algorithms. 
+
+You can also find the tutorials about these core algorithms [here](https://sefiks.com/tag/decision-tree/). 
 
 Besides, you can enroll this online course - [**Decision Trees for Machine Learning From Scratch**](https://www.udemy.com/course/decision-trees-for-machine-learning/?referralCode=FDC9B836EC6DAA1A663A) and follow the curriculum if you wonder the theory of decision trees and how this framework is developed.
 
