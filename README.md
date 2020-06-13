@@ -169,6 +169,17 @@ You can also support this project through Patreon.
 
 <a href="https://www.patreon.com/bePatron?u=31795557"><img src="https://c5.patreon.com/external/logo/become_a_patron_button.png"></img></a>
 
+# Citation
+
+Please cite chefboost in your publications if it helps your research. Here is an example BibTeX entry:
+
+@misc{serengil2020chefboost,
+  title={chefboost},
+  author={Serengil, Sefik Ilkin},
+  year={2020},
+  howpublished={\url{https://github.com/serengil/chefboost}},
+}
+
 # Licence
 
 Chefboost is licensed under the MIT License - see [`LICENSE`](https://github.com/serengil/chefboost/blob/master/LICENSE) for more details.
