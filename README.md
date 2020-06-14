@@ -175,10 +175,11 @@ Please cite chefboost in your publications if it helps your research. Here is an
 
 ```
 @misc{serengil2019chefboost,
-  title={chefboost},
+  abstract = {Lightweight Decision Trees Framework supporting Gradient Boosting (GBDT, GBRT, GBM), Random Forest and Adaboost w/categorical features support for Python},
   author={Serengil, Sefik Ilkin},
-  year={2019},
-  howpublished={\url{https://github.com/serengil/chefboost}},
+  title={chefboost},
+  url={https://github.com/serengil/chefboost}
+  year={2019}
 }
 ```
 
