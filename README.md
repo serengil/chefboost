@@ -174,10 +174,10 @@ You can also support this project through Patreon.
 Please cite chefboost in your publications if it helps your research. Here is an example BibTeX entry:
 
 ```
-@misc{serengil2020chefboost,
+@misc{serengil2019chefboost,
   title={chefboost},
   author={Serengil, Sefik Ilkin},
-  year={2020},
+  year={2019},
   howpublished={\url{https://github.com/serengil/chefboost}},
 }
 ```
