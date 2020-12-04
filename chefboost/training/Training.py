@@ -357,7 +357,7 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 		if enableParallelism != True:
 			
 			if i == 0:
-				descriptor = "# feature: "+winner_name+", instances: "+str(num_of_instances)+", "+metric_name+": "+str(round(metric, 4))
+				descriptor = "# Feature: "+winner_name+", Instances: "+str(num_of_instances)+", "+metric_name+": "+str(round(metric, 4))
 				functions.storeRule(file, (functions.formatRule(root), "", descriptor))
 			
 			createBranch(config, current_class, subdataset, numericColumn, branch_index
