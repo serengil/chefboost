@@ -244,7 +244,7 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 		
 	if enableParallelism != True:
 		
-		check_rule += " # feature: "+winner_name+", instances: "+str(num_of_instances)+", "+metric_name+": "+str(round(metric, 4))
+		#check_rule += " # feature: "+winner_name+", instances: "+str(num_of_instances)+", "+metric_name+": "+str(round(metric, 4))
 		
 		functions.storeRule(file,(functions.formatRule(root),"",check_rule))
 	else:
@@ -355,6 +355,11 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 		
 		#create branches serially
 		if enableParallelism != True:
+			
+			if i == 0:
+				descriptor = "# feature: "+winner_name+", instances: "+str(num_of_instances)+", "+metric_name+": "+str(round(metric, 4))
+				functions.storeRule(file, (functions.formatRule(root), "", descriptor))
+			
 			createBranch(config, current_class, subdataset, numericColumn, branch_index
 				, winner_index, root, parents, file, dataset_features, num_of_instances, metric, winner_name = winner_name, metric_name = metric_name)
 		else:
