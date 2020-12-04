@@ -158,25 +158,30 @@ def findDecision(df, config):
 	#print(df)
 	if algorithm == "ID3":
 		winner_index = gains.index(max(gains))
-		metric = entropy
+		metric_value = entropy
+		metric_name = "Entropy"
 	elif algorithm == "C4.5":
 		winner_index = gainratios.index(max(gainratios))
-		metric = entropy
+		metric_value = entropy
+		metric_name = "Entropy"
 	elif algorithm == "CART":
 		winner_index = ginis.index(min(ginis))
-		metric = min(ginis)
+		metric_value = min(ginis)
+		metric_name = "Gini"
 	elif algorithm == "CHAID":
 		winner_index = chi_squared_values.index(max(chi_squared_values))
-		metric = max(chi_squared_values)
+		metric_value = max(chi_squared_values)
+		metric_name = "ChiSquared"
 	elif algorithm == "Regression":
 		winner_index = reducted_stdevs.index(max(reducted_stdevs))
-		metric = max(reducted_stdevs)
+		metric_value = max(reducted_stdevs)
+		metric_name = "Std"
 	winner_name = df.columns[winner_index]
 
-	return winner_name, df.shape[0], metric
+	return winner_name, df.shape[0], metric_value, metric_name
 
 def createBranch(config, current_class, subdataset, numericColumn, branch_index
-	, winner_index, root, parents, file, dataset_features, num_of_instances, metric):
+	, winner_index, root, parents, file, dataset_features, num_of_instances, metric, winner_name = None, metric_name = None):
 	
 	algorithm = config['algorithm']
 	enableAdaboost = config['enableAdaboost']
@@ -238,6 +243,9 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 	custom_rule_file = "outputs/rules/"+str(leaf_id)+".txt"
 		
 	if enableParallelism != True:
+		
+		check_rule += " # feature: "+winner_name+", instances: "+str(num_of_instances)+", "+metric_name+": "+str(round(metric, 4))
+		
 		functions.storeRule(file,(functions.formatRule(root),"",check_rule))
 	else:
 
@@ -308,7 +316,7 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	
 	df_copy = df.copy()
 	
-	winner_name, num_of_instances, metric = findDecision(df, config)
+	winner_name, num_of_instances, metric, metric_name = findDecision(df, config)
 	
 	#find winner index, this cannot be returned by find decision because columns dropped in previous steps
 	j = 0 
@@ -348,7 +356,7 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 		#create branches serially
 		if enableParallelism != True:
 			createBranch(config, current_class, subdataset, numericColumn, branch_index
-				, winner_index, root, parents, file, dataset_features, num_of_instances, metric)
+				, winner_index, root, parents, file, dataset_features, num_of_instances, metric, winner_name = winner_name, metric_name = metric_name)
 		else:
 			input_params.append((config, current_class, subdataset, numericColumn, branch_index
 				, winner_index, root, parents, file, dataset_features, num_of_instances, metric))
