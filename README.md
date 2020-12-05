@@ -120,19 +120,7 @@ config = {'enableRandomForest': True, 'num_of_trees': 5}
 config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}
 ```
 
-## Paralellism
-
-Chefboost offers parallelism to speed model building up. Branches of a decision tree will be created in parallel in this way. You should pass enableParallelism argument as True in the configuration. Its default value is False.
-
-```python
-if __name__ == '__main__':
-   config = {'algorithm': 'C4.5', 'enableParallelism': True}
-   model = chef.fit(df, config)
-```
-
-Notice that you have to locate training step in an if block and it should check you are in main.
-
-## Feature Importance
+**Feature Importance** - [`Video`](https://youtu.be/NFLQT6Ta4-k)
 
 Decision trees are inherently interpretable and explainable algorithms. Still we can add some extra layers to explain the built models. Herein, [feature importance](https://sefiks.com/2020/04/06/feature-importance-in-decision-trees/) is one of the most common way to make transparent models.
 
@@ -152,6 +140,18 @@ This returns feature importance values in the pandas data frame format.
 | Humidity    | 0.265105         |
 | Temperature | 0.197528         |
 | Outlook     | -0.072501        |
+
+## Paralellism
+
+Chefboost offers parallelism to speed model building up. Branches of a decision tree will be created in parallel in this way. You should pass enableParallelism argument as True in the configuration. Its default value is False.
+
+```python
+if __name__ == '__main__':
+   config = {'algorithm': 'C4.5', 'enableParallelism': True}
+   model = chef.fit(df, config)
+```
+
+Notice that you have to locate training step in an if block and it should check you are in main.
 
 # E-Learning
 
