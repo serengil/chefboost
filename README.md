@@ -183,4 +183,4 @@ Please cite chefboost in your publications if it helps your research. Here is an
 
 Chefboost is licensed under the MIT License - see [`LICENSE`](https://github.com/serengil/chefboost/blob/master/LICENSE) for more details.
 
-[Logo](https://thenounproject.com/term/chef/1932168/) is created by [Tang Ge](https://thenounproject.com/tang_ge/). Licensed under [Creative Commons: By Attribution 3.0 License](https://creativecommons.org/licenses/by/3.0/).
+Chefboost [logo](https://thenounproject.com/term/chef/1932168/) is created by [Tang Ge](https://thenounproject.com/tang_ge/). Licensed under [Creative Commons: By Attribution 3.0 License](https://creativecommons.org/licenses/by/3.0/).
