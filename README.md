@@ -169,7 +169,7 @@ There are many ways to support a project - starring⭐️ the GitHub repos is ju
 
 Please cite chefboost in your publications if it helps your research. Here is an example BibTeX entry:
 
-```
+```BibTeX
 @misc{serengil2019chefboost,
   abstract = {Lightweight Decision Trees Framework supporting Gradient Boosting (GBDT, GBRT, GBM), Random Forest and Adaboost w/categorical features support for Python},
   author={Serengil, Sefik Ilkin},
