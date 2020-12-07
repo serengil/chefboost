@@ -141,11 +141,11 @@ This returns feature importance values in the pandas data frame format.
 
 ## Paralellism
 
-Chefboost offers parallelism to speed model building up. Branches of a decision tree will be created in parallel in this way. You should pass enableParallelism argument as True in the configuration. Its default value is False.
+Chefboost offers parallelism to speed model building up. Branches of a decision tree will be created in parallel in this way. You should set enableParallelism argument to True in the configuration. Its default value is False. It allocates half of the total number of cores in your environment if parallelism is enabled.
 
 ```python
 if __name__ == '__main__':
-   config = {'algorithm': 'C4.5', 'enableParallelism': True}
+   config = {'algorithm': 'C4.5', 'enableParallelism': True, 'num_cores': 2}
    model = chef.fit(df, config)
 ```
 
