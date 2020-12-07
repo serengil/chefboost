@@ -97,16 +97,18 @@ def evaluate(df, task = 'train'):
 			rmse = math.sqrt(mse)
 			print("RMSE: ",rmse)
 			
-			try:
-				#divisor might be equal to 0.
+			rae = 0; rrse = 0
+			try: #divisor might be equal to 0.
 				
 				rae = math.sqrt(df['Absolute_Error_Squared'].sum())/math.sqrt(df['Decision_Squared'].sum())
-				print("RAE: ", rae)
 				
 				rrse = math.sqrt((df['Absolute_Error_Squared'].sum()) / ((df['Decision_Mean'] - df['Decision']) ** 2).sum())
-				print("RRSE: ",rrse)
+				
 			except Exception as err:
 				print(str(err))
+			
+			print("RAE: ", rae)
+			print("RRSE: ",rrse)
 		
 			mean = df['Decision'].mean()
 			print("Mean: ", mean)
