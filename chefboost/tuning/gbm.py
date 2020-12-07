@@ -3,8 +3,9 @@ import numpy as np
 
 import imp
 
-from chefboost.commons import functions
+from chefboost.commons import functions, evaluate
 from chefboost.training import Preprocess, Training
+from chefboost import Chefboost as cb
 
 from tqdm import tqdm
 
@@ -25,8 +26,11 @@ def findPrediction(row):
 	
 	return prediction
 
-def regressor(df, config, header, dataset_features):
+def regressor(df, config, header, dataset_features, validation_df = None):
 	models = []
+	
+	#we will update decisions in every epoch, this will be used to restore
+	base_actuals = df.Decision.values
 	
 	algorithm = config['algorithm']
 	
@@ -68,7 +72,7 @@ def regressor(df, config, header, dataset_features):
 	
 	#------------------------------
 	
-	pbar = tqdm(range(1,epochs+1), desc='Boosting')
+	pbar = tqdm(range(1, epochs+1), desc='Boosting')
 	
 	#for index in range(1,epochs+1):
 	#for index in tqdm(range(1,epochs+1), desc='Boosting'):
@@ -142,9 +146,26 @@ def regressor(df, config, header, dataset_features):
 	
 	print("MSE of ",num_of_instances," instances are boosted from ",boosted_from," to ",boosted_to," in ",epochs," epochs")
 	
+	#-------------------------------
+	#evaluate gbm model
+	
+	model = {}
+	model["trees"] = models
+	model["config"] = config
+	
+	functions.bulk_prediction(df, model)
+	df['Decision'] = base_actuals
+	evaluate.evaluate(df)
+	
+	if isinstance(validation_df, pd.DataFrame):
+		functions.bulk_prediction(validation_df, model)
+		evaluate.evaluate(validation_df, task = 'validation')
+	
+	#-------------------------------
+	
 	return models
 
-def classifier(df, config, header, dataset_features):
+def classifier(df, config, header, dataset_features, validation_df = None):
 	
 	models = []
 	
@@ -274,5 +295,23 @@ def classifier(df, config, header, dataset_features):
 		#print(worksheet.head())
 		#print("round ",epoch+1)
 		pbar.set_description("Epoch %d. Accuracy: %s. Process: " % (epoch+1, accuracy))
+	
+	
+	#--------------------------------
+	#evaluate gbm model
+	
+	model = {}
+	model["trees"] = models
+	model["config"] = config
+	model["alphas"] = classes
+	
+	functions.bulk_prediction(df, model)
+	evaluate.evaluate(df)
+	
+	if isinstance(validation_df, pd.DataFrame):
+		functions.bulk_prediction(validation_df, model)
+		evaluate.evaluate(validation_df, task = 'validation')
+	
+	#--------------------------------
 	
 	return models, classes

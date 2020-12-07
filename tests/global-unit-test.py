@@ -21,15 +21,24 @@ if __name__ == '__main__':
 		
 		print("-------------------------")
 		
-		print("ID3 for label encoded features and nominal target:")
+		print("Validation set case")
+		
+		df = pd.read_csv("dataset/golf.txt")
+		validation_df = pd.read_csv("dataset/golf.txt")
 		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
-		model = cb.fit(pd.read_csv("dataset/golf_le.txt"), config)
+		model = cb.fit(df, config, validation_df = validation_df)
 		
 		print("-------------------------")
 		
 		print("ID3 for nominal features and nominal target:")
+		df = pd.read_csv("dataset/golf.txt")
+		
 		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
-		model = cb.fit(pd.read_csv("dataset/golf.txt"), config)
+		model = cb.fit(df, config)
+		
+		validation_df = pd.read_csv("dataset/golf.txt")
+		
+		cb.evaluate(model, validation_df)
 		
 		cb.save_model(model)
 		print("built model is saved to model.pkl")
@@ -49,7 +58,7 @@ if __name__ == '__main__':
 		model = cb.fit(pd.read_csv("dataset/golf2.txt"), config)
 		
 		instance = ['Sunny', 85, 85, 'Weak']
-		prediction = cb.predict(restored_model, instance)
+		prediction = cb.predict(model, instance)
 		print("prediction for ", instance, "is ", prediction)
 
 		print("-------------------------")
@@ -98,8 +107,7 @@ if __name__ == '__main__':
 
 		print("ID3 for nominal features and target (large data set)")
 		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
-		model = cb.fit(pd.read_csv("dataset/car.data"
-			, names=["buying", "maint", "doors", "persons", "lug_boot", "safety", "Decision"]), config)
+		model = cb.fit(pd.read_csv("dataset/car.data"), config)
 		
 		instance = ['vhigh','vhigh',2,'2','small','low']
 		prediction = cb.predict(model, instance)
@@ -131,7 +139,12 @@ if __name__ == '__main__':
 		
 		print("Adaboost")
 		config = {'algorithm': 'ID3', 'enableAdaboost': True, 'enableParallelism': False}
-		model = cb.fit(pd.read_csv("dataset/adaboost.txt"), config)
+		df = pd.read_csv("dataset/adaboost.txt")
+		validation_df = df.copy()
+		
+		model = cb.fit(df, config
+						, validation_df = validation_df
+						)
 		
 		instance = [4, 3.5]
 		#prediction = cb.predict(model, instance)
@@ -140,28 +153,42 @@ if __name__ == '__main__':
 		print("-------------------------")
 		
 		print("Regular GBM")
-		#config = {'algorithm': 'CART', 'enableGBM': True, 'epochs': 3, 'learning_rate': 1, 'enableParallelism': enableParallelism}
-		#model = cb.fit(pd.read_csv("dataset/golf4.txt"), config)
+		config = {'algorithm': 'CART', 'enableGBM': True, 'epochs': 3, 'learning_rate': 1, 'enableParallelism': enableParallelism}
+		df = pd.read_csv("dataset/golf4.txt")
+		validation_df = pd.read_csv("dataset/golf4.txt")
+		model = cb.fit(df, config
+						, validation_df = validation_df
+					)
 		
 		instance = ['Sunny',85,85,'Weak']
 		prediction = cb.predict(model, instance)
 		print("prediction for ",instance," is ",prediction)
-
+		
 		print("-------------------------")
 		
 		print("GBM for classification")
-		config = {'algorithm': 'ID3', 'enableGBM': True, 'epochs': 10, 'learning_rate': 1, 'enableParallelism': enableParallelism}
-		model = cb.fit(pd.read_csv("dataset/iris.data", names=["Sepal length", "Sepal width", "Petal length", "Petal width", "Decision"]), config)
+		config = {'algorithm': 'ID3', 'enableGBM': True, 'epochs': 3, 'learning_rate': 1, 'enableParallelism': enableParallelism}
+		
+		df = pd.read_csv("dataset/iris.data", names=["Sepal length", "Sepal width", "Petal length", "Petal width", "Decision"])
+		validation_df = df.copy()
+		
+		model = cb.fit(df, config
+						, validation_df = validation_df
+					)
 		
 		instance = [7.0,3.2,4.7,1.4]
 		prediction = cb.predict(model, instance)
 		print("prediction for ",instance," is ",prediction)
-
+		
 		print("-------------------------")
-
+		
 		print("Random forest")
 		config = {'algorithm': 'ID3', 'enableRandomForest': True, 'num_of_trees': 5, 'enableMultitasking': False, 'enableParallelism': enableParallelism}
-		model = cb.fit(pd.read_csv("dataset/car.data", names=["buying", "maint", "doors", "persons", "lug_boot", "safety", "Decision"]), config)
+		df = pd.read_csv("dataset/car.data")
+		validation_df = pd.read_csv("dataset/car.data")
+		model = cb.fit(pd.read_csv("dataset/car.data"), config
+						, validation_df = validation_df
+						)
 		
 		instance = ['vhigh','vhigh',2,'2','small','low']
 		

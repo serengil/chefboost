@@ -3,6 +3,18 @@ import pathlib
 import imp
 import os
 from os import path
+import multiprocessing
+from chefboost import Chefboost as cb
+
+def bulk_prediction(df, model):
+	
+	predictions = []
+	for index, instance in df.iterrows():
+		features = instance.values[0:-1]
+		prediction = cb.predict(model, features)
+		predictions.append(prediction)
+	
+	df['Prediction'] = predictions
 
 def restoreTree(moduleName):
    fp, pathname, description = imp.find_module(moduleName)
@@ -71,6 +83,7 @@ def initializeParams(config):
 	enableGBM = False; epochs = 10; learning_rate = 1
 	enableAdaboost = False; num_of_weak_classifier = 4
 	enableParallelism = False
+	num_cores = int(multiprocessing.cpu_count()/2) #allocate half of your total cores
 	
 	for key, value in config.items():
 		if key == 'algorithm':
@@ -97,6 +110,8 @@ def initializeParams(config):
 		#---------------------------------	
 		elif key == 'enableParallelism':
 			enableParallelism = value
+		elif key == 'num_cores':
+			num_cores = value
 			
 	config['algorithm'] = algorithm
 	config['enableRandomForest'] = enableRandomForest
@@ -108,5 +123,6 @@ def initializeParams(config):
 	config['enableAdaboost'] = enableAdaboost
 	config['num_of_weak_classifier'] = num_of_weak_classifier
 	config['enableParallelism'] = enableParallelism
+	config['num_cores'] = num_cores
 	
 	return config

@@ -10,7 +10,7 @@ import multiprocessing.pool
 import pandas as pd
 
 from chefboost.training import Preprocess
-from chefboost.commons import functions
+from chefboost.commons import functions, evaluate
 
 #----------------------------------------
 
@@ -181,7 +181,7 @@ def findDecision(df, config):
 	return winner_name, df.shape[0], metric_value, metric_name
 
 def createBranch(config, current_class, subdataset, numericColumn, branch_index
-	, winner_index, root, parents, file, dataset_features, num_of_instances, metric, winner_name = None, metric_name = None):
+	, winner_index, root, parents, file, dataset_features, num_of_instances, metric):
 	
 	algorithm = config['algorithm']
 	enableAdaboost = config['enableAdaboost']
@@ -299,7 +299,7 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 		root = tmp_root * 1
 		parents = copy.copy(parents_raw)
 
-def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root'):
+def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root', validation_df = None):
 			
 	models = []
 	
@@ -307,7 +307,7 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	algorithm = config['algorithm']
 	
 	json_file = file.split(".")[0]+".json"
-
+	
 	if root == 1:
 		if config['enableRandomForest'] != True and config['enableGBM'] != True and config['enableAdaboost'] != True:
 			raw_df = df.copy()
@@ -340,9 +340,7 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 		
 	#-----------------------------------------------------
 	
-	#TO-DO: you should specify the number of cores in config
-	#num_cores = int(multiprocessing.cpu_count()/2) #allocate half of your total cores
-	num_cores = 1
+	num_cores = config["num_cores"]
 	
 	input_params = []
 	
@@ -358,10 +356,11 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			
 			if i == 0:
 				descriptor = "# Feature: "+winner_name+", Instances: "+str(num_of_instances)+", "+metric_name+": "+str(round(metric, 4))
+				
 				functions.storeRule(file, (functions.formatRule(root), "", descriptor))
 			
 			createBranch(config, current_class, subdataset, numericColumn, branch_index
-				, winner_index, root, parents, file, dataset_features, num_of_instances, metric, winner_name = winner_name, metric_name = metric_name)
+				, winner_index, root, parents, file, dataset_features, num_of_instances, metric)
 		else:
 			input_params.append((config, current_class, subdataset, numericColumn, branch_index
 				, winner_index, root, parents, file, dataset_features, num_of_instances, metric))
@@ -481,7 +480,8 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			feature_importance(json_file, dataset_features)
 			
 			#-----------------------------------
-			
+		
+		#Accuracy calculation
 		if config['enableRandomForest'] != True and config['enableGBM'] != True and config['enableAdaboost'] != True:
 		#this is reguler decision tree. find accuracy here.
 			
@@ -490,41 +490,26 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			myrules = imp.load_module(moduleName, fp, pathname, description) #rules0
 			models.append(myrules)
 			
-			num_of_features = df.shape[1] - 1
-			instances = df.shape[0]
-			classified = 0; mae = 0; mse = 0
+			#--------------------------------
+			#train accuracy
+			
+			#some numerical features transform to nominal. e.g. 85 -> >=80
+			df = raw_df.copy()
 			
 			#instead of for loops, pandas functions perform well
-			raw_df['Prediction'] = raw_df.apply(findPrediction, axis=1)
-			if algorithm != 'Regression':
-				idx = raw_df[raw_df['Prediction'] == raw_df['Decision']].index
-				
-				#raw_df['Classified'] = 0
-				#raw_df.loc[idx, 'Classified'] = 1
-				#print(raw_df)
-				
-				accuracy = 100*len(idx)/instances
-				print("Accuracy: ", accuracy,"% on ",instances," instances")
-			else:
-				raw_df['Absolute_Error'] = abs(raw_df['Prediction'] - raw_df['Decision'])
-				raw_df['Absolute_Error_Squared'] = raw_df['Absolute_Error'] * raw_df['Absolute_Error']
-				
-				#print(raw_df)
-				
-				mae = raw_df['Absolute_Error'].sum()/instances
-				print("MAE: ",mae)
-				
-				mse = raw_df['Absolute_Error_Squared'].sum()/instances
-				rmse = math.sqrt(mse)
-				print("RMSE: ",rmse)
-				
-				mean = raw_df['Decision'].mean()
-				print("Mean: ", mean)
-				
-				if mean > 0:
-					print("MAE / Mean: ",100*mae/mean,"%")
-					print("RMSE / Mean: ",100*rmse/mean,"%")
-		
+			df['Prediction'] = df.apply(findPrediction, axis=1)
+			
+			evaluate.evaluate(df)
+			
+			#--------------------------------
+			#validation accuracy
+			
+			if isinstance(validation_df, pd.DataFrame):
+				validation_df['Prediction'] = validation_df.apply(findPrediction, axis=1)
+				evaluate.evaluate(validation_df, task = 'validation')
+			
+			#--------------------------------
+			
 	return models
 			
 def findPrediction(row):

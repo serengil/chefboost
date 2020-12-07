@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
 
-from chefboost.commons import functions
+from chefboost.commons import functions, evaluate
 from chefboost.training import Training
+from chefboost import Chefboost as cb
 
 import imp
 import math
@@ -26,7 +27,7 @@ def findPrediction(row):
 	
 	return prediction
 
-def apply(df, config, header, dataset_features):
+def apply(df, config, header, dataset_features, validation_df = None):
 
 	models = []; alphas = []
 	
@@ -111,6 +112,28 @@ def apply(df, config, header, dataset_features):
 	#print(final_predictions)
 	mae = final_predictions['Absolute_Error'].sum() / final_predictions.shape[0]
 	print("Loss (MAE) found ", mae, " with ",num_of_weak_classifier, ' weak classifiers')
+	
+	#------------------------------
+	#evaluate model
+	
+	model = {}
+	model["trees"] = models
+	model["config"] = config
+	model["alphas"] = alphas
+	
+	functions.bulk_prediction(df, model)
+	df['Prediction'] = df['Prediction'].astype(str)
+	df['Decision'] = df['Decision'].astype(str)	
+	evaluate.evaluate(df)
+	
+	if isinstance(validation_df, pd.DataFrame):
+		functions.bulk_prediction(validation_df, model)
+		validation_df['Prediction'] = validation_df['Prediction'].astype(str)
+		validation_df['Decision'] = validation_df['Decision'].astype(str)	
+		evaluate.evaluate(validation_df, task = 'validation')
+	
+	del model
+	#------------------------------
 	
 	return models, alphas
 

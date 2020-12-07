@@ -7,7 +7,7 @@ import pickle
 import os
 from os import path
 
-from chefboost.commons import functions
+from chefboost.commons import functions, evaluate as eval
 from chefboost.training import Preprocess, Training
 from chefboost.tuning import gbm, adaboost, randomforest
 
@@ -17,7 +17,35 @@ from chefboost.tuning import gbm, adaboost, randomforest
 
 #------------------------
 
-def fit(df, config):
+def fit(df, config, validation_df = None):
+	
+	"""
+	Parameters:
+		df (pandas data frame): Training data frame. The target column must be named as 'Decision' and it has to be in the last column
+		
+		config (dictionary):
+			
+			config = {
+				'algorithm' (string): 'ID' #C4.5, CART, CHAID or Regression
+				'enableParallelism' (boolean): False
+				
+				'enableGBM' (boolean): True,
+				'epochs' (int): 7,
+				'learning_rate' (int): 1,
+				
+				'enableRandomForest' (boolean): True,
+				'num_of_trees' (int): 5,
+				
+				'enableAdaboost' (boolean): True,
+				'num_of_weak_classifier' (int): 4
+			}
+			
+		validation_df (pandas data frame): if nothing is passed to validation data frame, then the function validates built trees for training data frame
+		
+	Returns:
+		chefboost model
+		
+	"""
 	
 	target_label = df.columns[len(df.columns)-1]
 	if target_label != 'Decision':
@@ -74,6 +102,13 @@ def fit(df, config):
 
 	enableAdaboost = config['enableAdaboost']
 	enableParallelism = config['enableParallelism']
+	
+	#------------------------
+	
+	if enableParallelism == True:
+		print("[INFO]: ",config["num_cores"],"CPU cores will be allocated in parallel running")
+	
+	#------------------------
 	
 	#this will handle basic decision stumps. parallelism is not required.
 	if enableRandomForest == True:
@@ -136,20 +171,20 @@ def fit(df, config):
 	trees = []; alphas = []
 
 	if enableAdaboost == True:
-		trees, alphas = adaboost.apply(df, config, header, dataset_features)
+		trees, alphas = adaboost.apply(df, config, header, dataset_features, validation_df = validation_df)
 
 	elif enableGBM == True:
 		
 		if df['Decision'].dtypes == 'object': #transform classification problem to regression
-			trees, alphas = gbm.classifier(df, config, header, dataset_features)
+			trees, alphas = gbm.classifier(df, config, header, dataset_features, validation_df = validation_df)
 			classification = True
 			
 		else: #regression
-			trees = gbm.regressor(df, config, header, dataset_features)
+			trees = gbm.regressor(df, config, header, dataset_features, validation_df = validation_df)
 			classification = False
 				
 	elif enableRandomForest == True:
-		trees = randomforest.apply(df, config, header, dataset_features)
+		trees = randomforest.apply(df, config, header, dataset_features, validation_df = validation_df)
 	else: #regular decision tree building
 
 		root = 1; file = "outputs/rules/rules.py"
@@ -159,9 +194,11 @@ def fit(df, config):
 			json_file = "outputs/rules/rules.json"
 			functions.createFile(json_file, "[\n")
 			
-		trees = Training.buildDecisionTree(df,root,file, config, dataset_features
-			, 0, 0, 'root')
-		
+		trees = Training.buildDecisionTree(df, root = root, file = file, config = config
+				, dataset_features = dataset_features
+				, parent_level = 0, leaf_id = 0, parents = 'root', validation_df = validation_df)
+	
+	print("-------------------------")
 	print("finished in ",time.time() - begin," seconds")
 	
 	obj = {
@@ -179,8 +216,14 @@ def predict(model, param):
 	
 	trees = model["trees"]
 	config = model["config"]
-	alphas = model["alphas"]
-	nan_values = model["nan_values"]
+	
+	alphas = []
+	if "alphas" in model:
+		alphas = model["alphas"]
+	
+	nan_values = []
+	if "nan_values" in model:
+		nan_values = model["nan_values"]
 	
 	#-----------------------
 	#handle missing values
@@ -254,19 +297,18 @@ def predict(model, param):
 	else:
 		if enableGBM == True and classification == True:
 			return alphas[np.argmax(prediction_classes)]
-		else:
-			unique_labels = np.unique(prediction_classes)
-			prediction_counts = []
+		else: #classification
+			#e.g. random forest
+			#get predictions made by different trees
+			predictions = np.array(prediction_classes)
 			
-			for i in range(0, len(unique_labels)):
-				count = 0
-				for j in prediction_classes:
-					if j == unique_labels[i]:
-						count = count + 1
-				prediction_counts.append(count)
+			#find the most frequent prediction
+			(values, counts) = np.unique(predictions, return_counts=True)
+			idx = np.argmax(counts)
+			prediction = values[idx]
 			
-			return unique_labels[np.argmax(prediction_counts)]
-
+			return prediction
+			
 def save_model(base_model, file_name="model.pkl"):
 	
 	model = base_model.copy()
@@ -329,5 +371,11 @@ def feature_importance():
 		return df
 
 	else:
-		print("Feature importance calculation is enabled when parallelised fitting. It seems that fit function didn't called parallelised. No file found like outputs/rules/rules_fi.csv")
+		print("Feature importance calculation is enabled when parallelism enabled in fitting.")
+		print("It seems that fit function didn't called.")
 		return None
+
+def evaluate(model, df):
+	functions.bulk_prediction(df, model)
+	eval.evaluate(df, task = 'test')
+	
