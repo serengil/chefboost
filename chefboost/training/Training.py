@@ -185,6 +185,8 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 	
 	algorithm = config['algorithm']
 	enableAdaboost = config['enableAdaboost']
+	enableGBM = config['enableGBM']
+	max_depth = config['max_depth']
 	enableParallelism = config['enableParallelism']
 	
 	charForResp = "'"
@@ -212,7 +214,10 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 	#-----------------------------------------------
 	#can decision be made?
 	
-	if enableAdaboost == True:
+	if enableGBM == True and root >= max_depth: #max depth
+		final_decision = subdataset['Decision'].mean()
+		terminateBuilding = True
+	elif enableAdaboost == True:
 		#final_decision = subdataset['Decision'].value_counts().idxmax()
 		final_decision = functions.sign(subdataset['Decision'].mean()) #get average
 		terminateBuilding = True
@@ -227,6 +232,7 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 	#elif algorithm == 'Regression' and subdataset['Decision'].std(ddof=0)/global_stdev < 0.4: #pruning condition
 		final_decision = subdataset['Decision'].mean() #get average
 		terminateBuilding = True
+	
 	#-----------------------------------------------
 	
 	if enableParallelism == True:

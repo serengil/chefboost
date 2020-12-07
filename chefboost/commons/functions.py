@@ -80,7 +80,7 @@ def initializeFolders():
 def initializeParams(config):
 	algorithm = 'ID3'
 	enableRandomForest = False; num_of_trees = 5; enableMultitasking = False
-	enableGBM = False; epochs = 10; learning_rate = 1
+	enableGBM = False; epochs = 10; learning_rate = 1; max_depth = 3
 	enableAdaboost = False; num_of_weak_classifier = 4
 	enableParallelism = False
 	num_cores = int(multiprocessing.cpu_count()/2) #allocate half of your total cores
@@ -102,6 +102,8 @@ def initializeParams(config):
 			epochs = value
 		elif key == 'learning_rate':
 			learning_rate = value
+		elif key == 'max_depth':
+			max_depth = value
 		#---------------------------------	
 		elif key == 'enableAdaboost':
 			enableAdaboost = value
@@ -120,6 +122,7 @@ def initializeParams(config):
 	config['enableGBM'] = enableGBM
 	config['epochs'] = epochs
 	config['learning_rate'] = learning_rate
+	config['max_depth'] = max_depth
 	config['enableAdaboost'] = enableAdaboost
 	config['num_of_weak_classifier'] = num_of_weak_classifier
 	config['enableParallelism'] = enableParallelism
