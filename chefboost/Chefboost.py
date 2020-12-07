@@ -246,6 +246,7 @@ def predict(model, param):
 	
 	enableGBM = config['enableGBM']
 	adaboost = config['enableAdaboost']
+	enableRandomForest = config['enableRandomForest']
 	
 	#-----------------------
 	
@@ -265,7 +266,7 @@ def predict(model, param):
 		
 	#-----------------------
 	
-	if len(trees) > 1: #boosting
+	if len(trees) > 1: #bagging or boosting
 		index = 0
 		for tree in trees:
 			if adaboost != True:
@@ -282,9 +283,13 @@ def predict(model, param):
 					else:
 						classification = True
 						prediction_classes.append(custom_prediction)
-			else:
+			else: #adaboost
 				prediction += alphas[index] * tree.findDecision(param)
 			index = index + 1
+		
+		if enableRandomForest == True:
+			#notice that gbm requires cumilative sum but random forest requires mean of each tree
+			prediction = prediction / len(trees)
 		
 		if adaboost == True:
 			prediction = functions.sign(prediction)

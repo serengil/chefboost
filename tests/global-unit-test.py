@@ -202,6 +202,22 @@ if __name__ == '__main__':
 		
 		print("-------------------------")
 		
+		print("Random forest for regression")
+		
+		config = {'algorithm': 'ID3', 'enableRandomForest': True, 'num_of_trees': 5, 'enableMultitasking': False, 'enableParallelism': enableParallelism}
+		
+		df = pd.read_csv("dataset/car_reg.data")
+		model = cb.fit(pd.read_csv("dataset/car_reg.data"), config)
+		
+		validation_df = pd.read_csv("dataset/car_reg.data")
+		cb.evaluate(model, validation_df)
+		
+		instance = ['high','high',4,'more','big','high']
+		prediction = cb.predict(model, instance)
+		print("prediction for ",instance," is ",prediction)
+		
+		print("-------------------------")
+		
 		print("Is there any none predictions?")
 		config = {'algorithm': 'C4.5', 'enableParallelism': enableParallelism}
 		model = cb.fit(pd.read_csv("dataset/none_train.txt"), config)
