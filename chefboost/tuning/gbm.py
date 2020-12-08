@@ -142,26 +142,9 @@ def regressor(df, config, header, dataset_features, validation_df = None):
 		#print("loss: ",loss)
 		pbar.set_description("Epoch %d. Loss: %d. Process: " % (index, loss))
 		
-		#---------------------------------
+	#---------------------------------
 	
 	print("MSE of ",num_of_instances," instances are boosted from ",boosted_from," to ",boosted_to," in ",epochs," epochs")
-	
-	#-------------------------------
-	#evaluate gbm model
-	
-	model = {}
-	model["trees"] = models
-	model["config"] = config
-	
-	functions.bulk_prediction(df, model)
-	df['Decision'] = base_actuals
-	evaluate.evaluate(df)
-	
-	if isinstance(validation_df, pd.DataFrame):
-		functions.bulk_prediction(validation_df, model)
-		evaluate.evaluate(validation_df, task = 'validation')
-	
-	#-------------------------------
 	
 	return models
 
@@ -295,22 +278,6 @@ def classifier(df, config, header, dataset_features, validation_df = None):
 		#print(worksheet.head())
 		#print("round ",epoch+1)
 		pbar.set_description("Epoch %d. Accuracy: %s. Process: " % (epoch+1, accuracy))
-	
-	
-	#--------------------------------
-	#evaluate gbm model
-	
-	model = {}
-	model["trees"] = models
-	model["config"] = config
-	model["alphas"] = classes
-	
-	functions.bulk_prediction(df, model)
-	evaluate.evaluate(df)
-	
-	if isinstance(validation_df, pd.DataFrame):
-		functions.bulk_prediction(validation_df, model)
-		evaluate.evaluate(validation_df, task = 'validation')
 	
 	#--------------------------------
 	

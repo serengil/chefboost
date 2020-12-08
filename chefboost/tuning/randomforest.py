@@ -44,21 +44,5 @@ def apply(df, config, header, dataset_features, validation_df = None):
 		models.append(myrules)
 		
 	#-------------------------------
-	#evaluate model
-	
-	model = {}
-	model["trees"] = models
-	model["config"] = config
-	
-	functions.bulk_prediction(df, model)
-	evaluate.evaluate(df)
-	
-	#-------------------------------
-	
-	if isinstance(validation_df, pd.DataFrame):
-		functions.bulk_prediction(validation_df, model)
-		evaluate.evaluate(validation_df, task = 'validation')
-	
-	#-------------------------------
 	
 	return models

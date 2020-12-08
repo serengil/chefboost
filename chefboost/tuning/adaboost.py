@@ -114,26 +114,6 @@ def apply(df, config, header, dataset_features, validation_df = None):
 	print("Loss (MAE) found ", mae, " with ",num_of_weak_classifier, ' weak classifiers')
 	
 	#------------------------------
-	#evaluate model
-	
-	model = {}
-	model["trees"] = models
-	model["config"] = config
-	model["alphas"] = alphas
-	
-	functions.bulk_prediction(df, model)
-	df['Prediction'] = df['Prediction'].astype(str)
-	df['Decision'] = df['Decision'].astype(str)	
-	evaluate.evaluate(df)
-	
-	if isinstance(validation_df, pd.DataFrame):
-		functions.bulk_prediction(validation_df, model)
-		validation_df['Prediction'] = validation_df['Prediction'].astype(str)
-		validation_df['Decision'] = validation_df['Decision'].astype(str)	
-		evaluate.evaluate(validation_df, task = 'validation')
-	
-	del model
-	#------------------------------
 	
 	return models, alphas
 

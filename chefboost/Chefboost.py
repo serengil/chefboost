@@ -47,6 +47,8 @@ def fit(df, config, validation_df = None):
 		
 	"""
 	
+	base_df = df.copy()
+	
 	target_label = df.columns[len(df.columns)-1]
 	if target_label != 'Decision':
 		print("Expected: Decision, Existing: ",target_label)
@@ -207,6 +209,18 @@ def fit(df, config, validation_df = None):
 		"config": config,
 		"nan_values": nan_values
 	}
+	
+	#-----------------------------------------
+	
+	#train set accuracy
+	df = base_df.copy()
+	evaluate(obj, df, task = 'train')
+	
+	#validation set accuracy
+	if isinstance(validation_df, pd.DataFrame):
+		evaluate(obj, validation_df, task = 'validation')
+	
+	#-----------------------------------------
 	
 	return obj
 	
@@ -380,7 +394,16 @@ def feature_importance():
 		print("It seems that fit function didn't called.")
 		return None
 
-def evaluate(model, df):
+def evaluate(model, df, task = 'test'):
+		
 	functions.bulk_prediction(df, model)
-	eval.evaluate(df, task = 'test')
+	
+	enableAdaboost = model["config"]["enableAdaboost"]
+	
+	if enableAdaboost == True:
+		df['Decision'] = df['Decision'].astype(str)
+		df['Prediction'] = df['Prediction'].astype(str)
+	
+	eval.evaluate(df, task = task)
+	
 	

@@ -442,7 +442,6 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	
 	#---------------------------------------------
 	
-	#calculate accuracy metrics
 	if root == 1:
 		
 		if enableParallelism == True:
@@ -487,7 +486,7 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			
 			#-----------------------------------
 		
-		#Accuracy calculation
+		#is regular decision tree
 		if config['enableRandomForest'] != True and config['enableGBM'] != True and config['enableAdaboost'] != True:
 		#this is reguler decision tree. find accuracy here.
 			
@@ -495,26 +494,6 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			fp, pathname, description = imp.find_module(moduleName)
 			myrules = imp.load_module(moduleName, fp, pathname, description) #rules0
 			models.append(myrules)
-			
-			#--------------------------------
-			#train accuracy
-			
-			#some numerical features transform to nominal. e.g. 85 -> >=80
-			df = raw_df.copy()
-			
-			#instead of for loops, pandas functions perform well
-			df['Prediction'] = df.apply(findPrediction, axis=1)
-			
-			evaluate.evaluate(df)
-			
-			#--------------------------------
-			#validation accuracy
-			
-			if isinstance(validation_df, pd.DataFrame):
-				validation_df['Prediction'] = validation_df.apply(findPrediction, axis=1)
-				evaluate.evaluate(validation_df, task = 'validation')
-			
-			#--------------------------------
 			
 	return models
 			

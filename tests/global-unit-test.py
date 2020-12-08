@@ -38,6 +38,7 @@ if __name__ == '__main__':
 		
 		validation_df = pd.read_csv("dataset/golf.txt")
 		
+		print("External validation")
 		cb.evaluate(model, validation_df)
 		
 		cb.save_model(model)
