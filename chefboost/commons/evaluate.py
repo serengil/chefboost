@@ -29,7 +29,8 @@ def evaluate(df, task = 'train'):
 		#-----------------------------
 		#confusion matrix
 		
-		labels = df.Prediction.unique()
+		#labels = df.Prediction.unique()
+		labels = df.Decision.unique()
 		
 		confusion_matrix = []
 		for prediction_label in labels:
@@ -62,10 +63,11 @@ def evaluate(df, task = 'train'):
 				elif actual == decision_class and prediction != decision_class:
 					fn = fn + 1
 			
-			precision = round(100*tp / (tp + fp), 4)
-			recall = round(100*tp / (tp + fn), 4)
-			f1_score = round((2 * precision * recall) / (precision + recall), 4)
-			accuracy = round(100 * (tp + tn) / (tp + tn + fp + fn), 4)
+			epsilon = 0.0000001 #to avoid divison by zero exception
+			precision = round(100*tp / (tp + fp + epsilon), 4)
+			recall = round(100*tp / (tp + fn + epsilon), 4)
+			f1_score = round((2 * precision * recall) / (precision + recall + epsilon), 4)
+			accuracy = round(100 * (tp + tn) / (tp + tn + fp + fn + epsilon), 4)
 			
 			if len(labels) >= 3:
 				print("Decision ", decision_class, " => ",end = '')

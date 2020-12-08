@@ -122,24 +122,24 @@ if __name__ == '__main__':
 	
 		print("C4.5 for nominal features and target (large data set)")
 		config = {'algorithm': 'C4.5', 'enableParallelism': enableParallelism}
-		cb.fit(pd.read_csv("dataset/car.data", names=["buying", "maint", "doors", "persons", "lug_boot", "safety", "Decision"]), config)
+		cb.fit(pd.read_csv("dataset/car.data"), config)
 
 		print("-------------------------")
 
 		print("CART for nominal features and target (large data set)")
 		config = {'algorithm': 'CART', 'enableParallelism': enableParallelism}
-		cb.fit(pd.read_csv("dataset/car.data", names=["buying", "maint", "doors", "persons", "lug_boot", "safety", "Decision"]), config)
+		cb.fit(pd.read_csv("dataset/car.data"), config)
 		
 		print("-------------------------")
 		
 		print("CHAID for nominal features and target (large data set)")
 		config = {'algorithm': 'CHAID', 'enableParallelism': enableParallelism}
-		cb.fit(pd.read_csv("dataset/car.data", names=["buying", "maint", "doors", "persons", "lug_boot", "safety", "Decision"]), config)
+		cb.fit(pd.read_csv("dataset/car.data"), config)
 		
 		print("-------------------------")
 		
 		print("Adaboost")
-		config = {'algorithm': 'ID3', 'enableAdaboost': True, 'enableParallelism': False}
+		config = {'algorithm': 'ID3', 'enableAdaboost': True, 'num_of_weak_classifier': 10, 'enableParallelism': False}
 		df = pd.read_csv("dataset/adaboost.txt")
 		validation_df = df.copy()
 		
@@ -154,7 +154,7 @@ if __name__ == '__main__':
 		print("-------------------------")
 		
 		print("Regular GBM")
-		config = {'algorithm': 'CART', 'enableGBM': True, 'epochs': 3, 'learning_rate': 1, 'enableParallelism': enableParallelism}
+		config = {'algorithm': 'CART', 'enableGBM': True, 'epochs': 10, 'learning_rate': 1, 'enableParallelism': enableParallelism}
 		df = pd.read_csv("dataset/golf4.txt")
 		validation_df = pd.read_csv("dataset/golf4.txt")
 		model = cb.fit(df, config
@@ -168,7 +168,7 @@ if __name__ == '__main__':
 		print("-------------------------")
 		
 		print("GBM for classification")
-		config = {'algorithm': 'ID3', 'enableGBM': True, 'epochs': 3, 'learning_rate': 1, 'enableParallelism': enableParallelism}
+		config = {'algorithm': 'ID3', 'enableGBM': True, 'epochs': 10, 'learning_rate': 1, 'enableParallelism': enableParallelism}
 		
 		df = pd.read_csv("dataset/iris.data", names=["Sepal length", "Sepal width", "Petal length", "Petal width", "Decision"])
 		validation_df = df.copy()
@@ -176,7 +176,7 @@ if __name__ == '__main__':
 		model = cb.fit(df, config
 						, validation_df = validation_df
 					)
-		
+				
 		instance = [7.0,3.2,4.7,1.4]
 		prediction = cb.predict(model, instance)
 		print("prediction for ",instance," is ",prediction)

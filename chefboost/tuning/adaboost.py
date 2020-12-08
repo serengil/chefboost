@@ -46,6 +46,8 @@ def apply(df, config, header, dataset_features, validation_df = None):
 	final_predictions = pd.DataFrame(np.zeros((df.shape[0], 2)), columns = ['Prediction', 'Actual'])
 	final_predictions['Actual'] = df['Decision']
 	
+	best_epoch_idx = 0; best_epoch_value = 1000000
+	
 	#for i in range(0, num_of_weak_classifier):
 	pbar = tqdm(range(0, num_of_weak_classifier), desc='Adaboosting')
 	for i in pbar:
@@ -104,14 +106,19 @@ def apply(df, config, header, dataset_features, validation_df = None):
 		
 		mae = (np.abs(final_predictions['Prediction'].apply(functions.sign) - final_predictions['Actual'])/2).sum()/final_predictions.shape[0]
 		#print(mae)
+		
+		if mae < best_epoch_value:
+			best_epoch_value = mae * 1
+			best_epoch_idx = i * 1
+		
 		pbar.set_description("Epoch %d. Loss: %d. Process: " % (i+1, mae))
 	
 	#------------------------------
-	final_predictions['Prediction'] = final_predictions['Prediction'].apply(functions.sign)
-	final_predictions['Absolute_Error'] = np.abs(final_predictions['Actual'] - final_predictions['Prediction'])/2
-	#print(final_predictions)
-	mae = final_predictions['Absolute_Error'].sum() / final_predictions.shape[0]
-	print("Loss (MAE) found ", mae, " with ",num_of_weak_classifier, ' weak classifiers')
+	
+	print("The best epoch is ",best_epoch_idx," with the ",best_epoch_value," MAE score")
+	
+	models = models[0: best_epoch_idx+1]
+	alphas = alphas[0: best_epoch_idx+1]
 	
 	#------------------------------
 	

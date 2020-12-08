@@ -72,6 +72,8 @@ def regressor(df, config, header, dataset_features, validation_df = None):
 	
 	#------------------------------
 	
+	best_epoch_idx = 0; best_epoch_loss = 1000000
+	
 	pbar = tqdm(range(1, epochs+1), desc='Boosting')
 	
 	#for index in range(1,epochs+1):
@@ -106,10 +108,16 @@ def regressor(df, config, header, dataset_features, validation_df = None):
 		
 		loss = (base_df['Boosted_Prediction'] - base_df['Decision']).pow(2).sum()
 		
+		current_loss = loss / num_of_instances
+		
 		if index == 1: 
-			boosted_from = loss / num_of_instances
+			boosted_from = current_loss * 1
 		elif index == epochs:
-			boosted_to = loss / num_of_instances
+			boosted_to = current_loss * 1
+		
+		if current_loss < best_epoch_loss:
+			best_epoch_loss = current_loss * 1
+			best_epoch_idx = index * 1
 		
 		df['Decision'] = int(learning_rate)*(df['Decision'] - df['Prediction'])
 		df = df.drop(columns = ['Epoch', 'Prediction'])
@@ -144,7 +152,11 @@ def regressor(df, config, header, dataset_features, validation_df = None):
 		
 	#---------------------------------
 	
-	print("MSE of ",num_of_instances," instances are boosted from ",boosted_from," to ",boosted_to," in ",epochs," epochs")
+	print("The best epoch is ", best_epoch_idx," with ", best_epoch_loss," loss value")
+	models = models[0:best_epoch_idx]
+	config["epochs"] = best_epoch_idx
+	
+	print("MSE of ",num_of_instances," instances are boosted from ",boosted_from," to ",best_epoch_loss," in ",epochs," epochs")
 	
 	return models
 
@@ -173,6 +185,9 @@ def classifier(df, config, header, dataset_features, validation_df = None):
 		current_class = classes[i]
 		actual_set[current_class] = np.where(df['Decision'] == current_class, 1, 0)
 	actual_set = actual_set.values #transform it to numpy array
+	
+	best_accuracy_idx = 0; best_accuracy_value = 0
+	accuracies = []
 	
 	#for epoch in range(0, epochs):
 	for epoch in pbar:
@@ -271,14 +286,23 @@ def classifier(df, config, header, dataset_features, validation_df = None):
 			if actual == prediction:
 				classified = classified + 1
 		
-		accuracy = str(100 * classified / actual_set.shape[0]) + "%"
+		accuracy = 100 * classified / actual_set.shape[0]
+		accuracies.append(accuracy)
+		
+		if accuracy > best_accuracy_value:
+			best_accuracy_value = accuracy * 1
+			best_accuracy_idx = epoch * 1
 		
 		#----------------------------
 		
 		#print(worksheet.head())
 		#print("round ",epoch+1)
-		pbar.set_description("Epoch %d. Accuracy: %s. Process: " % (epoch+1, accuracy))
+		pbar.set_description("Epoch %d. Accuracy: %d. Process: " % (epoch+1, accuracy))
 	
 	#--------------------------------
+	
+	print("The best accuracy got in ",best_accuracy_idx," epoch with the score ", best_accuracy_value)
+	
+	models = models[0: best_accuracy_idx * len(classes) + len(classes)]
 	
 	return models, classes
