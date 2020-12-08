@@ -12,8 +12,6 @@ The easiest way to install Chefboost framework is to download it from [from PyPI
 pip install chefboost
 ```
 
-Installation guideline is captured as a video [here](https://youtu.be/YYF993HTHf8).
-
 ## Usage
 
 Basically, you just need to pass the dataset as pandas data frame and tree configurations after importing Chefboost as illustrated below. You just need to put the target label to the right. Besides, chefboost handles both numeric and nominal features and target values in contrast to its alternatives.
