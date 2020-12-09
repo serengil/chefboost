@@ -89,25 +89,35 @@ prediction = chef.predict(model, ['Sunny',85,85,'Weak'])
 
 Chefboost supports several decision tree, bagging and boosting algorithms. You just need to pass the configuration to use different algorithms.
 
-**Regular Decision Trees** [`ID3 Video`](https://youtu.be/Z93qE5eb6eg), [`C4.5 Video`](https://youtu.be/kjhQHmtDaAA), [`CART Video`](https://youtu.be/CSApBetgukM), [`CHAID Video`](https://youtu.be/dcnFuS4QILg), [`Regression Tree Video`](https://youtu.be/pCQ2RCa20Bg)
+**Regular Decision Trees**
 
 ```python
 config = {'algorithm': 'C4.5'} #Set algorithm to ID3, C4.5, CART, CHAID or Regression
 ```
 
-**Gradient Boosting** [`Video`](https://youtu.be/KFsnZKMKNAE)
+The following regular decision tree algorithms are wrapped in the library.
+
+| Algorithm | Tutorial | Demo |
+| ---       | ---      | ---  |
+| ID3       | [`Tutorial`](https://sefiks.com/2017/11/20/a-step-by-step-id3-decision-tree-example/) | [`Demo`](https://youtu.be/Z93qE5eb6eg) |
+| C4.5      | [`Tutorial`](https://sefiks.com/2018/05/13/a-step-by-step-c4-5-decision-tree-example/) | [`Demo`](https://youtu.be/kjhQHmtDaAA) |
+| CART      | [`Tutorial`](https://sefiks.com/2018/08/27/a-step-by-step-cart-decision-tree-example/) | [`Demo`](https://youtu.be/CSApBetgukM) |
+| CHAID     | [`Tutorial`](https://sefiks.com/2020/03/18/a-step-by-step-chaid-decision-tree-example/) | [`Demo`](https://youtu.be/dcnFuS4QILg) |
+| Regression | [`Tutorial`](https://sefiks.com/2018/08/28/a-step-by-step-regression-decision-tree-example/) | [`Demo`](https://youtu.be/pCQ2RCa20Bg) |
+
+**Gradient Boosting** [`Tutorial`](https://sefiks.com/2018/10/04/a-step-by-step-gradient-boosting-decision-tree-example/), [`Demo`](https://youtu.be/KFsnZKMKNAE)
 
 ```python
 config = {'enableGBM': True, 'epochs': 7, 'learning_rate': 1, 'max_depth': 5}
 ```
 
-**Random Forest** [`Video`](https://youtu.be/J7hDtV261PQ)
+**Random Forest** [`Tutorial`](https://sefiks.com/2017/11/19/how-random-forests-can-keep-you-from-decision-tree/), [`Demo`](https://youtu.be/J7hDtV261PQ)
 
 ```python
 config = {'enableRandomForest': True, 'num_of_trees': 5}
 ```
 
-**Adaboost** [`Video`](https://youtu.be/Obj208F6e7k)
+**Adaboost** [`Tutorial`](https://sefiks.com/2018/11/02/a-step-by-step-adaboost-example/), [`Demo`](https://youtu.be/Obj208F6e7k)
 
 ```python
 config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}
