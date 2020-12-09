@@ -4,7 +4,7 @@
 
 **Chefboost** is a lightweight [gradient boosting](https://sefiks.com/2018/10/04/a-step-by-step-gradient-boosting-decision-tree-example/), [random forest](https://sefiks.com/2017/11/19/how-random-forests-can-keep-you-from-decision-tree/) and [adaboost](https://sefiks.com/2018/11/02/a-step-by-step-adaboost-example/) enabled decision tree framework including regular [ID3](https://sefiks.com/2017/11/20/a-step-by-step-id3-decision-tree-example/), [C4.5](https://sefiks.com/2018/05/13/a-step-by-step-c4-5-decision-tree-example/), [CART](https://sefiks.com/2018/08/27/a-step-by-step-cart-decision-tree-example/), [CHAID](https://sefiks.com/2020/03/18/a-step-by-step-chaid-decision-tree-example/) and [regression tree](https://sefiks.com/2018/08/28/a-step-by-step-regression-decision-tree-example/) algorithms **with categorical features support**. The library is lightweight. It just depends on pandas and numpy. You just need to write **a few lines of code** to build decision trees with Chefboost.
 
-## Installation
+**Installation** - [`Demo`](https://youtu.be/YYF993HTHf8)
 
 The easiest way to install Chefboost framework is to download it from [from PyPI](https://pypi.org/project/chefboost).
  
@@ -12,7 +12,7 @@ The easiest way to install Chefboost framework is to download it from [from PyPI
 pip install chefboost
 ```
 
-## Usage
+**Usage** - [`Demo`](https://youtu.be/Z93qE5eb6eg)
 
 Basically, you just need to pass the dataset as pandas data frame and tree configurations after importing Chefboost as illustrated below. You just need to put the target label to the right. Besides, chefboost handles both numeric and nominal features and target values in contrast to its alternatives.
 
@@ -26,7 +26,7 @@ config = {'algorithm': 'ID3'}
 model = chef.fit(df, config)
 ```
 
-## Outcomes
+**Outcomes**
 
 Built decision trees are stored as python if statements in the `tests/outputs/rules` directory. A sample of decision rules is demonstrated below.
 
@@ -52,17 +52,15 @@ def findDecision(Outlook, Temperature, Humidity, Wind, Decision):
       return 'Yes'
  ```
 
-## Testing for custom instances
+**Testing for custom instances**
 
 Decision rules will be stored in `outputs/rules/` folder when you build decision trees. You can run the built decision tree for new instances as illustrated below.
 
 ```python
-test_instance = ['Sunny', 'Hot', 'High', 'Weak']
-model = chef.fit(df, config)
-prediction = chef.predict(model, test_instance)
+prediction = chef.predict(model, param = ['Sunny', 'Hot', 'High', 'Weak'])
 ```
 
-You can consume built decision trees directly as well. In this way, you can restore already built decision trees and skip learning steps, or apply **transfer learning**. Loaded trees offer you findDecision method to test for new instances.
+You can consume built decision trees directly as well. In this way, you can restore already built decision trees and skip learning steps, or apply [transfer learning](https://youtu.be/9hX8ir7_ZtA). Loaded trees offer you findDecision method to test for new instances.
 
 ```python
 moduleName = "outputs/rules/rules" #this will load outputs/rules/rules.py
@@ -70,14 +68,13 @@ tree = chef.restoreTree(moduleName)
 prediction = tree.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 ```
 
-**tests/global-unit-test.py** will guide you how to build a different decision trees and make predictions.
+tests/global-unit-test.py will guide you how to build a different decision trees and make predictions.
 
-## Model save and restoration
+**Model save and restoration**
 
-You can save your trained models.
+You can save your trained models. This makes your model ready for transfer learning.
 
 ```python
-model = chef.fit(df.copy(), config)
 chef.save_model(model, "model.pkl")
 ```
 
@@ -88,7 +85,7 @@ model = chef.load_model("model.pkl")
 prediction = chef.predict(model, ['Sunny',85,85,'Weak'])
 ```
 
-## Sample configurations
+### Sample configurations
 
 Chefboost supports several decision tree, bagging and boosting algorithms. You just need to pass the configuration to use different algorithms.
 
@@ -149,7 +146,7 @@ Parallelism must be enabled to retrieve feature importance. This returns feature
 | Temperature | 0.197528         |
 | Outlook     | -0.072501        |
 
-## E-Learning
+### E-Learning
 
 This [playlist](https://www.youtube.com/playlist?list=PLsS_1RYmYQQHp_xZObt76dpacY543GrJD) guides you how to use Chefboost step by step for different algorithms. 
 
@@ -157,11 +154,11 @@ You can also find the tutorials about these core algorithms [here](https://sefik
 
 Besides, you can enroll this online course - [**Decision Trees for Machine Learning From Scratch**](https://www.udemy.com/course/decision-trees-for-machine-learning/?referralCode=FDC9B836EC6DAA1A663A) and follow the curriculum if you wonder the theory of decision trees and how this framework is developed.
 
-## Support
+### Support
 
 There are many ways to support a project - starring⭐️ the GitHub repos is just one.
 
-## Citation
+### Citation
 
 Please cite chefboost in your publications if it helps your research. Here is an example BibTeX entry:
 
@@ -175,6 +172,6 @@ Please cite chefboost in your publications if it helps your research. Here is an
 }
 ```
 
-## Licence
+### Licence
 
 Chefboost is licensed under the MIT License - see [`LICENSE`](https://github.com/serengil/chefboost/blob/master/LICENSE) for more details.
