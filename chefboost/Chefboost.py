@@ -12,10 +12,6 @@ from chefboost.commons import functions, evaluate as eval
 from chefboost.training import Preprocess, Training
 from chefboost.tuning import gbm, adaboost, randomforest
 
-#from commons import functions
-#from training import Preprocess, Training
-#from tuning import gbm, adaboost, randomforest
-
 #------------------------
 
 def fit(df, config = {}, validation_df = None):
