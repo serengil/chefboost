@@ -131,9 +131,9 @@ Adaboost applies a decision stump instead of a decision tree. This is a weak cla
 config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}
 ```
 
-**Feature Importance** - [`Video`](https://youtu.be/NFLQT6Ta4-k)
+**Feature Importance** - [`Demo`](https://youtu.be/NFLQT6Ta4-k)
 
-Decision trees are naturally interpretable and explainable algorithms. A decision is clear made by a single tree. Still we need some extra layers to understand the built models. Besides, random forest and GBM are hard to explain. Herein, [feature importance]https://sefiks.com/2020/04/06/feature-importance-in-decision-trees/) is one of the most common way to see the big picture and understand built models.
+Decision trees are naturally interpretable and explainable algorithms. A decision is clear made by a single tree. Still we need some extra layers to understand the built models. Besides, random forest and GBM are hard to explain. Herein, [feature importance](https://sefiks.com/2020/04/06/feature-importance-in-decision-trees/) is one of the most common way to see the big picture and understand built models.
 
 ```python
 df = chef.feature_importance("outputs/rules/rules.py")
