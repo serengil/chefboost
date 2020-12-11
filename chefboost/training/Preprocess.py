@@ -5,9 +5,24 @@ import math
 from chefboost.training import Training
 #from training import Training
 
-#TO-DO: this causes very long running when unique numbers are high. Find a workaround for this. scale groups might be a solution.
 def processContinuousFeatures(algorithm, df, column_name, entropy, config):
-	unique_values = sorted(df[column_name].unique())
+	
+	if df[column_name].nunique() <= 7:
+		unique_values = sorted(df[column_name].unique())
+	else:
+		unique_values = []
+		
+		mean = df[column_name].mean()
+		stdev = df[column_name].std(ddof=0)
+		
+		unique_values.append(mean - 3 * stdev)
+		unique_values.append(mean - 2 * stdev)
+		unique_values.append(mean - 1 * stdev)
+		unique_values.append(mean + 0 * stdev)
+		unique_values.append(mean + 1 * stdev)
+		unique_values.append(mean + 2 * stdev)
+		unique_values.append(mean + 3 * stdev)
+	
 	#print(column_name,"->",unique_values)
 	
 	subset_gainratios = []; subset_gains = []; subset_ginis = []; subset_red_stdevs = []; subset_chi_squares = []

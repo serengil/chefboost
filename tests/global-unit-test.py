@@ -114,7 +114,7 @@ if __name__ == '__main__':
 		cb.fit(pd.read_csv("dataset/golf4.txt"), config)
 
 		print("-------------------------")
-
+		
 		print("algorithm must be regression tree for numetic target. set any other algorithm.")
 		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/golf4.txt"), config)
