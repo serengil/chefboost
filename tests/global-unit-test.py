@@ -37,6 +37,7 @@ if __name__ == '__main__':
 		if enableParallelism == False:
 			print("Feature importance for serial built decision tree")
 			decision_rules = model["trees"][0].__dict__["__name__"]+".py"
+			#decision_rules = tree.__dict__["__spec__"].origin
 			print(cb.feature_importance(decision_rules))
 		else:
 			print("Feature importance for parallel built decision tree")
@@ -198,12 +199,22 @@ if __name__ == '__main__':
 		print("-------------------------")
 		
 		print("Random forest")
-		config = {'algorithm': 'ID3', 'enableRandomForest': True, 'num_of_trees': 5, 'enableMultitasking': False, 'enableParallelism': enableParallelism}
+		config = {'algorithm': 'ID3', 'enableRandomForest': True, 'num_of_trees': 3, 'enableMultitasking': False, 'enableParallelism': enableParallelism}
 		df = pd.read_csv("dataset/car.data")
 		validation_df = pd.read_csv("dataset/car.data")
 		model = cb.fit(pd.read_csv("dataset/car.data"), config
-						, validation_df = validation_df
+						#, validation_df = validation_df
 						)
+		
+		print("Feature importance of random forest")
+		decision_rules = []
+		for tree in model["trees"]:
+			
+			decision_rule = tree.__dict__["__spec__"].origin
+			decision_rules.append(decision_rule)
+			
+		df = cb.feature_importance(decision_rules)	
+		print(df)
 		
 		instance = ['vhigh','vhigh',2,'2','small','low']
 		

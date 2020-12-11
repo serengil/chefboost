@@ -356,9 +356,18 @@ def load_model(file_name="model.pkl"):
 def restoreTree(moduleName):
 	return functions.restoreTree(moduleName)
 
-def feature_importance(rule = None):
+def feature_importance(rules):
 	
-	if rule != None: #directly analyse feature importance of any rules.py
+	if type(rules) != list:
+		rules = [rules]
+	else:
+		print("rules: ",rules)
+	
+	#-----------------------------
+	
+	dfs = []
+	
+	for rule in rules:
 		print("Decision rule: ",rule)
 		
 		file = open(rule, 'r')
@@ -424,35 +433,27 @@ def feature_importance(rule = None):
 		df = pd.DataFrame(instances, columns = ["feature", "final_importance"])
 		df = df.sort_values(by = ["final_importance"], ascending = False)		
 		
-		return df
-
-	else:
-		df_initialized = False
-
-		feature_importance_files = []
-
-		for file in os.listdir("outputs/rules"):
-			if file.endswith("_fi.csv"):
-				feature_importance_files.append("outputs/rules/%s" % (file))
-		
-		if len(feature_importance_files) > 0:
-			for file in feature_importance_files:
-				fi = pd.read_csv(file)
-
-				if df_initialized == False:
-					df = pd.DataFrame(fi.feature.values, columns = ["feature"])
-					df["final_importance"] = 0
-					df_initialized = True
-				
-				df = df.merge(fi, on = ["feature"], how = 'left')
-
-				df.final_importance = df.final_importance + df.importance
-				df = df.drop(columns = ["importance"])
-
-			df = df.sort_values(by = ["final_importance"], ascending = False).reset_index(drop = True)
-			df.final_importance = df.final_importance / df.final_importance.sum()
-
+		if len(rules) == 1:
 			return df
+		else:
+			dfs.append(df)
+	
+	if len(rules) > 1:
+		
+		hf = pd.DataFrame(feature_names, columns = ["feature"])
+		hf["importance"] = 0
+		
+		for df in dfs:
+			hf = hf.merge(df, on = ["feature"], how = "left")
+			hf["importance"] = hf["importance"] + hf["final_importance"]
+			hf = hf.drop(columns = ["final_importance"])
+					
+		#------------------------
+		#normalize
+		hf["importance"] = hf["importance"] / hf["importance"].sum()
+		hf = hf.sort_values(by = ["importance"], ascending = False)
+		
+		return hf
 
 def evaluate(model, df, task = 'test'):
 		
