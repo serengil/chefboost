@@ -91,21 +91,25 @@ Chefboost supports several decision tree, bagging and boosting algorithms. You j
 
 **Regular Decision Trees**
 
+Regular decision tree algorithms find the best split point.
+
 ```python
 config = {'algorithm': 'C4.5'} #Set algorithm to ID3, C4.5, CART, CHAID or Regression
 ```
 
 The following regular decision tree algorithms are wrapped in the library.
 
-| Algorithm | Tutorial | Demo |
-| ---       | ---      | ---  |
-| ID3       | [`Tutorial`](https://sefiks.com/2017/11/20/a-step-by-step-id3-decision-tree-example/) | [`Demo`](https://youtu.be/Z93qE5eb6eg) |
-| C4.5      | [`Tutorial`](https://sefiks.com/2018/05/13/a-step-by-step-c4-5-decision-tree-example/) | [`Demo`](https://youtu.be/kjhQHmtDaAA) |
-| CART      | [`Tutorial`](https://sefiks.com/2018/08/27/a-step-by-step-cart-decision-tree-example/) | [`Demo`](https://youtu.be/CSApBetgukM) |
-| CHAID     | [`Tutorial`](https://sefiks.com/2020/03/18/a-step-by-step-chaid-decision-tree-example/) | [`Demo`](https://youtu.be/dcnFuS4QILg) |
-| Regression | [`Tutorial`](https://sefiks.com/2018/08/28/a-step-by-step-regression-decision-tree-example/) | [`Demo`](https://youtu.be/pCQ2RCa20Bg) |
+| Algorithm  | Metric | Tutorial | Demo |
+| ---        | --- | ---      | ---  |
+| ID3        | Entropy, Information Gain |[`Tutorial`](https://sefiks.com/2017/11/20/a-step-by-step-id3-decision-tree-example/) | [`Demo`](https://youtu.be/Z93qE5eb6eg) |
+| C4.5       | Entropy, Gain Ratio | [`Tutorial`](https://sefiks.com/2018/05/13/a-step-by-step-c4-5-decision-tree-example/) | [`Demo`](https://youtu.be/kjhQHmtDaAA) |
+| CART       | GINI | [`Tutorial`](https://sefiks.com/2018/08/27/a-step-by-step-cart-decision-tree-example/) | [`Demo`](https://youtu.be/CSApBetgukM) |
+| CHAID      | Chi Square | [`Tutorial`](https://sefiks.com/2020/03/18/a-step-by-step-chaid-decision-tree-example/) | [`Demo`](https://youtu.be/dcnFuS4QILg) |
+| Regression | Standard Deviation | [`Tutorial`](https://sefiks.com/2018/08/28/a-step-by-step-regression-decision-tree-example/) | [`Demo`](https://youtu.be/pCQ2RCa20Bg) |
 
 **Gradient Boosting** [`Tutorial`](https://sefiks.com/2018/10/04/a-step-by-step-gradient-boosting-decision-tree-example/), [`Demo`](https://youtu.be/KFsnZKMKNAE)
+
+Gradient boosting is basically based on building a tree, and then building another based on the previous one's error. In this way, it boosts results. Predictions will be the sum of each tree'e prediction result. 
 
 ```python
 config = {'enableGBM': True, 'epochs': 7, 'learning_rate': 1, 'max_depth': 5}
@@ -113,11 +117,15 @@ config = {'enableGBM': True, 'epochs': 7, 'learning_rate': 1, 'max_depth': 5}
 
 **Random Forest** [`Tutorial`](https://sefiks.com/2017/11/19/how-random-forests-can-keep-you-from-decision-tree/), [`Demo`](https://youtu.be/J7hDtV261PQ)
 
+Random forest basically splits the data set into several sub data sets and builds different data set for those sub data sets. Predictions will be the average of each tree's prediction result.
+
 ```python
 config = {'enableRandomForest': True, 'num_of_trees': 5}
 ```
 
 **Adaboost** [`Tutorial`](https://sefiks.com/2018/11/02/a-step-by-step-adaboost-example/), [`Demo`](https://youtu.be/Obj208F6e7k)
+
+Adaboost applies a decision stump instead of a decision tree. This is a weak classifier and aims to get min 50% score. It then increases the unclassified ones and decreases the classified ones. In this way, it aims to have a high score with weak classifiers.
 
 ```python
 config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}
