@@ -82,7 +82,7 @@ if __name__ == '__main__':
 		print("C4.5 for nominal/numeric features and nominal target:")
 		config = {'algorithm': 'C4.5', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/golf2.txt"), config)
-
+		
 		print("-------------------------")
 
 		print("CART for nominal/numeric features and nominal target:")
@@ -199,7 +199,7 @@ if __name__ == '__main__':
 		print("-------------------------")
 		
 		print("Random forest")
-		config = {'algorithm': 'ID3', 'enableRandomForest': True, 'num_of_trees': 10
+		config = {'algorithm': 'ID3', 'enableRandomForest': True, 'num_of_trees': 3
 			, 'enableParallelism': enableParallelism, 'num_cores': 3
 		}
 		df = pd.read_csv("dataset/car.data")

@@ -28,14 +28,13 @@ def apply(df, config, header, dataset_features, validation_df = None):
 		root = 1
 		
 		moduleName = "outputs/rules/rule_"+str(i)
-		file = moduleName+".py"; json_file = moduleName+".json"
+		file = moduleName+".py"
 		
 		functions.createFile(file, header)
 		
 		if parallelism_on: #parallel run
-			functions.createFile(json_file, "[\n")
 			input_params.append((subset, root, file, config, dataset_features, 0, 0, 'root', i))
-			functions.storeRule(json_file,"{}]")
+		
 		else: #serial run
 			Training.buildDecisionTree(subset,root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root', tree_id = i)
 		

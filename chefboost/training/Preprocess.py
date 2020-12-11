@@ -7,22 +7,28 @@ from chefboost.training import Training
 
 def processContinuousFeatures(algorithm, df, column_name, entropy, config):
 	
+	#if True:
 	if df[column_name].nunique() <= 7:
 		unique_values = sorted(df[column_name].unique())
 	else:
 		unique_values = []
 		
-		mean = df[column_name].mean()
-		stdev = df[column_name].std(ddof=0)
+		df_mean = df[column_name].mean()
+		df_std = df[column_name].std(ddof=0)
+		df_min = df[column_name].min()
+		df_max = df[column_name].max()
 		
-		unique_values.append(mean - 3 * stdev)
-		unique_values.append(mean - 2 * stdev)
-		unique_values.append(mean - 1 * stdev)
-		unique_values.append(mean + 0 * stdev)
-		unique_values.append(mean + 1 * stdev)
-		unique_values.append(mean + 2 * stdev)
-		unique_values.append(mean + 3 * stdev)
-	
+		unique_values.append(df[column_name].min())
+		unique_values.append(df[column_name].max())
+		unique_values.append(df[column_name].mean())
+		
+		scales = list(range(-3,+4, 1))
+		for scale in scales:
+			if df_mean + scale * df_std > df_min and df_mean + scale * df_std < df_max:
+				unique_values.append(df_mean + scale * df_std)
+		
+		unique_values.sort()
+		
 	#print(column_name,"->",unique_values)
 	
 	subset_gainratios = []; subset_gains = []; subset_ginis = []; subset_red_stdevs = []; subset_chi_squares = []
@@ -49,6 +55,7 @@ def processContinuousFeatures(algorithm, df, column_name, entropy, config):
 			subset_gains.append(threshold_gain)
 		
 		if algorithm == 'C4.5': #C4.5 also need gain in the block above. That's why, instead of else if we used direct if condition here
+			
 			threshold_splitinfo = -subset1_probability * math.log(subset1_probability, 2)-subset2_probability*math.log(subset2_probability, 2)
 			gainratio = threshold_gain / threshold_splitinfo
 			subset_gainratios.append(gainratio)

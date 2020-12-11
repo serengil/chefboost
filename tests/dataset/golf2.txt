@@ -1,4 +1,4 @@
-Outlook,Temp.,Humidity,Wind,Decision
+Outlook,Temperature,Humidity,Wind,Decision
 Sunny,85,85,Weak,No
 Sunny,80,90,Strong,No
 Overcast,83,78,Weak,Yes
