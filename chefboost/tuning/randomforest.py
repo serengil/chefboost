@@ -1,26 +1,25 @@
 import pandas as pd
 import numpy as np
-
 from multiprocessing import Pool
-
 from chefboost.commons import functions, evaluate
 from chefboost.training import Training
 from chefboost import Chefboost as cb
-
 from tqdm import tqdm
-
 import imp
-	
+
 def apply(df, config, header, dataset_features, validation_df = None):
 	
 	models = []
 	
 	num_of_trees = config['num_of_trees']
 	
-	pbar = tqdm(range(0, num_of_trees), desc='Bagging')
+	parallelism_on = config["enableParallelism"]
+	config["enableParallelism"] = False #run each tree in parallel but each branch in serial
 	
+	input_params = []
+	
+	pbar = tqdm(range(0, num_of_trees), desc='Bagging')
 	for i in pbar:
-	#for i in range(0, num_of_trees):
 		pbar.set_description("Sub decision tree %d is processing" % (i+1))
 		subset = df.sample(frac=1/num_of_trees)
 		
@@ -30,19 +29,35 @@ def apply(df, config, header, dataset_features, validation_df = None):
 		file = moduleName+".py"; json_file = moduleName+".json"
 		
 		functions.createFile(file, header)
-		functions.createFile(json_file, "[\n")
 		
-		Training.buildDecisionTree(subset,root, file, config, dataset_features
-			, parent_level = 0, leaf_id = 0, parents = 'root')
-		
-		functions.storeRule(json_file,"{}]")
-		
-		#--------------------------------
-		
-		fp, pathname, description = imp.find_module(moduleName)
-		myrules = imp.load_module(moduleName, fp, pathname, description)
-		models.append(myrules)
+		if parallelism_on: #parallel run
+			functions.createFile(json_file, "[\n")
+			input_params.append((subset, root, file, config, dataset_features, 0, 0, 'root', i))
+			functions.storeRule(json_file,"{}]")
+		else: #serial run
+			Training.buildDecisionTree(subset,root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root', tree_id = i)
 		
 	#-------------------------------
 	
+	if parallelism_on:
+		num_cores = config["num_cores"]
+		pool = Training.MyPool(num_cores)
+		results = pool.starmap(buildDecisionTree, input_params)
+		pool.close()
+		pool.join()
+	
+	#-------------------------------
+	#collect models for both serial and parallel here
+	for i in range(0, num_of_trees):
+		moduleName = "outputs/rules/rule_"+str(i)
+		fp, pathname, description = imp.find_module(moduleName)
+		myrules = imp.load_module(moduleName, fp, pathname, description)
+		models.append(myrules)
+	
+	#-------------------------------
+	
 	return models
+
+#wrapper for parallel run
+def buildDecisionTree(df, root, file, config, dataset_features, parent_level, leaf_id, parents, tree_id, validation_df = None):
+	Training.buildDecisionTree(df, root, file, config, dataset_features, parent_level = parent_level, leaf_id =leaf_id, parents = parents, tree_id = tree_id)

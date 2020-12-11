@@ -108,13 +108,6 @@ def fit(df, config = {}, validation_df = None):
 		print("[INFO]: ",config["num_cores"],"CPU cores will be allocated in parallel running")
 	
 	#------------------------
-	
-	#this will handle basic decision stumps. parallelism is not required.
-	if enableRandomForest == True:
-		config['enableParallelism'] = False
-		enableParallelism = False
-	
-	#------------------------
 	raw_df = df.copy()
 	num_of_rows = df.shape[0]; num_of_columns = df.shape[1]
 	

@@ -8,8 +8,8 @@ pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
 #----------------------------------------------
-parallelism_cases = [False]
-#parallelism_cases = [False, True]
+#parallelism_cases = [False]
+parallelism_cases = [False, True]
 
 if __name__ == '__main__':
 
@@ -120,7 +120,7 @@ if __name__ == '__main__':
 		cb.fit(pd.read_csv("dataset/golf4.txt"), config)
 		
 		print("-------------------------")
-
+		
 		print("ID3 for nominal features and target (large data set)")
 		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
 		model = cb.fit(pd.read_csv("dataset/car.data"), config)
@@ -199,7 +199,9 @@ if __name__ == '__main__':
 		print("-------------------------")
 		
 		print("Random forest")
-		config = {'algorithm': 'ID3', 'enableRandomForest': True, 'num_of_trees': 3, 'enableMultitasking': False, 'enableParallelism': enableParallelism}
+		config = {'algorithm': 'ID3', 'enableRandomForest': True, 'num_of_trees': 10
+			, 'enableParallelism': enableParallelism, 'num_cores': 3
+		}
 		df = pd.read_csv("dataset/car.data")
 		validation_df = pd.read_csv("dataset/car.data")
 		model = cb.fit(pd.read_csv("dataset/car.data"), config

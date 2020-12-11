@@ -181,7 +181,7 @@ def findDecision(df, config):
 	return winner_name, df.shape[0], metric_value, metric_name
 
 def createBranch(config, current_class, subdataset, numericColumn, branch_index
-	, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric):
+	, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric, tree_id = 0):
 	
 	algorithm = config['algorithm']
 	enableAdaboost = config['enableAdaboost']
@@ -265,6 +265,7 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 		sample_rule["instances"] = num_of_instances
 		sample_rule["metric"] = metric
 		sample_rule["return_statement"] = 0
+		sample_rule["tree_id"] = tree_id
 		
 		#json to string
 		sample_rule = json.dumps(sample_rule)
@@ -296,6 +297,7 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 			sample_rule["instances"] = num_of_instances
 			sample_rule["metric"] = 0
 			sample_rule["return_statement"] = 1
+			sample_rule["tree_id"] = tree_id
 			
 			#json to string
 			sample_rule = ", "+json.dumps(sample_rule)
@@ -312,7 +314,7 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 		root = tmp_root * 1
 		parents = copy.copy(parents_raw)
 
-def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root', validation_df = None):
+def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root', tree_id = 0, validation_df = None):
 	
 	models = []
 	feature_names = df.columns[0:-1]
@@ -417,6 +419,7 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			sample_rule["instances"] = df.shape[0]
 			sample_rule["metric"] = 0
 			sample_rule["return_statement"] = 0
+			sample_rule["tree_id"] = tree_id
 			
 			#json to string
 			sample_rule = json.dumps(sample_rule)
@@ -436,12 +439,15 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			
 			check_rule = "else: "+else_decision
 			
-			sample_rule = "   {\n"
-			sample_rule += "      \"current_level\": "+str(root)+",\n"
-			sample_rule += "      \"leaf_id\": \""+str(leaf_id)+"\",\n"
-			sample_rule += "      \"parents\": \""+parents+"\",\n"
-			sample_rule += "      \"rule\": \""+check_rule+"\"\n"
-			sample_rule += "   }"
+			sample_rule = {}
+			sample_rule["current_level"] = root
+			sample_rule["leaf_id"] = leaf_id
+			sample_rule["parents"] = parents
+			sample_rule["rule"] = check_rule
+			sample_rule["tree_id"] = tree_id
+			
+			#json to string
+			sample_rule = json.dumps(sample_rule)
 			
 			functions.createFile(custom_rule_file, "")
 			functions.storeRule(custom_rule_file, sample_rule)
@@ -455,6 +461,14 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 		with Pool(number_of_cpus) as pool:
 			pool.starmap(createBranch, input_params)
 		"""
+		
+		#print("process: ",os.getpid(),", parent: ",os.getppid())
+		
+		
+		#TODO: just apply parallelism for the 1st level?
+		if parent_level > 0:
+			num_cores = 1
+		
 		
 		pool = MyPool(num_cores)
 		results = pool.starmap(createBranch, input_params)
@@ -502,8 +516,9 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			
 			reconstructRules(json_file, feature_names)
 
+			
 			#feature importance should be calculated by demand?
-			feature_importance(json_file, dataset_features)
+			#feature_importance(json_file, dataset_features)
 			
 			#-----------------------------------
 		
@@ -535,7 +550,7 @@ def findPrediction(row):
 If you set parelellisim True, then branches will be created parallel. Rules are stored in a json file randomly. This program reconstructs built rules in a tree form. In this way, we can build decision trees faster.
 """
 
-def reconstructRules(source, feature_names):
+def reconstructRules(source, feature_names, tree_id = 0):
 	
 	#print("Reconstructing ",source)
 	
@@ -654,88 +669,3 @@ def reconstructRules(source, feature_names):
 	extractRules(df)
 
 	#------------------------------------
-
-def feature_importance(source, features):
-	
-	with open(source, 'r') as f:
-		rules = json.load(f)
-	
-	rule_set = []
-	for instance in rules:
-		if len(instance) > 0:
-			rule = []
-			if "metric" in list(instance.keys()):
-				rule.append(instance["current_level"])
-				rule.append(instance["leaf_id"])
-				rule.append(instance["parents"])
-				rule.append(instance["rule"])
-				rule.append(instance["feature_idx"])
-				rule.append(instance["instances"])
-				rule.append(instance["metric"])
-				rule_set.append(rule)
-	
-	df = pd.DataFrame(rule_set
-		, columns = ["current_level", "leaf_id", "parents", "rule", "feature_idx", "instances", "metric"])
-
-	feature_importances = []
-	feature_idx = 0
-	for feature in features:
-
-		#print("Feature ", feature)
-		
-		feature_nodes = df[df.feature_idx == feature_idx]
-		feature_nodes = feature_nodes.merge(df, left_on = ["leaf_id"], right_on = ["parents"], how = "left")
-		feature_nodes = feature_nodes[(feature_nodes.feature_idx_y != -1)] #discard else conditions
-
-		#----------------------------------
-
-		pivot = feature_nodes.groupby(by = ["parents_y"])[["parents_x", "metric_x", "instances_x", "metric_y", "instances_y"]].min()
-
-		parents = pivot.parents_x.unique()
-
-		importance = 0
-
-		#print("Feature ", feature, ": ")
-
-		for parent in parents:
-			node_importance = 0
-			child = pivot[pivot.parents_x == parent]
-
-			parent_effect = (child.iloc[0].metric_x * child.iloc[0].instances_x)
-			node_importance = node_importance + parent_effect
-
-			#print(child.iloc[0].metric_x," x ", child.iloc[0].instances_x, end = '')
-
-			for index, instance in child.iterrows():
-				#print(" - ", instance.metric_y, " x ", instance.instances_y, end = '')
-				node_importance = node_importance - (instance.metric_y * instance.instances_y)
-
-			#importance = importance + (parent_effect - child_effect)
-
-			#print(" = ",node_importance)
-			importance = importance + node_importance
-
-		#print("Importance of feature ", feature," is ", importance,". \n")
-
-		feature_importance = []
-		feature_importance.append(feature)
-		feature_importance.append(importance)
-		feature_importances.append(feature_importance)
-
-		feature_idx = feature_idx + 1
-
-	#---------------------------------
-
-	feature_importances = pd.DataFrame(feature_importances, columns = ["feature", "importance"])
-	feature_importances = feature_importances.sort_values(by = ["importance"], ascending = False).reset_index(drop = True)
-	
-	#print(feature_importances)
-	
-	feature_importances.importance = (feature_importances.importance) / feature_importances.importance.sum()
-
-	target = source.split(".")[0]+"_fi.csv"
-
-	feature_importances.to_csv(target, index = False)
-
-	#print(feature_importances)
-	
