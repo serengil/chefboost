@@ -23,7 +23,7 @@ def fit(df, config = {}, validation_df = None):
 		config (dictionary):
 			
 			config = {
-				'algorithm' (string): 'ID3' #C4.5, CART, CHAID or Regression
+				'algorithm' (string): ID3, 'C4.5, CART, CHAID or Regression
 				'enableParallelism' (boolean): False
 				
 				'enableGBM' (boolean): True,
