@@ -6,6 +6,7 @@ import imp
 import pickle
 import os
 from os import path
+import json
 
 from chefboost.commons import functions, evaluate as eval
 from chefboost.training import Preprocess, Training
@@ -153,17 +154,16 @@ def fit(df, config, validation_df = None):
 	
 	dataset_features = dict() #initialize a dictionary. this is going to be used to check features numeric or nominal. numeric features should be transformed to nominal values based on scales.
 
-	header = "def findDecision(obj):"
-	#header += " #"
+	header = "def findDecision(obj): #"
 	
 	num_of_columns = df.shape[1]-1
 	for i in range(0, num_of_columns):
 		column_name = df.columns[i]
 		dataset_features[column_name] = df[column_name].dtypes
-		"""header = header + "obj[" + str(i) +"]: "+column_name
+		header = header + "obj[" + str(i) +"]: "+column_name
 		if i != num_of_columns - 1:
 			header = header + ", "
-		"""
+		
 	header = header + "\n"
 	
 	#------------------------
@@ -360,39 +360,103 @@ def load_model(file_name="model.pkl"):
 def restoreTree(moduleName):
 	return functions.restoreTree(moduleName)
 
-def feature_importance():
-
-	df_initialized = False
-
-	feature_importance_files = []
-
-	for file in os.listdir("outputs/rules"):
-		if file.endswith("_fi.csv"):
-			feature_importance_files.append("outputs/rules/%s" % (file))
+def feature_importance(rule = None):
 	
-	if len(feature_importance_files) > 0:
-		for file in feature_importance_files:
-			fi = pd.read_csv(file)
-
-			if df_initialized == False:
-				df = pd.DataFrame(fi.feature.values, columns = ["feature"])
-				df["final_importance"] = 0
-				df_initialized = True
+	if rule != None: #directly analyse feature importance of any rules.py
+		print("Decision rule: ",rule)
+		
+		file = open(rule, 'r')
+		lines = file.readlines()
+		
+		pivot = {}
+		rules = []
+		
+		#initialize feature importances
+		line_idx = 0
+		for line in lines:
+			if line_idx == 0:
+				feature_explainer_list = line.split("#")[1].split(", ")
+				for feature_explainer in feature_explainer_list:
+					feature = feature_explainer.split(": ")[1].replace("\n", "")
+					pivot[feature] = 0
+			else:
+				if "# " in line:
+					rule = line.strip().split("# ")[1]
+					rules.append(json.loads(rule))
 			
-			df = df.merge(fi, on = ["feature"], how = 'left')
-
-			df.final_importance = df.final_importance + df.importance
-			df = df.drop(columns = ["importance"])
-
-		df = df.sort_values(by = ["final_importance"], ascending = False).reset_index(drop = True)
-		df.final_importance = df.final_importance / df.final_importance.sum()
-
+			line_idx = line_idx + 1
+		
+		feature_names = list(pivot.keys())
+		
+		for feature in feature_names:
+			for rule in rules:
+				if rule["feature"] == feature:
+					
+					
+					score = rule["metric_value"] * rule["instances"]
+					current_depth = rule["depth"]
+					
+					child_scores = 0
+					#find child node importances
+					for child_rule in rules:
+						if child_rule["depth"] == current_depth + 1:
+							
+							child_score = child_rule["metric_value"] * child_rule["instances"]
+							
+							child_scores = child_scores + child_score
+					
+					score = score - child_scores
+				
+					pivot[feature] = pivot[feature] + score
+		
+		#normalize feature importance
+		
+		total_score = 0
+		for feature, score in pivot.items():
+			total_score = total_score + score
+		
+		for feature, score in pivot.items():
+			pivot[feature] = round(pivot[feature] / total_score, 4)
+		
+		instances = []
+		for feature, score in pivot.items():
+			instance = []
+			instance.append(feature)
+			instance.append(score)
+			instances.append(instance)
+		
+		df = pd.DataFrame(instances, columns = ["feature", "final_importance"])
+		df = df.sort_values(by = ["final_importance"], ascending = False)		
+		
 		return df
 
 	else:
-		print("Feature importance calculation is enabled when parallelism enabled in fitting.")
-		print("It seems that fit function didn't called.")
-		return None
+		df_initialized = False
+
+		feature_importance_files = []
+
+		for file in os.listdir("outputs/rules"):
+			if file.endswith("_fi.csv"):
+				feature_importance_files.append("outputs/rules/%s" % (file))
+		
+		if len(feature_importance_files) > 0:
+			for file in feature_importance_files:
+				fi = pd.read_csv(file)
+
+				if df_initialized == False:
+					df = pd.DataFrame(fi.feature.values, columns = ["feature"])
+					df["final_importance"] = 0
+					df_initialized = True
+				
+				df = df.merge(fi, on = ["feature"], how = 'left')
+
+				df.final_importance = df.final_importance + df.importance
+				df = df.drop(columns = ["importance"])
+
+			df = df.sort_values(by = ["final_importance"], ascending = False).reset_index(drop = True)
+			df.final_importance = df.final_importance / df.final_importance.sum()
+
+			return df
 
 def evaluate(model, df, task = 'test'):
 		

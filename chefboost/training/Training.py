@@ -181,7 +181,7 @@ def findDecision(df, config):
 	return winner_name, df.shape[0], metric_value, metric_name
 
 def createBranch(config, current_class, subdataset, numericColumn, branch_index
-	, winner_index, root, parents, file, dataset_features, num_of_instances, metric):
+	, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric):
 	
 	algorithm = config['algorithm']
 	enableAdaboost = config['enableAdaboost']
@@ -254,16 +254,20 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 		
 		functions.storeRule(file,(functions.formatRule(root),"",check_rule))
 	else:
-
-		sample_rule = "   {\n"
-		sample_rule += "      \"current_level\": "+str(root)+",\n"
-		sample_rule += "      \"leaf_id\": \""+str(leaf_id)+"\",\n"
-		sample_rule += "      \"parents\": \""+parents+"\",\n"
-		sample_rule += "      \"rule\": \""+check_rule+"\",\n"
-		sample_rule += "      \"feature_idx\": "+str(winner_index)+",\n"
-		sample_rule += "      \"instances\": "+str(num_of_instances)+",\n"
-		sample_rule += "      \"metric\": "+str(metric)+"\n"
-		sample_rule += "   }"
+		
+		sample_rule = {}
+		sample_rule["current_level"] = root
+		sample_rule["leaf_id"] = leaf_id
+		sample_rule["parents"] = parents
+		sample_rule["rule"] = check_rule
+		sample_rule["feature_idx"] = winner_index
+		sample_rule["feature_name"] = winner_name
+		sample_rule["instances"] = num_of_instances
+		sample_rule["metric"] = metric
+		sample_rule["return_statement"] = 0
+		
+		#json to string
+		sample_rule = json.dumps(sample_rule)
 	
 		functions.createFile(custom_rule_file, "")
 		functions.storeRule(custom_rule_file, sample_rule)
@@ -281,17 +285,20 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 			#serial
 			functions.storeRule(file,(functions.formatRule(root+1),decision_rule))
 		else:
-			#parallel
-			sample_rule = "   , {\n"
-			sample_rule += "      \"current_level\": "+str(root+1)+",\n"
-			sample_rule += "      \"leaf_id\": \""+str(leaf_id)+"\",\n"
-			sample_rule += "      \"parents\": \""+parents+"\",\n"
-			sample_rule += "      \"rule\": \""+decision_rule+"\",\n"
-			sample_rule += "      \"feature_idx\": "+str(winner_index)+",\n"
-			sample_rule += "      \"instances\": "+str(num_of_instances)+",\n"
-			sample_rule += "      \"metric\": 0\n"
-
-			sample_rule += "   }"
+			#parallel			
+			sample_rule = {}
+			sample_rule["current_level"] = root+1
+			sample_rule["leaf_id"] = leaf_id
+			sample_rule["parents"] = parents
+			sample_rule["rule"] = decision_rule
+			sample_rule["feature_idx"] = winner_index
+			sample_rule["feature_name"] = winner_name
+			sample_rule["instances"] = num_of_instances
+			sample_rule["metric"] = 0
+			sample_rule["return_statement"] = 1
+			
+			#json to string
+			sample_rule = ", "+json.dumps(sample_rule)
 			
 			functions.storeRule(custom_rule_file, sample_rule)
 	
@@ -306,8 +313,9 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 		parents = copy.copy(parents_raw)
 
 def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root', validation_df = None):
-			
+	
 	models = []
+	feature_names = df.columns[0:-1]
 	
 	enableParallelism = config['enableParallelism']
 	algorithm = config['algorithm']
@@ -361,15 +369,24 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 		if enableParallelism != True:
 			
 			if i == 0:
-				descriptor = "# Feature: "+winner_name+", Instances: "+str(num_of_instances)+", "+metric_name+": "+str(round(metric, 4))
+				#descriptor = "# Feature: "+winner_name+", Instances: "+str(num_of_instances)+", "+metric_name+": "+str(round(metric, 4))
+				
+				descriptor = {
+					"feature": winner_name,
+					"instances": num_of_instances,
+					#"metric_name": metric_name,
+					"metric_value": round(metric, 4),
+					"depth": parent_level + 1
+				}
+				descriptor = "# "+json.dumps(descriptor)
 				
 				functions.storeRule(file, (functions.formatRule(root), "", descriptor))
 			
 			createBranch(config, current_class, subdataset, numericColumn, branch_index
-				, winner_index, root, parents, file, dataset_features, num_of_instances, metric)
+				, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric)
 		else:
 			input_params.append((config, current_class, subdataset, numericColumn, branch_index
-				, winner_index, root, parents, file, dataset_features, num_of_instances, metric))
+				, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric))
 	
 	#---------------------------
 	#add else condition in the decision tree
@@ -390,22 +407,26 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			
 			check_rule = "else: "+else_decision
 			
-			sample_rule = "   {\n"
-			sample_rule += "      \"current_level\": "+str(root)+",\n"
-			sample_rule += "      \"leaf_id\": \""+str(leaf_id)+"\",\n"
-			sample_rule += "      \"parents\": \""+parents+"\",\n"
-			sample_rule += "      \"rule\": \""+check_rule+"\",\n"
-			sample_rule += "      \"feature_idx\": -1,\n"
-			sample_rule += "      \"instances\": "+str(df.shape[0])+",\n"
-			sample_rule += "      \"metric\": 0\n"
-			sample_rule += "   }"
+			sample_rule = {}
+			sample_rule["current_level"] = root
+			sample_rule["leaf_id"] = leaf_id
+			sample_rule["parents"] = parents
+			sample_rule["rule"] = check_rule
+			sample_rule["feature_idx"] = -1
+			sample_rule["feature_name"] = ""
+			sample_rule["instances"] = df.shape[0]
+			sample_rule["metric"] = 0
+			sample_rule["return_statement"] = 0
+			
+			#json to string
+			sample_rule = json.dumps(sample_rule)
 			
 			functions.createFile(custom_rule_file, "")
 			functions.storeRule(custom_rule_file, sample_rule)
 			
 	else: #regression
 		else_decision = "return %s" % (subdataset.Decision.mean())
-		
+				
 		if enableParallelism != True:
 			functions.storeRule(file,(functions.formatRule(root), "else:"))
 			functions.storeRule(file,(functions.formatRule(root+1), else_decision))
@@ -479,7 +500,7 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			
 			#-----------------------------------
 			
-			reconstructRules(json_file)
+			reconstructRules(json_file, feature_names)
 
 			#feature importance should be calculated by demand?
 			feature_importance(json_file, dataset_features)
@@ -514,14 +535,27 @@ def findPrediction(row):
 If you set parelellisim True, then branches will be created parallel. Rules are stored in a json file randomly. This program reconstructs built rules in a tree form. In this way, we can build decision trees faster.
 """
 
-def reconstructRules(source):
+def reconstructRules(source, feature_names):
 	
 	#print("Reconstructing ",source)
 	
 	file_name = source.split(".json")[0]
 	file_name = file_name+".py"
 	
-	functions.createFile(file_name, "#This rule was reconstructed from "+source+"\n")
+	#-----------------------------------
+	
+	constructor = "def findDecision(obj): #"
+	idx = 0
+	for feature in feature_names:
+		constructor = constructor + "obj["+str(idx)+"]: "+feature
+		
+		if idx < len(feature_names) - 1:
+			constructor = constructor+", "
+		idx = idx + 1
+	
+	functions.createFile(file_name, constructor+"\n")
+	
+	#-----------------------------------
 	
 	with open(source, 'r') as f:
 		rules = json.load(f)
@@ -546,6 +580,10 @@ def reconstructRules(source):
 			rule.append(instance["leaf_id"])
 			rule.append(instance["parents"])
 			rule.append(instance["rule"])
+			rule.append(instance["feature_name"])
+			rule.append(instance["instances"])
+			rule.append(instance["metric"])
+			rule.append(instance["return_statement"])
 			rule_set.append(rule)
 			#print(padleft(instance["rule"], instance["current_level"]))
 
@@ -559,9 +597,14 @@ def reconstructRules(source):
 		
 		leaf_idx = 0
 		for i in range(0 ,df.shape[0]):
+			current_level = int(df[i][0])
 			leaf_id = df[i][1]
 			parent_id = df[i][2]
 			rule = df[i][3]
+			feature_name = df[i][4]
+			instances = int(df[i][5])
+			metric = float(df[i][6])
+			return_statement = int(df[i][7])
 			
 			if parent_id == parent:
 				
@@ -583,6 +626,15 @@ def reconstructRules(source):
 					
 					#print(padleft(rule, level), "(", leaf_idx,")")
 					
+					if leaf_idx == 0 and return_statement == 0:
+						explainer = {}
+						explainer["feature"] = feature_name
+						explainer["instances"] = instances
+						explainer["metric_value"] = round(metric, 4)
+						explainer["depth"] = current_level
+						explainer = "# "+json.dumps(explainer)
+						functions.storeRule(file_name, padleft(explainer, level))
+					
 					functions.storeRule(file_name, padleft(rule, level))
 					
 					level = level + 1; parent = copy.copy(leaf_id)
@@ -599,8 +651,6 @@ def reconstructRules(source):
 			
 	#------------------------------------
 	
-	#print("def findDecision(obj):")
-	functions.storeRule(file_name, "def findDecision(obj):")
 	extractRules(df)
 
 	#------------------------------------

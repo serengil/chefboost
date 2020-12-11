@@ -123,6 +123,21 @@ config = {'enableRandomForest': True, 'num_of_trees': 5}
 config = {'enableAdaboost': True, 'num_of_weak_classifier': 4}
 ```
 
+**Feature Importance** - [`Video`](https://youtu.be/NFLQT6Ta4-k)
+
+Decision trees are naturally interpretable and explainable algorithms. A decision is clear made by a single tree. Still we need some extra layers to understand the built models. Besides, random forest and GBM are hard to explain. Herein, [feature importance]https://sefiks.com/2020/04/06/feature-importance-in-decision-trees/) is one of the most common way to see the big picture and understand built models.
+
+```python
+df = chef.feature_importance("outputs/rules/rules.py")
+```
+
+| feature     | final_importance |
+| ---         | ---              |
+| Humidity    | 0.3688           |
+| Wind        | 0.3688           |
+| Outlook     | 0.2624           |
+| Temperature | 0.0000           |
+
 ### Paralellism
 
 Chefboost offers parallelism to speed model building up. Branches of a decision tree will be created in parallel in this way. You should set enableParallelism argument to True in the configuration. Its default value is False. It allocates half of the total number of cores in your environment if parallelism is enabled.
@@ -134,27 +149,6 @@ if __name__ == '__main__':
 ```
 
 Notice that you have to locate training step in an if block and it should check you are in main.
-
-**Feature Importance** - [`Video`](https://youtu.be/NFLQT6Ta4-k)
-
-Decision trees are naturally interpretable and explainable algorithms. Decisions are clear made by a single tree. Still we need some extra layers to understand the built models. Besides, its advanced version random forest and GBM are hard to explain. Herein, [feature importance](https://sefiks.com/2020/04/06/feature-importance-in-decision-trees/) is one of the most common way to see the big picture.
-
-```python
-if __name__ == '__main__':
-   config = {'algorithm': 'C4.5', 'enableParallelism': True}
-   model = chef.fit(df, config)
-   fi = chef.feature_importance()
-   print(fi)
-```
-
-Parallelism must be enabled to retrieve feature importance. This returns feature importance values in the pandas data frame format.
-
-| feature     | final_importance |
-| ---         | ---              |
-| Wind        | 0.609868         |
-| Humidity    | 0.265105         |
-| Temperature | 0.197528         |
-| Outlook     | -0.072501        |
 
 ### E-Learning
 

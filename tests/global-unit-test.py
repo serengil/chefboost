@@ -30,6 +30,16 @@ if __name__ == '__main__':
 		
 		print("-------------------------")
 		
+		if enableParallelism == False:
+			print("Feature importance for serial built decision tree")
+			decision_rules = model["trees"][0].__dict__["__name__"]+".py"
+			print(cb.feature_importance(decision_rules))
+		else:
+			print("Feature importance for parallel built decision tree")
+			print(cb.feature_importance())
+		
+		print("-------------------------")
+		
 		print("ID3 for nominal features and nominal target:")
 		df = pd.read_csv("dataset/golf.txt")
 		

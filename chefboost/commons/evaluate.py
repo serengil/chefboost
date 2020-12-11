@@ -65,7 +65,7 @@ def evaluate(df, task = 'train'):
 			
 			epsilon = 0.0000001 #to avoid divison by zero exception
 			precision = round(100*tp / (tp + fp + epsilon), 4)
-			recall = round(100*tp / (tp + fn + epsilon), 4)
+			recall = round(100*tp / (tp + fn + epsilon), 4) #tpr
 			f1_score = round((2 * precision * recall) / (precision + recall + epsilon), 4)
 			accuracy = round(100 * (tp + tn) / (tp + tn + fp + fn + epsilon), 4)
 			
