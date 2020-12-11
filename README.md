@@ -89,7 +89,7 @@ Chefboost supports several decision tree, bagging and boosting algorithms. You j
 
 **Regular Decision Trees**
 
-Regular decision tree algorithms find the best split point.
+Regular decision tree algorithms find the best feature and the best split point maximizing the information gain. It builds decision trees recursively in child nodes.
 
 ```python
 config = {'algorithm': 'C4.5'} #Set algorithm to ID3, C4.5, CART, CHAID or Regression
