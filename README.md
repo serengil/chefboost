@@ -14,16 +14,14 @@ pip install chefboost
 
 **Usage** - [`Demo`](https://youtu.be/Z93qE5eb6eg)
 
-Basically, you just need to pass the dataset as pandas data frame and tree configurations after importing Chefboost as illustrated below. You just need to put the target label to the right. Besides, chefboost handles both numeric and nominal features and target values in contrast to its alternatives.
+Basically, you just need to pass the dataset as pandas data frame and tree configurations optionally after importing Chefboost as illustrated below. You just need to put the target label to the right. Besides, chefboost handles both numeric and nominal features and target values in contrast to its alternatives.
 
 ```python
 from chefboost import Chefboost as chef
 import pandas as pd
 
 df = pd.read_csv("dataset/golf.txt")
-
-config = {'algorithm': 'ID3'}
-model = chef.fit(df, config)
+model = chef.fit(df)
 ```
 
 **Outcomes**

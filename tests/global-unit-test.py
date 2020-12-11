@@ -19,6 +19,10 @@ if __name__ == '__main__':
 		print("enableParallelism is set to ",enableParallelism)
 		print("*************************")
 		
+		print("no config passed ")
+		df = pd.read_csv("dataset/golf.txt")
+		model = cb.fit(df)
+		
 		print("-------------------------")
 		
 		print("Validation set case")

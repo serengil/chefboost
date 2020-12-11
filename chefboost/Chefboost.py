@@ -18,7 +18,7 @@ from chefboost.tuning import gbm, adaboost, randomforest
 
 #------------------------
 
-def fit(df, config, validation_df = None):
+def fit(df, config = {}, validation_df = None):
 	
 	"""
 	Parameters:
