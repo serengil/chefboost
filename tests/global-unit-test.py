@@ -8,8 +8,8 @@ pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
 #----------------------------------------------
-#parallelism_cases = [False]
-parallelism_cases = [False, True]
+parallelism_cases = [False]
+#parallelism_cases = [False, True]
 
 if __name__ == '__main__':
 

@@ -462,13 +462,11 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			pool.starmap(createBranch, input_params)
 		"""
 		
-		#print("process: ",os.getpid(),", parent: ",os.getppid())
-		
-		
+		"""
 		#TODO: just apply parallelism for the 1st level?
 		if parent_level > 0:
 			num_cores = 1
-		
+		"""
 		
 		pool = MyPool(num_cores)
 		results = pool.starmap(createBranch, input_params)

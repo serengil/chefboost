@@ -14,6 +14,8 @@ def apply(df, config, header, dataset_features, validation_df = None):
 	num_of_trees = config['num_of_trees']
 	
 	parallelism_on = config["enableParallelism"]
+	
+	#TODO: is this logical for 48x2 cores?
 	config["enableParallelism"] = False #run each tree in parallel but each branch in serial
 	
 	input_params = []
