@@ -217,6 +217,16 @@ def fit(df, config = {}, validation_df = None):
 
 def predict(model, param):
 	
+	"""
+	Parameters:
+		model (built chefboost model): you should pass model argument to the return of fit function
+		param (list): pass input features as python list
+		
+		e.g. chef.predict(model, param = ['Sunny', 'Hot', 'High', 'Weak'])
+	Returns:
+		prediction
+	"""
+	
 	trees = model["trees"]
 	config = model["config"]
 	
@@ -319,6 +329,12 @@ def predict(model, param):
 			
 def save_model(base_model, file_name="model.pkl"):
 	
+	"""
+	Parameters:
+		base_model (built chefboost model): you should pass this to the return of fit function
+		file_name (string): you should pass target file name as exact path.
+	"""
+	
 	model = base_model.copy()
 	
 	#modules cannot be saved. Save its reference instead.
@@ -333,6 +349,14 @@ def save_model(base_model, file_name="model.pkl"):
 	f.close()
 	
 def load_model(file_name="model.pkl"):
+	
+	"""
+	Parameters:
+		file_name (string): exact path of the target saved model
+	Returns:
+		built chefboost model
+	"""
+	
 	f = open('outputs/rules/'+file_name, 'rb')
 	model = pickle.load(f)
 	
@@ -347,9 +371,35 @@ def load_model(file_name="model.pkl"):
 	return model
 
 def restoreTree(moduleName):
+	
+	"""
+	If you have decision rules, then this function enables you to load a built chefboost model. You can then call prediction.
+	Parameters:
+		moduleName (string): you should pass outputs/rules/rules if you want to restore outputs/rules/rules.py
+	
+	Returns:
+		built chefboost model
+	"""
+	
 	return functions.restoreTree(moduleName)
 
 def feature_importance(rules):
+	
+	"""
+	Parameters:
+		rules (string or list): 
+		
+		e.g. decision_rules = "outputs/rules/rules.py"
+		or this could be retrieved from built model as shown below.
+		
+			decision_rules = []
+			for tree in model["trees"]:
+			   rule = .__dict__["__spec__"].origin
+			   decision_rules.append(rule)
+	
+	Returns:
+		pandas data frame
+	"""
 	
 	if type(rules) != list:
 		rules = [rules]
@@ -449,6 +499,13 @@ def feature_importance(rules):
 		return hf
 
 def evaluate(model, df, task = 'test'):
+	
+	"""
+	Parameters:
+		model (built chefboost model): you should pass the return of fit function
+		df (pandas data frame): data frame you would like to evaluate
+		task (string): optionally you can pass this train, validation or test
+	"""
 		
 	functions.bulk_prediction(df, model)
 	
