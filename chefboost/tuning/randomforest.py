@@ -16,7 +16,9 @@ def apply(df, config, header, dataset_features, validation_df = None):
 	parallelism_on = config["enableParallelism"]
 	
 	#TODO: is this logical for 48x2 cores?
-	config["enableParallelism"] = False #run each tree in parallel but each branch in serial
+	#config["enableParallelism"] = False #run each tree in parallel but each branch in serial
+	
+	#TODO: reconstruct for parallel run is problematic. you should reconstruct based on tree id.
 	
 	input_params = []
 	

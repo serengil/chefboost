@@ -309,7 +309,7 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 		parents = copy.copy(leaf_id)
 		
 		buildDecisionTree(subdataset, root, file, config, dataset_features
-			, root-1, leaf_id, parents)
+			, root-1, leaf_id, parents, tree_id = tree_id)
 					
 		root = tmp_root * 1
 		parents = copy.copy(parents_raw)
@@ -385,10 +385,10 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 				functions.storeRule(file, (functions.formatRule(root), "", descriptor))
 			
 			createBranch(config, current_class, subdataset, numericColumn, branch_index
-				, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric)
+				, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric, tree_id = tree_id)
 		else:
 			input_params.append((config, current_class, subdataset, numericColumn, branch_index
-				, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric))
+				, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric, tree_id))
 	
 	#---------------------------
 	#add else condition in the decision tree
@@ -445,6 +445,10 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			sample_rule["parents"] = parents
 			sample_rule["rule"] = check_rule
 			sample_rule["tree_id"] = tree_id
+			sample_rule["feature_name"] = ""
+			sample_rule["instances"] = 0
+			sample_rule["metric"] = 0
+			sample_rule["return_statement"] = 1
 			
 			#json to string
 			sample_rule = json.dumps(sample_rule)
@@ -462,43 +466,65 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			pool.starmap(createBranch, input_params)
 		"""
 		
-		"""
-		#TODO: just apply parallelism for the 1st level?
-		if parent_level > 0:
-			num_cores = 1
-		"""
-		
-		pool = MyPool(num_cores)
-		results = pool.starmap(createBranch, input_params)
-		pool.close()
-		pool.join()
+		#calling parallel run recursively causes bottleneck. limit paralel processes.		
+		if parent_level == 0: #TODO: this control might be modified based on num of cores.
+			
+			#print(len(input_params), " branches will be run parallel")
+			pool = MyPool(num_cores)
+			results = pool.starmap(createBranch, input_params)
+			pool.close()
+			pool.join()
+		else:
+			for input_param in input_params:
+				createBranch(input_param[0], input_param[1], input_param[2], input_param[3], input_param[4], input_param[5], input_param[6], input_param[7], input_param[8], input_param[9], input_param[10], input_param[11], input_param[12], input_param[13])
 	
 	#---------------------------------------------
+	
+	random_forest_enabled = config['enableRandomForest']
 	
 	if root == 1:
 		
 		if enableParallelism == True:
-
+			
 			#custom rules are stored in .txt files. merge them all in a json file
 			
 			functions.createFile(json_file, "[\n")
 			
 			custom_rules = []
-			
+						
 			file_index = 0
 			for file in os.listdir(os.getcwd()+"/outputs/rules"):
 				if file.endswith(".txt"):
-					custom_rules.append(os.getcwd()+"/outputs/rules/"+file)
-					#print(file) #this file stores a custom rule
+					
 					f = open(os.getcwd()+"/outputs/rules/"+file, "r")
 					custom_rule = f.read()
 					
-					if file_index > 0:
-						custom_rule = ", "+custom_rule
+					#--------------------------------
+					if random_forest_enabled:
+						#read tree_id in the json object
+						try:
+							custom_rule_json = json.loads(custom_rule)
+						except:
+							#return statements include two json objects as string
+							custom_rule_json = json.loads("["+custom_rule+"]")
+							
+						try:
+							source_tree_id = custom_rule_json["tree_id"]
+						except:	
+							source_tree_id = custom_rule_json[0]["tree_id"]
+						
+					#--------------------------------
 					
-					functions.storeRule(json_file, custom_rule)
+					if random_forest_enabled != True or (random_forest_enabled == True and source_tree_id == tree_id):
+						custom_rules.append(os.getcwd()+"/outputs/rules/"+file)
+						
+						if file_index > 0:
+							custom_rule = ", "+custom_rule
+							
+						functions.storeRule(json_file, custom_rule)
+						file_index = file_index + 1
+					
 					f.close()
-					file_index = file_index + 1
 					
 			functions.storeRule(json_file, "]")
 			
@@ -507,16 +533,13 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			#custom rules are already merged in a json file. clear messy custom rules
 			#TO-DO: if random forest trees are handled in parallel, this would be a problem. You cannot know the related tree of a rule. You should store a global tree id in a rule.
 			
+			
 			for file in custom_rules:
 				os.remove(file)
 			
 			#-----------------------------------
 			
 			reconstructRules(json_file, feature_names)
-
-			
-			#feature importance should be calculated by demand?
-			#feature_importance(json_file, dataset_features)
 			
 			#-----------------------------------
 		

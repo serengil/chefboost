@@ -22,7 +22,8 @@ def findPrediction(row):
 	fp, pathname, description = imp.find_module(moduleName)
 	myrules = imp.load_module(moduleName, fp, pathname, description)
 	
-	prediction = int(myrules.findDecision(params)) 
+	#prediction = int(myrules.findDecision(params)) 
+	prediction = myrules.findDecision(params)
 	
 	return prediction
 
@@ -107,8 +108,7 @@ def regressor(df, config, header, dataset_features, validation_df = None):
 		base_df['Boosted_Prediction'] += df['Prediction']
 		
 		loss = (base_df['Boosted_Prediction'] - base_df['Decision']).pow(2).sum()
-		
-		current_loss = loss / num_of_instances
+		current_loss = loss / num_of_instances #mse
 		
 		if index == 1: 
 			boosted_from = current_loss * 1
@@ -237,7 +237,7 @@ def classifier(df, config, header, dataset_features, validation_df = None):
 				
 				actual = temp_df.loc[row]['Decision']
 				prediction = myrules.findDecision(features)
-								
+												
 				predictions.append(prediction)
 					
 			#----------------------------

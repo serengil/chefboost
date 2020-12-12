@@ -81,6 +81,7 @@ def evaluate(df, task = 'train'):
 				
 	#-------------------------------------
 	else:
+		
 		df['Absolute_Error'] = abs(df['Prediction'] - df['Decision'])
 		df['Absolute_Error_Squared'] = df['Absolute_Error'] * df['Absolute_Error']
 		df['Decision_Squared'] = df['Decision'] * df['Decision']

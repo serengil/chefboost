@@ -34,15 +34,11 @@ if __name__ == '__main__':
 		
 		print("-------------------------")
 		
-		if enableParallelism == False:
-			print("Feature importance for serial built decision tree")
-			decision_rules = model["trees"][0].__dict__["__name__"]+".py"
-			#decision_rules = tree.__dict__["__spec__"].origin
-			print(cb.feature_importance(decision_rules))
-		else:
-			print("Feature importance for parallel built decision tree")
-			print(cb.feature_importance())
-		
+		print("Feature importance")
+		#decision_rules = model["trees"][0].__dict__["__name__"]+".py"
+		decision_rules = model["trees"][0].__dict__["__spec__"].origin
+		print(cb.feature_importance(decision_rules))
+
 		print("-------------------------")
 		
 		print("ID3 for nominal features and nominal target:")
@@ -122,7 +118,7 @@ if __name__ == '__main__':
 		print("-------------------------")
 		
 		print("ID3 for nominal features and target (large data set)")
-		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
+		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism, 'num_cores': 4}
 		model = cb.fit(pd.read_csv("dataset/car.data"), config)
 		
 		instance = ['vhigh','vhigh',2,'2','small','low']
@@ -150,6 +146,13 @@ if __name__ == '__main__':
 		print("CHAID for nominal features and target (large data set)")
 		config = {'algorithm': 'CHAID', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/car.data"), config)
+		
+		print("-------------------------")
+		
+		print("Iris with regular decision tree")
+		config = {'algorithm': 'ID3'}
+		df = pd.read_csv("dataset/iris.data", names=["Sepal length", "Sepal width", "Petal length", "Petal width", "Decision"])
+		model = cb.fit(df, config)
 		
 		print("-------------------------")
 		
@@ -191,7 +194,7 @@ if __name__ == '__main__':
 		model = cb.fit(df, config
 						, validation_df = validation_df
 					)
-				
+		
 		instance = [7.0,3.2,4.7,1.4]
 		prediction = cb.predict(model, instance)
 		print("prediction for ",instance," is ",prediction)
