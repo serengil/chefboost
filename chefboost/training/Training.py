@@ -180,6 +180,9 @@ def findDecision(df, config):
 
 	return winner_name, df.shape[0], metric_value, metric_name
 
+def createBranchWrapper(func, args):
+	func(*args)
+
 def createBranch(config, current_class, subdataset, numericColumn, branch_index
 	, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric, tree_id = 0):
 	
@@ -460,23 +463,16 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	
 	#create branches in parallel
 	if enableParallelism == True:
-		"""
-		#this usage causes trouble for recursive functions
-		with Pool(number_of_cpus) as pool:
-			pool.starmap(createBranch, input_params)
-		"""
-		
-		#calling parallel run recursively causes bottleneck. limit paralel processes.		
 		if parent_level == 0: #TODO: this control might be modified based on num of cores.
 			
-			#print(len(input_params), " branches will be run parallel")
+			#len(classes) branches will be run in parallel
 			pool = MyPool(num_cores)
 			results = pool.starmap(createBranch, input_params)
 			pool.close()
 			pool.join()
 		else:
 			for input_param in input_params:
-				createBranch(input_param[0], input_param[1], input_param[2], input_param[3], input_param[4], input_param[5], input_param[6], input_param[7], input_param[8], input_param[9], input_param[10], input_param[11], input_param[12], input_param[13])
+				createBranchWrapper(createBranch, input_param)
 	
 	#---------------------------------------------
 	
