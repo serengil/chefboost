@@ -8,6 +8,7 @@ import multiprocessing
 import os
 import multiprocessing.pool
 import pandas as pd
+import psutil
 
 from chefboost.training import Preprocess
 from chefboost.commons import functions, evaluate
@@ -184,7 +185,7 @@ def createBranchWrapper(func, args):
 	func(*args)
 
 def createBranch(config, current_class, subdataset, numericColumn, branch_index
-	, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric, tree_id = 0):
+	, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric, tree_id = 0, main_process_id = None):
 	
 	algorithm = config['algorithm']
 	enableAdaboost = config['enableAdaboost']
@@ -312,13 +313,13 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 		parents = copy.copy(leaf_id)
 		
 		buildDecisionTree(subdataset, root, file, config, dataset_features
-			, root-1, leaf_id, parents, tree_id = tree_id)
+			, root-1, leaf_id, parents, tree_id = tree_id, main_process_id = main_process_id)
 					
 		root = tmp_root * 1
 		parents = copy.copy(parents_raw)
 
-def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root', tree_id = 0, validation_df = None):
-	
+def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root', tree_id = 0, validation_df = None, main_process_id = None):
+		
 	models = []
 	feature_names = df.columns[0:-1]
 	
@@ -388,10 +389,10 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 				functions.storeRule(file, (functions.formatRule(root), "", descriptor))
 			
 			createBranch(config, current_class, subdataset, numericColumn, branch_index
-				, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric, tree_id = tree_id)
+				, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric, tree_id = tree_id, main_process_id = main_process_id)
 		else:
 			input_params.append((config, current_class, subdataset, numericColumn, branch_index
-				, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric, tree_id))
+				, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric, tree_id, main_process_id))
 	
 	#---------------------------
 	#add else condition in the decision tree
@@ -461,11 +462,18 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	
 	#---------------------------
 	
+	main_process_id
+	parent_process_id = os.getppid()
+	current_process_id = os.getpid()
+	
+	parent = psutil.Process(main_process_id)
+	children = parent.children(recursive=True)
+	#print("parallel processes: ", len(children))
+	
 	#create branches in parallel
 	if enableParallelism == True:
 		if parent_level == 0: #TODO: this control might be modified based on num of cores.
-			
-			#len(classes) branches will be run in parallel
+		#if num_cores > len(children):
 			pool = MyPool(num_cores)
 			results = pool.starmap(createBranch, input_params)
 			pool.close()

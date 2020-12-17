@@ -6,8 +6,11 @@ from chefboost.training import Training
 from chefboost import Chefboost as cb
 from tqdm import tqdm
 import imp
+import os
 
 def apply(df, config, header, dataset_features, validation_df = None):
+	
+	process_id = os.getpid()
 	
 	models = []
 	
@@ -35,10 +38,10 @@ def apply(df, config, header, dataset_features, validation_df = None):
 		functions.createFile(file, header)
 		
 		if parallelism_on: #parallel run
-			input_params.append((subset, root, file, config, dataset_features, 0, 0, 'root', i))
+			input_params.append((subset, root, file, config, dataset_features, 0, 0, 'root', i, None, process_id))
 		
 		else: #serial run
-			Training.buildDecisionTree(subset,root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root', tree_id = i)
+			Training.buildDecisionTree(subset,root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root', tree_id = i, main_process_id = process_id)
 		
 	#-------------------------------
 	
@@ -62,5 +65,5 @@ def apply(df, config, header, dataset_features, validation_df = None):
 	return models
 
 #wrapper for parallel run
-def buildDecisionTree(df, root, file, config, dataset_features, parent_level, leaf_id, parents, tree_id, validation_df = None):
-	Training.buildDecisionTree(df, root, file, config, dataset_features, parent_level = parent_level, leaf_id =leaf_id, parents = parents, tree_id = tree_id)
+def buildDecisionTree(df, root, file, config, dataset_features, parent_level, leaf_id, parents, tree_id, validation_df = None, process_id = None):
+	Training.buildDecisionTree(df, root, file, config, dataset_features, parent_level = parent_level, leaf_id =leaf_id, parents = parents, tree_id = tree_id, main_process_id = process_id)
