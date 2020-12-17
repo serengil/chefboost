@@ -8,7 +8,7 @@ pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
 #----------------------------------------------
-parallelism_cases = [True]
+parallelism_cases = [False]
 #parallelism_cases = [False, True]
 
 if __name__ == '__main__':
@@ -186,7 +186,7 @@ if __name__ == '__main__':
 		print("-------------------------")
 		
 		print("GBM for classification")
-		config = {'algorithm': 'ID3', 'enableGBM': True, 'epochs': 10, 'learning_rate': 1, 'enableParallelism': enableParallelism}
+		config = {'algorithm': 'ID3', 'enableGBM': True, 'epochs': 10, 'learning_rate': 1, 'enableParallelism': enableParallelism, 'num_cores': 2}
 		
 		df = pd.read_csv("dataset/iris.data", names=["Sepal length", "Sepal width", "Petal length", "Petal width", "Decision"])
 		validation_df = df.copy()

@@ -27,7 +27,7 @@ def findPrediction(row):
 	
 	return prediction
 
-def apply(df, config, header, dataset_features, validation_df = None):
+def apply(df, config, header, dataset_features, validation_df = None, process_id = None):
 
 	models = []; alphas = []
 	
@@ -61,7 +61,7 @@ def apply(df, config, header, dataset_features, validation_df = None):
 		#print(worksheet)
 		Training.buildDecisionTree(worksheet.drop(columns=['Weight'])
 			, root, file, config, dataset_features
-			, parent_level = 0, leaf_id = 0, parents = 'root')
+			, parent_level = 0, leaf_id = 0, parents = 'root', main_process_id = process_id)
 		
 		#---------------------------------------
 		

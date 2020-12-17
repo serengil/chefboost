@@ -44,6 +44,8 @@ def fit(df, config = {}, validation_df = None):
 		
 	"""
 	
+	process_id = os.getpid()
+	
 	base_df = df.copy()
 	
 	target_label = df.columns[len(df.columns)-1]
@@ -175,7 +177,7 @@ def fit(df, config = {}, validation_df = None):
 			classification = False
 				
 	elif enableRandomForest == True:
-		trees = randomforest.apply(df, config, header, dataset_features, validation_df = validation_df)
+		trees = randomforest.apply(df, config, header, dataset_features, validation_df = validation_df, process_id = process_id)
 	else: #regular decision tree building
 
 		root = 1; file = "outputs/rules/rules.py"
@@ -187,7 +189,7 @@ def fit(df, config = {}, validation_df = None):
 			
 		trees = Training.buildDecisionTree(df, root = root, file = file, config = config
 				, dataset_features = dataset_features
-				, parent_level = 0, leaf_id = 0, parents = 'root', validation_df = validation_df)
+				, parent_level = 0, leaf_id = 0, parents = 'root', validation_df = validation_df, main_process_id = process_id)
 	
 	print("-------------------------")
 	print("finished in ",time.time() - begin," seconds")

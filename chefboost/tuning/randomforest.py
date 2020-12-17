@@ -8,9 +8,7 @@ from tqdm import tqdm
 import imp
 import os
 
-def apply(df, config, header, dataset_features, validation_df = None):
-	
-	process_id = os.getpid()
+def apply(df, config, header, dataset_features, validation_df = None, process_id = None):
 	
 	models = []
 	

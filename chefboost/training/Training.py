@@ -462,18 +462,17 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	
 	#---------------------------
 	
-	main_process_id
-	parent_process_id = os.getppid()
-	current_process_id = os.getpid()
-	
-	parent = psutil.Process(main_process_id)
-	children = parent.children(recursive=True)
-	#print("parallel processes: ", len(children))
+	try:
+		main_process = psutil.Process(main_process_id)
+		children = main_process.children(recursive=True)
+		active_processes = len(children) + 1 #plus parent
+	except:
+		active_processes = 100 #set a large value
 	
 	#create branches in parallel
 	if enableParallelism == True:
-		if parent_level == 0: #TODO: this control might be modified based on num of cores.
-		#if num_cores > len(children):
+		#if parent_level == 0:
+		if num_cores >= active_processes + len(classes): #len(classes) branches will be run in parallel
 			pool = MyPool(num_cores)
 			results = pool.starmap(createBranch, input_params)
 			pool.close()

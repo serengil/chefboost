@@ -27,7 +27,7 @@ def findPrediction(row):
 	
 	return prediction
 
-def regressor(df, config, header, dataset_features, validation_df = None):
+def regressor(df, config, header, dataset_features, validation_df = None, process_id = None):
 	models = []
 	
 	#we will update decisions in every epoch, this will be used to restore
@@ -137,7 +137,7 @@ def regressor(df, config, header, dataset_features, validation_df = None):
 		
 		current_df = df.copy()
 		Training.buildDecisionTree(df,root,file, config, dataset_features
-			, parent_level = 0, leaf_id = 0, parents = 'root')
+			, parent_level = 0, leaf_id = 0, parents = 'root', main_process_id = process_id)
 		
 		#functions.storeRule(json_file," {}]")
 		
@@ -160,7 +160,7 @@ def regressor(df, config, header, dataset_features, validation_df = None):
 	
 	return models
 
-def classifier(df, config, header, dataset_features, validation_df = None):
+def classifier(df, config, header, dataset_features, validation_df = None, process_id = None):
 	
 	models = []
 	
@@ -216,7 +216,7 @@ def classifier(df, config, header, dataset_features, validation_df = None):
 				functions.createFile(json_file, "[\n")
 			
 			Training.buildDecisionTree(temp_df, root, file, config, dataset_features
-				, parent_level = 0, leaf_id = 0, parents = 'root')
+				, parent_level = 0, leaf_id = 0, parents = 'root', main_process_id = process_id)
 				
 			#decision rules created
 			#----------------------------
