@@ -21,7 +21,8 @@ from chefboost import Chefboost as chef
 import pandas as pd
 
 df = pd.read_csv("dataset/golf.txt")
-model = chef.fit(df)
+config = {'algorithm': 'C4.5'}
+model = chef.fit(df, config = config)
 ```
 
 **Outcomes**
@@ -93,6 +94,7 @@ Regular decision tree algorithms find the best feature and the best split point 
 
 ```python
 config = {'algorithm': 'C4.5'} #Set algorithm to ID3, C4.5, CART, CHAID or Regression
+model = chef.fit(df, config)
 ```
 
 The following regular decision tree algorithms are wrapped in the library.
