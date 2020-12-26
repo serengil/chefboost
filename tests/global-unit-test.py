@@ -8,7 +8,7 @@ pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
 #----------------------------------------------
-parallelism_cases = [False]
+parallelism_cases = [True]
 #parallelism_cases = [False, True]
 
 if __name__ == '__main__':
@@ -44,7 +44,7 @@ if __name__ == '__main__':
 		print("ID3 for nominal features and nominal target:")
 		df = pd.read_csv("dataset/golf.txt")
 		
-		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
+		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism, 'num_cores': 4}
 		model = cb.fit(df, config)
 		
 		validation_df = pd.read_csv("dataset/golf.txt")
@@ -130,11 +130,11 @@ if __name__ == '__main__':
 		print(prediction)
 		
 		print("-------------------------")
-	
+		
 		print("C4.5 for nominal features and target (large data set)")
 		config = {'algorithm': 'C4.5', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/car.data"), config)
-
+		
 		print("-------------------------")
 
 		print("CART for nominal features and target (large data set)")
