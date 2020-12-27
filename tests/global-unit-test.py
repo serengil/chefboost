@@ -2,14 +2,16 @@ import pandas as pd
 import sys
 from chefboost import Chefboost as cb
 import matplotlib.pyplot as plt
+import gc
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
 #----------------------------------------------
-parallelism_cases = [True]
-#parallelism_cases = [False, True]
+#parallelism_cases = [True]
+#parallelism_cases = [False]
+parallelism_cases = [False, True]
 
 if __name__ == '__main__':
 
@@ -23,6 +25,8 @@ if __name__ == '__main__':
 		df = pd.read_csv("dataset/golf.txt")
 		model = cb.fit(df)
 		
+		gc.collect()
+		
 		print("-------------------------")
 		
 		print("Validation set case")
@@ -31,6 +35,8 @@ if __name__ == '__main__':
 		validation_df = pd.read_csv("dataset/golf.txt")
 		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
 		model = cb.fit(df, config, validation_df = validation_df)
+		
+		gc.collect()
 		
 		print("-------------------------")
 		
@@ -44,7 +50,7 @@ if __name__ == '__main__':
 		print("ID3 for nominal features and nominal target:")
 		df = pd.read_csv("dataset/golf.txt")
 		
-		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism, 'num_cores': 4}
+		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
 		model = cb.fit(df, config)
 		
 		validation_df = pd.read_csv("dataset/golf.txt")
@@ -63,6 +69,8 @@ if __name__ == '__main__':
 		
 		print("prediction for ", instance, "is ", prediction)
 		
+		gc.collect()
+		
 		print("-------------------------")
 		
 		print("ID3 for nominal/numeric features and nominal target:")
@@ -72,6 +80,8 @@ if __name__ == '__main__':
 		instance = ['Sunny', 85, 85, 'Weak']
 		prediction = cb.predict(model, instance)
 		print("prediction for ", instance, "is ", prediction)
+		
+		gc.collect()
 
 		print("-------------------------")
 		
@@ -79,11 +89,15 @@ if __name__ == '__main__':
 		config = {'algorithm': 'C4.5', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/golf2.txt"), config)
 		
+		gc.collect()
+		
 		print("-------------------------")
 
 		print("CART for nominal/numeric features and nominal target:")
 		config = {'algorithm': 'CART', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/golf2.txt"), config)
+		
+		gc.collect()
 		
 		print("-------------------------")
 		
@@ -91,11 +105,15 @@ if __name__ == '__main__':
 		config = {'algorithm': 'CHAID', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/golf.txt"), config)
 		
+		gc.collect()
+		
 		print("-------------------------")
 		
 		print("CHAID for nominal/numeric features and nominal target:")
 		config = {'algorithm': 'CHAID', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/golf2.txt"), config)
+		
+		gc.collect()
 
 		print("-------------------------")
 		
@@ -103,11 +121,15 @@ if __name__ == '__main__':
 		config = {'algorithm': 'Regression', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/golf3.txt"), config)
 		
+		gc.collect()
+		
 		print("-------------------------")
 
 		print("regression tree for nominal/numeric features, numeric target")
 		config = {'algorithm': 'Regression', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/golf4.txt"), config)
+		
+		gc.collect()
 
 		print("-------------------------")
 		
@@ -115,10 +137,12 @@ if __name__ == '__main__':
 		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/golf4.txt"), config)
 		
+		gc.collect()
+		
 		print("-------------------------")
 		
 		print("ID3 for nominal features and target (large data set)")
-		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism, 'num_cores': 4}
+		config = {'algorithm': 'ID3', 'enableParallelism': enableParallelism}
 		model = cb.fit(pd.read_csv("dataset/car.data"), config)
 		
 		instance = ['vhigh','vhigh',2,'2','small','low']
@@ -129,11 +153,15 @@ if __name__ == '__main__':
 		prediction = cb.predict(model, instance)
 		print(prediction)
 		
+		gc.collect()
+		
 		print("-------------------------")
 		
 		print("C4.5 for nominal features and target (large data set)")
 		config = {'algorithm': 'C4.5', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/car.data"), config)
+		
+		gc.collect()
 		
 		print("-------------------------")
 
@@ -141,11 +169,15 @@ if __name__ == '__main__':
 		config = {'algorithm': 'CART', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/car.data"), config)
 		
+		gc.collect()
+		
 		print("-------------------------")
 		
 		print("CHAID for nominal features and target (large data set)")
 		config = {'algorithm': 'CHAID', 'enableParallelism': enableParallelism}
 		cb.fit(pd.read_csv("dataset/car.data"), config)
+		
+		gc.collect()
 		
 		print("-------------------------")
 		
@@ -153,6 +185,8 @@ if __name__ == '__main__':
 		config = {'algorithm': 'ID3'}
 		df = pd.read_csv("dataset/iris.data", names=["Sepal length", "Sepal width", "Petal length", "Petal width", "Decision"])
 		model = cb.fit(df, config)
+		
+		gc.collect()
 		
 		print("-------------------------")
 		
@@ -169,6 +203,8 @@ if __name__ == '__main__':
 		#prediction = cb.predict(model, instance)
 		#print("prediction for ",instance," is ",prediction)
 		
+		gc.collect()
+		
 		print("-------------------------")
 		
 		print("Regular GBM")
@@ -183,10 +219,12 @@ if __name__ == '__main__':
 		prediction = cb.predict(model, instance)
 		print("prediction for ",instance," is ",prediction)
 		
+		gc.collect()
+		
 		print("-------------------------")
 		
 		print("GBM for classification")
-		config = {'algorithm': 'ID3', 'enableGBM': True, 'epochs': 10, 'learning_rate': 1, 'enableParallelism': enableParallelism, 'num_cores': 2}
+		config = {'algorithm': 'ID3', 'enableGBM': True, 'epochs': 10, 'learning_rate': 1, 'enableParallelism': enableParallelism}
 		
 		df = pd.read_csv("dataset/iris.data", names=["Sepal length", "Sepal width", "Petal length", "Petal width", "Decision"])
 		validation_df = df.copy()
@@ -199,11 +237,13 @@ if __name__ == '__main__':
 		prediction = cb.predict(model, instance)
 		print("prediction for ",instance," is ",prediction)
 		
+		gc.collect()
+		
 		print("-------------------------")
 		
 		print("Random forest")
 		config = {'algorithm': 'ID3', 'enableRandomForest': True, 'num_of_trees': 3
-			, 'enableParallelism': enableParallelism, 'num_cores': 3
+			, 'enableParallelism': enableParallelism
 		}
 		df = pd.read_csv("dataset/car.data")
 		validation_df = pd.read_csv("dataset/car.data")
@@ -231,6 +271,8 @@ if __name__ == '__main__':
 		prediction = cb.predict(model, instance)
 		print("prediction for ",instance," is ",prediction)
 		
+		gc.collect()
+		
 		print("-------------------------")
 		
 		print("Random forest for regression")
@@ -247,6 +289,8 @@ if __name__ == '__main__':
 		prediction = cb.predict(model, instance)
 		print("prediction for ",instance," is ",prediction)
 		
+		gc.collect()
+		
 		print("-------------------------")
 		
 		print("Is there any none predictions?")
@@ -255,6 +299,8 @@ if __name__ == '__main__':
 		test_set = pd.read_csv("dataset/none_test.txt")		
 		instance = test_set.iloc[3]
 		print(instance.values, "->", cb.predict(model, instance))
+		
+		gc.collect()
 		
 		print("-------------------------")
 		
