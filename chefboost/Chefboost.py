@@ -108,6 +108,9 @@ def fit(df, config = {}, validation_df = None):
 	
 	if enableParallelism == True:
 		print("[INFO]: ",config["num_cores"],"CPU cores will be allocated in parallel running")
+		
+		from multiprocessing import set_start_method
+		set_start_method("spawn", force=True)
 	
 	#------------------------
 	raw_df = df.copy()
@@ -164,16 +167,16 @@ def fit(df, config = {}, validation_df = None):
 	trees = []; alphas = []
 
 	if enableAdaboost == True:
-		trees, alphas = adaboost.apply(df, config, header, dataset_features, validation_df = validation_df)
+		trees, alphas = adaboost.apply(df, config, header, dataset_features, validation_df = validation_df, process_id = process_id)
 
 	elif enableGBM == True:
 		
 		if df['Decision'].dtypes == 'object': #transform classification problem to regression
-			trees, alphas = gbm.classifier(df, config, header, dataset_features, validation_df = validation_df)
+			trees, alphas = gbm.classifier(df, config, header, dataset_features, validation_df = validation_df, process_id = process_id)
 			classification = True
 			
 		else: #regression
-			trees = gbm.regressor(df, config, header, dataset_features, validation_df = validation_df)
+			trees = gbm.regressor(df, config, header, dataset_features, validation_df = validation_df, process_id = process_id)
 			classification = False
 				
 	elif enableRandomForest == True:

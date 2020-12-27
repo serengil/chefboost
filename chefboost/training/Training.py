@@ -4,16 +4,19 @@ import uuid
 import json
 import numpy as np
 import copy
-import multiprocessing
 import os
+import multiprocessing
 import multiprocessing.pool
 import pandas as pd
 import psutil
+import gc
 
 from chefboost.training import Preprocess
 from chefboost.commons import functions, evaluate
 
 #----------------------------------------
+
+global decision_rules
 
 class NoDaemonProcess(multiprocessing.Process):
     # make 'daemon' attribute always return False
@@ -182,10 +185,12 @@ def findDecision(df, config):
 	return winner_name, df.shape[0], metric_value, metric_name
 
 def createBranchWrapper(func, args):
-	func(*args)
+	return func(*args)
 
 def createBranch(config, current_class, subdataset, numericColumn, branch_index
 	, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric, tree_id = 0, main_process_id = None):
+	
+	custom_rules = []
 	
 	algorithm = config['algorithm']
 	enableAdaboost = config['enableAdaboost']
@@ -198,9 +203,7 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 		charForResp = ""
 	
 	#---------------------------
-	
-	json_file = file.split(".")[0]+".json"
-	
+		
 	tmp_root = root * 1
 	parents_raw = copy.copy(parents)
 	
@@ -210,9 +213,7 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 		compareTo = current_class #current class might be <=x or >x in this case
 	else:
 		compareTo = " == '"+str(current_class)+"'"
-	
-	#print(subdataset)
-	
+		
 	terminateBuilding = False
 	
 	#-----------------------------------------------
@@ -250,15 +251,10 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 	check_rule = check_condition+" obj["+str(winner_index)+"]"+compareTo+":"
 	
 	leaf_id = str(uuid.uuid1())
-	custom_rule_file = "outputs/rules/"+str(leaf_id)+".txt"
-		
+	
 	if enableParallelism != True:
-		
-		#check_rule += " # feature: "+winner_name+", instances: "+str(num_of_instances)+", "+metric_name+": "+str(round(metric, 4))
-		
 		functions.storeRule(file,(functions.formatRule(root),"",check_rule))
 	else:
-		
 		sample_rule = {}
 		sample_rule["current_level"] = root
 		sample_rule["leaf_id"] = leaf_id
@@ -273,9 +269,8 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 		
 		#json to string
 		sample_rule = json.dumps(sample_rule)
-	
-		functions.createFile(custom_rule_file, "")
-		functions.storeRule(custom_rule_file, sample_rule)
+		
+		custom_rules.append(sample_rule)
 	
 	#-----------------------------------------------
 	
@@ -304,23 +299,30 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 			sample_rule["tree_id"] = tree_id
 			
 			#json to string
-			sample_rule = ", "+json.dumps(sample_rule)
+			sample_rule = json.dumps(sample_rule)
 			
-			functions.storeRule(custom_rule_file, sample_rule)
+			custom_rules.append(sample_rule)
 	
 	else: #decision is not made, continue to create branch and leafs
 		root = root + 1 #the following rule will be included by this rule. increase root
 		parents = copy.copy(leaf_id)
 		
-		buildDecisionTree(subdataset, root, file, config, dataset_features
+		results = buildDecisionTree(subdataset, root, file, config, dataset_features
 			, root-1, leaf_id, parents, tree_id = tree_id, main_process_id = main_process_id)
-					
+		
+		custom_rules = custom_rules + results
+		
 		root = tmp_root * 1
 		parents = copy.copy(parents_raw)
+	
+	return custom_rules
 
 def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root', tree_id = 0, validation_df = None, main_process_id = None):
 		
 	models = []
+	
+	decision_rules = []
+	
 	feature_names = df.columns[0:-1]
 	
 	enableParallelism = config['enableParallelism']
@@ -375,7 +377,6 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 		if enableParallelism != True:
 			
 			if i == 0:
-				#descriptor = "# Feature: "+winner_name+", Instances: "+str(num_of_instances)+", "+metric_name+": "+str(round(metric, 4))
 				
 				descriptor = {
 					"feature": winner_name,
@@ -388,8 +389,11 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 				
 				functions.storeRule(file, (functions.formatRule(root), "", descriptor))
 			
-			createBranch(config, current_class, subdataset, numericColumn, branch_index
+			results = createBranch(config, current_class, subdataset, numericColumn, branch_index
 				, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric, tree_id = tree_id, main_process_id = main_process_id)
+			
+			decision_rules = decision_rules + results
+			
 		else:
 			input_params.append((config, current_class, subdataset, numericColumn, branch_index
 				, winner_name, winner_index, root, parents, file, dataset_features, num_of_instances, metric, tree_id, main_process_id))
@@ -409,7 +413,6 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			functions.storeRule(file,(functions.formatRule(root+1), else_decision))
 		else: #parallelism
 			leaf_id = str(uuid.uuid1())
-			custom_rule_file = "outputs/rules/"+str(leaf_id)+".txt"
 			
 			check_rule = "else: "+else_decision
 			
@@ -427,9 +430,7 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			
 			#json to string
 			sample_rule = json.dumps(sample_rule)
-			
-			functions.createFile(custom_rule_file, "")
-			functions.storeRule(custom_rule_file, sample_rule)
+			decision_rules.append(sample_rule)
 			
 	else: #regression
 		else_decision = "return %s" % (subdataset.Decision.mean())
@@ -439,7 +440,6 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			functions.storeRule(file,(functions.formatRule(root+1), else_decision))
 		else:
 			leaf_id = str(uuid.uuid1())
-			custom_rule_file = "outputs/rules/"+str(leaf_id)+".txt"
 			
 			check_rule = "else: "+else_decision
 			
@@ -456,31 +456,80 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			
 			#json to string
 			sample_rule = json.dumps(sample_rule)
-			
-			functions.createFile(custom_rule_file, "")
-			functions.storeRule(custom_rule_file, sample_rule)
+			decision_rules.append(sample_rule)
 	
 	#---------------------------
-	
+		
 	try:
 		main_process = psutil.Process(main_process_id)
 		children = main_process.children(recursive=True)
 		#active_processes = len(children) + 1 #plus parent
 		active_processes = len(children)
 	except:
-		active_processes = 100 #set a large value
+		active_processes = 100 #set a large initial value
 	
+	results = []
 	#create branches in parallel
 	if enableParallelism == True:
-		#if parent_level == 0:
-		if num_cores >= active_processes + len(classes): #len(classes) branches will be run in parallel
+		
+		if main_process_id != None and num_cores >= active_processes + len(classes): #len(classes) branches will be run in parallel
+			
 			pool = MyPool(num_cores)
-			results = pool.starmap(createBranch, input_params)
+			
+			#--------------------------------
+			
+			#causes hang problem if number of input_params is greater than num_cores
+			branch_results = pool.starmap(createBranch, input_params)
+			
+			for branch_result in branch_results:
+				for leaf_result in branch_result:
+					results.append(leaf_result)
+			
 			pool.close()
 			pool.join()
+			
+			gc.collect()
+			
+			#--------------------------------
+			#workaround for hang problem. set num_cores and active threads same.
+			"""
+			cycles = int(len(input_params) / num_cores) + 1
+			
+			for i in range(0, cycles):
+				
+				filter_begin = i * cycles
+				filter_end = i * cycles + cycles
+				
+				if filter_end > len(input_params):
+					filter_end = filter_end
+				
+				input_frame = input_params[filter_begin: filter_end]
+				branch_results = pool.starmap(createBranch, input_frame)
+				
+				for branch_result in branch_results:
+					for leaf_result in branch_result:
+						results.append(leaf_result)
+			
+			pool.close()
+			pool.join()
+			pool.terminate()
+			"""
+			#--------------------------------
+		
 		else:
 			for input_param in input_params:
-				createBranchWrapper(createBranch, input_param)
+				sub_results = createBranchWrapper(createBranch, input_param)
+				for sub_result in sub_results:
+					results.append(sub_result)
+		
+		#--------------------------------
+		
+		decision_rules = decision_rules + results
+		
+		#--------------------------------
+		
+		if root != 1: #return children results until the root node
+			return decision_rules
 	
 	#---------------------------------------------
 	
@@ -490,58 +539,29 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 		
 		if enableParallelism == True:
 			
-			#custom rules are stored in .txt files. merge them all in a json file
-			
-			functions.createFile(json_file, "[\n")
-			
-			custom_rules = []
+			#custom rules are stored in decision_rules. merge them all in a json file first
 						
+			json_rules = "[\n" #initialize
+			
 			file_index = 0
-			for file in os.listdir(os.getcwd()+"/outputs/rules"):
-				if file.endswith(".txt"):
-					
-					f = open(os.getcwd()+"/outputs/rules/"+file, "r")
-					custom_rule = f.read()
-					
-					#--------------------------------
-					if random_forest_enabled:
-						#read tree_id in the json object
-						try:
-							custom_rule_json = json.loads(custom_rule)
-						except:
-							#return statements include two json objects as string
-							custom_rule_json = json.loads("["+custom_rule+"]")
-							
-						try:
-							source_tree_id = custom_rule_json["tree_id"]
-						except:	
-							source_tree_id = custom_rule_json[0]["tree_id"]
-						
-					#--------------------------------
-					
-					if random_forest_enabled != True or (random_forest_enabled == True and source_tree_id == tree_id):
-						custom_rules.append(os.getcwd()+"/outputs/rules/"+file)
-						
-						if file_index > 0:
-							custom_rule = ", "+custom_rule
-							
-						functions.storeRule(json_file, custom_rule)
-						file_index = file_index + 1
-					
-					f.close()
-					
-			functions.storeRule(json_file, "]")
+			for custom_rule in decision_rules:
+				
+				json_rules += custom_rule
+				
+				if file_index < len(decision_rules) - 1:
+					json_rules += ", "
+				
+				json_rules += "\n"
+				
+				file_index = file_index + 1				
 			
 			#-----------------------------------
 			
-			#custom rules are already merged in a json file. clear messy custom rules
-			#TO-DO: if random forest trees are handled in parallel, this would be a problem. You cannot know the related tree of a rule. You should store a global tree id in a rule.
-			
-			
-			for file in custom_rules:
-				os.remove(file)
+			json_rules += "]"
+			functions.createFile(json_file, json_rules)
 			
 			#-----------------------------------
+			#reconstruct rules from json to py
 			
 			reconstructRules(json_file, feature_names)
 			
