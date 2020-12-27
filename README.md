@@ -166,6 +166,10 @@ You can also find the tutorials about these core algorithms [here](https://sefik
 
 Besides, you can enroll this online course - [**Decision Trees for Machine Learning From Scratch**](https://www.udemy.com/course/decision-trees-for-machine-learning/?referralCode=FDC9B836EC6DAA1A663A) and follow the curriculum if you wonder the theory of decision trees and how this framework is developed.
 
+### Contributing
+
+Pull requests are welcome. You should run the unit tests locally by running [`test/global-unit-test.py`](https://github.com/serengil/chefboost/blob/master/tests/global-unit-test.py). Please share the unit test result logs in the PR.
+
 ### Support
 
 There are many ways to support a project - starring⭐️ the GitHub repos is just one.
