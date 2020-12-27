@@ -10,6 +10,7 @@ import multiprocessing.pool
 import pandas as pd
 import psutil
 import gc
+import sys
 
 from chefboost.training import Preprocess
 from chefboost.commons import functions, evaluate
@@ -30,7 +31,6 @@ class NoDaemonContext(type(multiprocessing.get_context())):
 	Process = NoDaemonProcess
 	
 class MyPool(multiprocessing.pool.Pool):
-	#Process = NoDaemonProcess #Ref: https://stackoverflow.com/questions/52948447/error-group-argument-must-be-none-for-now-in-multiprocessing-pool
 	
 	def __init__(self, *args, **kwargs):
 		kwargs['context'] = NoDaemonContext()
@@ -323,6 +323,8 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index
 		root = tmp_root * 1
 		parents = copy.copy(parents_raw)
 	
+	gc.collect()
+	
 	return custom_rules
 
 def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0, leaf_id = 0, parents = 'root', tree_id = 0, validation_df = None, main_process_id = None):
@@ -484,13 +486,17 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	#create branches in parallel
 	if enableParallelism == True:
 		
-		if parent_level == 0 and random_forest_enabled != True:
-		#if main_process_id != None and num_cores >= active_processes + len(classes): #len(classes) branches will be run in parallel #this causes hang and deadlock
+		#if parent_level == 0 and random_forest_enabled != True:
+		if main_process_id != None and num_cores >= active_processes + len(classes): #len(classes) branches will be run in parallel #this causes hang and deadlock
 			
-			pool = MyPool(num_cores)
 			#--------------------------------
 			
 			#causes hang problem if number of input_params is greater than num_cores
+			
+			#Ref: https://stackoverflow.com/questions/34086112/python-multiprocessing-pool-stuck
+			sys.modules['__main__'].__file__ = 'ipython'
+			
+			pool = MyPool(num_cores)
 			branch_results = pool.starmap(createBranch, input_params)
 			
 			for branch_result in branch_results:
@@ -499,12 +505,14 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			
 			pool.close()
 			pool.join()
+			pool.terminate()
 			
 			gc.collect()
 			
 			#--------------------------------
-			#workaround for hang problem. set num_cores and active threads same.
 			"""
+			#workaround for hang problem. set num_cores and active threads same.
+			
 			cycles = int(len(input_params) / num_cores) + 1
 			
 			for i in range(0, cycles):
@@ -516,18 +524,19 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 					filter_end = filter_end
 				
 				input_frame = input_params[filter_begin: filter_end]
+				
+				pool = MyPool(num_cores)
 				branch_results = pool.starmap(createBranch, input_frame)
 				
+				pool.close()
+				pool.join()
+				pool.terminate()
 				gc.collect()
 				
 				for branch_result in branch_results:
 					for leaf_result in branch_result:
 						results.append(leaf_result)
-			
-			pool.close()
-			pool.join()
-			pool.terminate()
-			"""
+			"""	
 			#--------------------------------
 		
 		else:

@@ -109,9 +109,9 @@ def fit(df, config = {}, validation_df = None):
 	if enableParallelism == True:
 		print("[INFO]: ",config["num_cores"],"CPU cores will be allocated in parallel running")
 		
-		from multiprocessing import set_start_method
+		from multiprocessing import set_start_method, freeze_support
 		set_start_method("spawn", force=True)
-	
+		freeze_support()
 	#------------------------
 	raw_df = df.copy()
 	num_of_rows = df.shape[0]; num_of_columns = df.shape[1]

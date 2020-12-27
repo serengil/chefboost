@@ -9,6 +9,8 @@ from chefboost import Chefboost as cb
 
 from tqdm import tqdm
 
+import gc
+
 def findPrediction(row):
 	epoch = row['Epoch']
 	row = row.drop(labels=['Epoch'])
@@ -149,6 +151,8 @@ def regressor(df, config, header, dataset_features, validation_df = None, proces
 		#print("epoch ",index," - loss: ",loss)
 		#print("loss: ",loss)
 		pbar.set_description("Epoch %d. Loss: %d. Process: " % (index, loss))
+		
+		gc.collect()
 		
 	#---------------------------------
 	
@@ -298,7 +302,9 @@ def classifier(df, config, header, dataset_features, validation_df = None, proce
 		#print(worksheet.head())
 		#print("round ",epoch+1)
 		pbar.set_description("Epoch %d. Accuracy: %d. Process: " % (epoch+1, accuracy))
-	
+		
+		gc.collect()
+		
 	#--------------------------------
 	
 	print("The best accuracy got in ",best_accuracy_idx," epoch with the score ", best_accuracy_value)

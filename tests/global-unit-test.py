@@ -9,9 +9,9 @@ pd.set_option('display.width', 1000)
 
 #----------------------------------------------
 
-#parallelism_cases = [True]
+parallelism_cases = [True]
 #parallelism_cases = [False]
-parallelism_cases = [False, True]
+#parallelism_cases = [False, True]
 
 if __name__ == '__main__':
 
@@ -175,7 +175,8 @@ if __name__ == '__main__':
 		
 		print("CHAID for nominal features and target (large data set)")
 		config = {'algorithm': 'CHAID', 'enableParallelism': enableParallelism}
-		cb.fit(pd.read_csv("dataset/car.data"), config)
+		df = pd.read_csv("dataset/car.data")
+		cb.fit(df, config)
 		
 		gc.collect()
 		
