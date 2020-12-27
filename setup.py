@@ -19,5 +19,5 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    install_requires=["pandas>=0.22.0", "numpy>=1.14.0", "tqdm>=4.30.0"]
+    install_requires=["pandas>=0.22.0", "numpy>=1.14.0", "tqdm>=4.30.0", "psutil>=5.4.3"]
 )

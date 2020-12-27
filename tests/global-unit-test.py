@@ -1,7 +1,6 @@
 import pandas as pd
 import sys
 from chefboost import Chefboost as cb
-import matplotlib.pyplot as plt
 import gc
 
 pd.set_option('display.max_rows', 500)
@@ -9,6 +8,7 @@ pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
 #----------------------------------------------
+
 #parallelism_cases = [True]
 #parallelism_cases = [False]
 parallelism_cases = [False, True]

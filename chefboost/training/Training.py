@@ -19,15 +19,23 @@ from chefboost.commons import functions, evaluate
 global decision_rules
 
 class NoDaemonProcess(multiprocessing.Process):
-    # make 'daemon' attribute always return False
-    def _get_daemon(self):
-        return False
-    def _set_daemon(self, value):
-        pass
-    daemon = property(_get_daemon, _set_daemon)
+	# make 'daemon' attribute always return False
+	def _get_daemon(self):
+		return False
+	def _set_daemon(self, value):
+		pass
+	daemon = property(_get_daemon, _set_daemon)
 
+class NoDaemonContext(type(multiprocessing.get_context())):
+	Process = NoDaemonProcess
+	
 class MyPool(multiprocessing.pool.Pool):
-    Process = NoDaemonProcess
+	#Process = NoDaemonProcess #Ref: https://stackoverflow.com/questions/52948447/error-group-argument-must-be-none-for-now-in-multiprocessing-pool
+	
+	def __init__(self, *args, **kwargs):
+		kwargs['context'] = NoDaemonContext()
+		super(MyPool, self).__init__(*args, **kwargs)
+	
 #----------------------------------------
 def calculateEntropy(df, config):
 	
@@ -330,8 +338,12 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	
 	json_file = file.split(".")[0]+".json"
 	
+	random_forest_enabled = config['enableRandomForest']
+	enableGBM = config['enableGBM']
+	enableAdaboost = config['enableAdaboost']
+	
 	if root == 1:
-		if config['enableRandomForest'] != True and config['enableGBM'] != True and config['enableAdaboost'] != True:
+		if random_forest_enabled != True and enableGBM != True and enableAdaboost != True:
 			raw_df = df.copy()
 	
 	#--------------------------------------
@@ -472,10 +484,10 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	#create branches in parallel
 	if enableParallelism == True:
 		
-		if main_process_id != None and num_cores >= active_processes + len(classes): #len(classes) branches will be run in parallel
+		if parent_level == 0 and random_forest_enabled != True:
+		#if main_process_id != None and num_cores >= active_processes + len(classes): #len(classes) branches will be run in parallel #this causes hang and deadlock
 			
 			pool = MyPool(num_cores)
-			
 			#--------------------------------
 			
 			#causes hang problem if number of input_params is greater than num_cores
@@ -506,6 +518,8 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 				input_frame = input_params[filter_begin: filter_end]
 				branch_results = pool.starmap(createBranch, input_frame)
 				
+				gc.collect()
+				
 				for branch_result in branch_results:
 					for leaf_result in branch_result:
 						results.append(leaf_result)
@@ -532,8 +546,6 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			return decision_rules
 	
 	#---------------------------------------------
-	
-	random_forest_enabled = config['enableRandomForest']
 	
 	if root == 1:
 		
