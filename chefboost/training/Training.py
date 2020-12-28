@@ -477,8 +477,8 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	try:
 		main_process = psutil.Process(main_process_id)
 		children = main_process.children(recursive=True)
-		#active_processes = len(children) + 1 #plus parent
-		active_processes = len(children)
+		active_processes = len(children) + 1 #plus parent
+		#active_processes = len(children)
 	except:
 		active_processes = 100 #set a large initial value
 	
@@ -486,16 +486,12 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	#create branches in parallel
 	if enableParallelism == True:
 		
-		#if parent_level == 0 and random_forest_enabled != True:
-		if main_process_id != None and num_cores >= active_processes + len(classes): #len(classes) branches will be run in parallel #this causes hang and deadlock
+		if parent_level == 0 and random_forest_enabled != True:
+		#if main_process_id != None and num_cores >= active_processes + len(classes): #len(classes) branches will be run in parallel #this causes hang and deadlock
 			
 			#--------------------------------
-			
+			"""
 			#causes hang problem if number of input_params is greater than num_cores
-			
-			#Ref: https://stackoverflow.com/questions/34086112/python-multiprocessing-pool-stuck
-			sys.modules['__main__'].__file__ = 'ipython'
-			
 			pool = MyPool(num_cores)
 			branch_results = pool.starmap(createBranch, input_params)
 			
@@ -508,17 +504,20 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 			pool.terminate()
 			
 			gc.collect()
-			
-			#--------------------------------
 			"""
+			#--------------------------------
+			
 			#workaround for hang problem. set num_cores and active threads same.
+			#len(classes) == len(input_params)
+			#e.g. len(input_params) = 5, num_cores = 2, cycles = 3
+			#we will feed 2 items to pool in for loops instead of 5
 			
 			cycles = int(len(input_params) / num_cores) + 1
 			
 			for i in range(0, cycles):
 				
-				filter_begin = i * cycles
-				filter_end = i * cycles + cycles
+				filter_begin = i * num_cores
+				filter_end = i * num_cores + num_cores
 				
 				if filter_end > len(input_params):
 					filter_end = filter_end
@@ -536,7 +535,7 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 				for branch_result in branch_results:
 					for leaf_result in branch_result:
 						results.append(leaf_result)
-			"""	
+			
 			#--------------------------------
 		
 		else:

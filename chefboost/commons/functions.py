@@ -83,8 +83,8 @@ def initializeParams(config):
 	enableGBM = False; epochs = 10; learning_rate = 1; max_depth = 3
 	enableAdaboost = False; num_of_weak_classifier = 4
 	enableParallelism = False
-	#num_cores = int(multiprocessing.cpu_count()/2) #allocate half of your total cores
-	num_cores = int((3*multiprocessing.cpu_count())/4) #allocate 3/4 of your total cores
+	num_cores = int(multiprocessing.cpu_count()/2) #allocate half of your total cores
+	#num_cores = int((3*multiprocessing.cpu_count())/4) #allocate 3/4 of your total cores
 	#num_cores = multiprocessing.cpu_count()
 	
 	for key, value in config.items():
