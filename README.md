@@ -172,6 +172,10 @@ Pull requests are welcome. You should run the unit tests locally by running [`te
 
 There are many ways to support a project - starring⭐️ the GitHub repos is just one.
 
+You can also support this project on [Patreon](https://www.patreon.com/serengil) 🙏.
+
+<p align="left"><a href="https://www.patreon.com/serengil"><img src="https://github.com/serengil/deepface/blob/master/icon/patreon.png" width="30%"></a></p>
+
 ### Citation
 
 Please cite chefboost in your publications if it helps your research. Here is an example BibTeX entry:
