@@ -67,24 +67,53 @@ def calculateEntropy(df, config):
 	return entropy
 
 def findDecision(df, config):
+	#information gain for id3, gain ratio for c4.5, gini for cart, chi square for chaid and std for regression
+	algorithm = config['algorithm']
+	
+	resp_obj = findGains(df, config)
+	gains = list(resp_obj["gains"].values())
+	entropy = resp_obj["entropy"]
+	
+	if algorithm == "ID3":
+		winner_index = gains.index(max(gains))
+		metric_value = entropy
+		metric_name = "Entropy"
+	elif algorithm == "C4.5":
+		winner_index = gains.index(max(gains))
+		metric_value = entropy
+		metric_name = "Entropy"
+	elif algorithm == "CART":
+		winner_index = gains.index(min(gains))
+		metric_value = min(gains)
+		metric_name = "Gini"
+	elif algorithm == "CHAID":
+		winner_index = gains.index(max(gains))
+		metric_value = max(gains)
+		metric_name = "ChiSquared"
+	elif algorithm == "Regression":
+		winner_index = gains.index(max(gains))
+		metric_value = max(gains)
+		metric_name = "Std"
+	
+	winner_name = df.columns[winner_index]
+	
+	return winner_name, df.shape[0], metric_value, metric_name
+	
+def findGains(df, config):
 	
 	algorithm = config['algorithm']
 	decision_classes = df["Decision"].unique()
 	
 	#-----------------------------
 	
-	if algorithm == 'Regression':
-		stdev = df['Decision'].std(ddof=0)
-	
 	entropy = 0
 	
 	if algorithm == "ID3" or algorithm == "C4.5":
 		entropy = calculateEntropy(df, config)
-	#print("entropy: ",entropy)
-
+	
 	columns = df.shape[1]; instances = df.shape[0]
 
-	gains = []; gainratios = []; ginis = []; reducted_stdevs = []; chi_squared_values = []
+	gains = []
 
 	for i in range(0, columns-1):
 		column_name = df.columns[i]
@@ -97,7 +126,11 @@ def findDecision(df, config):
 		
 		classes = df[column_name].value_counts()
 		
-		gain = entropy * 1; splitinfo = 0; gini = 0; weighted_stdev = 0; chi_squared_value = 0
+		splitinfo = 0
+		if algorithm == 'ID3' or algorithm == 'C4.5':
+			gain = entropy * 1
+		else:
+			gain = 0
 		
 		for j in range(0, len(classes)):
 			current_class = classes.keys().tolist()[j]
@@ -111,7 +144,6 @@ def findDecision(df, config):
 			
 			if algorithm == 'ID3' or algorithm == 'C4.5':
 				subset_entropy = calculateEntropy(subdataset, config)
-				#print("entropy for this sub dataset is ", subset_entropy)
 				gain = gain - class_probability * subset_entropy			
 			
 			if algorithm == 'C4.5':
@@ -125,7 +157,7 @@ def findDecision(df, config):
 				for k in range(0, len(decision_list)):
 					subgini = subgini - math.pow((decision_list[k]/subset_instances), 2)
 				
-				gini = gini + (subset_instances / instances) * subgini
+				gain = gain + (subset_instances / instances) * subgini
 			
 			elif algorithm == 'CHAID':
 				num_of_decisions = len(decision_classes)
@@ -137,61 +169,40 @@ def findDecision(df, config):
 					
 					chi_square_of_d = math.sqrt(((num_of_d - expected) * (num_of_d - expected)) / expected)
 					
-					chi_squared_value += chi_square_of_d
+					gain += chi_square_of_d
 				
 			elif algorithm == 'Regression':
 				subset_stdev = subdataset['Decision'].std(ddof=0)
-				weighted_stdev = weighted_stdev + (subset_instances/instances)*subset_stdev
+				gain = gain + (subset_instances/instances)*subset_stdev
 		
 		#iterating over classes for loop end
 		#-------------------------------
-		
-		if algorithm == "ID3":
-			gains.append(gain)
-		
-		elif algorithm == "C4.5":
-		
+        
+		if algorithm == 'Regression':
+			stdev = df['Decision'].std(ddof=0)
+			gain = stdev - gain
+		if algorithm == 'C4.5':
 			if splitinfo == 0:
 				splitinfo = 100 #this can be if data set consists of 2 rows and current column consists of 1 class. still decision can be made (decisions for these 2 rows same). set splitinfo to very large value to make gain ratio very small. in this way, we won't find this column as the most dominant one.
-				
-			gainratio = gain / splitinfo
-			gainratios.append(gainratio)
+			gain = gain / splitinfo
 		
-		elif algorithm == "CART":
-			ginis.append(gini)
+		#----------------------------------
 		
-		elif algorithm == "CHAID":
-			chi_squared_values.append(chi_squared_value)
+		gains.append(gain)
 		
-		elif algorithm == 'Regression':
-			reducted_stdev = stdev - weighted_stdev
-			reducted_stdevs.append(reducted_stdev)
+	#-------------------------------------------------
 	
-	#print(df)
-	if algorithm == "ID3":
-		winner_index = gains.index(max(gains))
-		metric_value = entropy
-		metric_name = "Entropy"
-	elif algorithm == "C4.5":
-		winner_index = gainratios.index(max(gainratios))
-		metric_value = entropy
-		metric_name = "Entropy"
-	elif algorithm == "CART":
-		winner_index = ginis.index(min(ginis))
-		metric_value = min(ginis)
-		metric_name = "Gini"
-	elif algorithm == "CHAID":
-		winner_index = chi_squared_values.index(max(chi_squared_values))
-		metric_value = max(chi_squared_values)
-		metric_name = "ChiSquared"
-	elif algorithm == "Regression":
-		winner_index = reducted_stdevs.index(max(reducted_stdevs))
-		metric_value = max(reducted_stdevs)
-		metric_name = "Std"
-	winner_name = df.columns[winner_index]
-
-	return winner_name, df.shape[0], metric_value, metric_name
-
+	resp_obj = {}
+	resp_obj["gains"] = {}
+	
+	for idx, feature in enumerate(df.columns[0:-1]): #Decision is always the last column
+		#print(idx, feature)    
+		resp_obj["gains"][feature] = gains[idx]
+	
+	resp_obj["entropy"] = entropy
+	
+	return resp_obj
+	
 def createBranchWrapper(func, args):
 	return func(*args)
 

@@ -9,8 +9,8 @@ pd.set_option('display.width', 1000)
 
 #----------------------------------------------
 
-parallelism_cases = [True]
-#parallelism_cases = [False]
+#parallelism_cases = [True]
+parallelism_cases = [False]
 #parallelism_cases = [False, True]
 
 if __name__ == '__main__':
