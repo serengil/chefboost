@@ -364,7 +364,7 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	df_copy = df.copy()
 	
 	winner_name, num_of_instances, metric, metric_name = findDecision(df, config)
-	
+		
 	#find winner index, this cannot be returned by find decision because columns dropped in previous steps
 	j = 0 
 	for i in dataset_features:
@@ -379,12 +379,13 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	#restoration
 	columns = df.shape[1]
 	for i in range(0, columns-1):
-		column_name = df.columns[i]; column_type = df[column_name].dtypes
+		#column_name = df.columns[i]; column_type = df[column_name].dtypes #numeric field already transformed to object. you cannot check it with df itself, you should check df_copy
+		column_name = df_copy.columns[i]; column_type = df_copy[column_name].dtypes
 		if column_type != 'object' and column_name != winner_name:
 			df[column_name] = df_copy[column_name]
 	
 	classes = df[winner_name].value_counts().keys().tolist()
-		
+	#print("classes: ",classes," in ", winner_name)
 	#-----------------------------------------------------
 	
 	num_cores = config["num_cores"]

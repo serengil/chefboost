@@ -8,7 +8,7 @@ from chefboost.training import Training
 def processContinuousFeatures(algorithm, df, column_name, entropy, config):
 	
 	#if True:
-	if df[column_name].nunique() <= 7:
+	if df[column_name].nunique() <= 20:
 		unique_values = sorted(df[column_name].unique())
 	else:
 		unique_values = []
@@ -122,8 +122,9 @@ def processContinuousFeatures(algorithm, df, column_name, entropy, config):
 		winner_one = subset_chi_squares.index(max(subset_chi_squares))
 	elif algorithm == "Regression":
 		winner_one = subset_red_stdevs.index(max(subset_red_stdevs))
-		
+	
 	winner_threshold = unique_values[winner_one]
+	#print(column_name,": ", winner_threshold," in ", unique_values)
 	
 	#print("theshold is ",winner_threshold," for ",column_name)
 	df[column_name] = np.where(df[column_name] <= winner_threshold, "<="+str(winner_threshold), ">"+str(winner_threshold))
