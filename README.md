@@ -1,6 +1,7 @@
 # chefboost
 
 [![Downloads](https://pepy.tech/badge/chefboost)](https://pepy.tech/project/chefboost)
+[![Stars](https://img.shields.io/github/stars/serengil/chefboost)](https://github.com/serengil/chefboost)
 [![License](http://img.shields.io/:license-MIT-green.svg?style=flat)](https://github.com/serengil/chefboost/blob/master/LICENSE)
 [![Patreon](https://img.shields.io/:support-patreon-orange.svg?style=flat)](https://www.patreon.com/bePatron?u=31795557&redirect_uri=https%3A%2F%2Fgithub.com%2Fserengil%2Fchefboost)
 
