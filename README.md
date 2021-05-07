@@ -160,12 +160,6 @@ if __name__ == '__main__':
 
 Notice that you have to locate training step in an if block and it should check you are in main.
 
-### E-Learning
-
-This [playlist](https://www.youtube.com/playlist?list=PLsS_1RYmYQQHp_xZObt76dpacY543GrJD) guides you how to use Chefboost step by step for different algorithms. You can also find the tutorials about these core algorithms [here](https://sefiks.com/tag/decision-tree/). 
-
-Besides, you can enroll this online course - [**Decision Trees for Machine Learning From Scratch**](https://www.udemy.com/course/decision-trees-for-machine-learning/?referralCode=FDC9B836EC6DAA1A663A) and follow the curriculum if you wonder the theory of decision trees and how this framework is developed.
-
 ### Contributing
 
 Pull requests are welcome. You should run the unit tests locally by running [`test/global-unit-test.py`](https://github.com/serengil/chefboost/blob/master/tests/global-unit-test.py). Please share the unit test result logs in the PR.
