@@ -16,3 +16,6 @@ chefboost/__pycache__/*
 chefboost/commons/__pycache__/*
 chefboost/training/__pycache__/*
 chefboost/tuning/__pycache__/*
+.DS_Store
+chefboost/.DS_Store
+tests/.DS_Store
