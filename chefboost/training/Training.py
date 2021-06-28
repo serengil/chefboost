@@ -499,10 +499,16 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 	#create branches in parallel
 	if enableParallelism == True:
 
-		#if parent_level == 0 and random_forest_enabled != True:
-		if main_process_id != None and num_cores >= active_processes + len(classes): #len(classes) branches will be run in parallel #this causes hang and deadlock
+		required_threads = active_processes + len(classes)
 
-			with closing(multiprocessing.Pool(num_cores)) as pool:
+		#if parent_level == 0 and random_forest_enabled != True:
+		if main_process_id != None and num_cores >= required_threads: #len(classes) branches will be run in parallel
+
+			#POOL_SIZE = num_cores
+			POOL_SIZE = len(classes)
+
+			#with closing(multiprocessing.Pool(POOL_SIZE)) as pool:
+			with closing(MyPool(POOL_SIZE)) as pool:
 				funclist = []
 
 				for input_param in input_params:

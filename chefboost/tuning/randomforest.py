@@ -47,25 +47,28 @@ def apply(df, config, header, dataset_features, validation_df = None, process_id
 
 	if parallelism_on:
 		num_cores = config["num_cores"]
-		"""
-		#legacy way
-		pool = Training.MyPool(num_cores)
-		results = pool.starmap(buildDecisionTree, input_params)
-		pool.close()
-		pool.join()
-		"""
+
 		#---------------------------------
-		with closing(multiprocessing.Pool(num_cores)) as pool:
+
+		if num_of_trees <= num_cores:
+			POOL_SIZE = num_of_trees
+		else:
+			POOL_SIZE = num_cores
+
+		with closing(multiprocessing.Pool(POOL_SIZE)) as pool:
 			funclist = []
 			for input_param in input_params:
 				f = pool.apply_async(buildDecisionTree, [*input_param])
 				funclist.append(f)
 
 			#all functions registered here
-			results = []
+			#results = []
 			for f in tqdm(funclist):
 				branch_results = f.get(timeout = 100000)
-				results.append(branch_results)
+				#results.append(branch_results)
+
+			pool.close()
+			pool.terminate()
 
 	#-------------------------------
 	#collect models for both serial and parallel here
