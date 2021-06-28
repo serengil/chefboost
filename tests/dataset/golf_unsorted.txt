@@ -1,0 +1,15 @@
+Outlook,Temp.,Humidity,Wind,Decision,Dummy
+Sunny,Hot,High,Weak,No,1
+Sunny,Hot,High,Strong,No,1
+Overcast,Hot,High,Weak,Yes,1
+Rain,Mild,High,Weak,Yes,1
+Rain,Cool,Normal,Weak,Yes,1
+Rain,Cool,Normal,Strong,No,1
+Overcast,Cool,Normal,Strong,Yes,1
+Sunny,Mild,High,Weak,No,1
+Sunny,Cool,Normal,Weak,Yes,1
+Rain,Mild,Normal,Weak,Yes,1
+Sunny,Mild,Normal,Strong,Yes,1
+Overcast,Mild,High,Strong,Yes,1
+Overcast,Hot,Normal,Weak,Yes,1
+Rain,Mild,High,Strong,No,1
