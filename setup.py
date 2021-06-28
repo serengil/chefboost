@@ -4,8 +4,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="chefboost",  
-    version="0.0.12",
+    name="chefboost",
+    version="0.0.13",
     author="Sefik Ilkin Serengil",
     author_email="serengil@gmail.com",
     description="Lightweight Decision Tree Framework Supporting GBM, Random Forest and Adaboost",
