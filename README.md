@@ -9,7 +9,7 @@
 **Installation** - [`Demo`](https://youtu.be/YYF993HTHf8)
 
 The easiest way to install Chefboost framework is to download it from [from PyPI](https://pypi.org/project/chefboost).
- 
+
 ```
 pip install chefboost
 ```
@@ -32,7 +32,7 @@ model = chef.fit(df, config = config)
 Built decision trees are stored as python if statements in the `tests/outputs/rules` directory. A sample of decision rules is demonstrated below.
 
 ```python
-def findDecision(Outlook, Temperature, Humidity, Wind, Decision):
+def findDecision(Outlook, Temperature, Humidity, Wind):
    if Outlook == 'Rain':
       if Wind == 'Weak':
          return 'Yes'
@@ -111,7 +111,7 @@ The following regular decision tree algorithms are wrapped in the library.
 
 **Gradient Boosting** [`Tutorial`](https://sefiks.com/2018/10/04/a-step-by-step-gradient-boosting-decision-tree-example/), [`Demo`](https://youtu.be/KFsnZKMKNAE)
 
-Gradient boosting is basically based on building a tree, and then building another based on the previous one's error. In this way, it boosts results. Predictions will be the sum of each tree'e prediction result. 
+Gradient boosting is basically based on building a tree, and then building another based on the previous one's error. In this way, it boosts results. Predictions will be the sum of each tree'e prediction result.
 
 ```python
 config = {'enableGBM': True, 'epochs': 7, 'learning_rate': 1, 'max_depth': 5}
