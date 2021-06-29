@@ -55,9 +55,12 @@ def fit(df, config = {}, target_label = 'Decision', validation_df = None):
 
 	#if target is not the last column
 	if df.columns[-1] != 'Decision':
-		new_column_order = df.columns.drop('Decision').tolist() + ['Decision']
-		print(new_column_order)
-		df = df[new_column_order]
+		if 'Decision' in df.columns:
+			new_column_order = df.columns.drop('Decision').tolist() + ['Decision']
+			#print(new_column_order)
+			df = df[new_column_order]
+		else:
+			raise ValueError('Please set the target_label')
 
 	#------------------------
 
