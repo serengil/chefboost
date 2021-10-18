@@ -176,7 +176,7 @@ Please cite [ChefBoost](https://doi.org/10.5281/zenodo.5576203) in your publicat
 ```BibTeX
 @misc{serengil2021chefboost,
   author       = {Serengil, Sefik Ilkin},
-  title        = {{ChefBoost: A Lightweight Boosted Decision Tree Framework}},
+  title        = {ChefBoost: A Lightweight Boosted Decision Tree Framework},
   month        = oct,
   year         = 2021,
   publisher    = {Zenodo},
