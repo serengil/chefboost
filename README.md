@@ -1,14 +1,14 @@
-# chefboost
+# ChefBoost
 
 [![Downloads](https://pepy.tech/badge/chefboost)](https://pepy.tech/project/chefboost)
 [![Stars](https://img.shields.io/github/stars/serengil/chefboost?color=yellow)](https://github.com/serengil/chefboost)
 [![License](http://img.shields.io/:license-MIT-green.svg?style=flat)](https://github.com/serengil/chefboost/blob/master/LICENSE)
 
-**Chefboost** is a lightweight decision tree framework for Python **with categorical feature support**. It covers regular decision tree algorithms: [ID3](https://sefiks.com/2017/11/20/a-step-by-step-id3-decision-tree-example/), [C4.5](https://sefiks.com/2018/05/13/a-step-by-step-c4-5-decision-tree-example/), [CART](https://sefiks.com/2018/08/27/a-step-by-step-cart-decision-tree-example/), [CHAID](https://sefiks.com/2020/03/18/a-step-by-step-chaid-decision-tree-example/) and [regression tree](https://sefiks.com/2018/08/28/a-step-by-step-regression-decision-tree-example/); also some advanved techniques: [gradient boosting](https://sefiks.com/2018/10/04/a-step-by-step-gradient-boosting-decision-tree-example/), [random forest](https://sefiks.com/2017/11/19/how-random-forests-can-keep-you-from-decision-tree/) and [adaboost](https://sefiks.com/2018/11/02/a-step-by-step-adaboost-example/). You just need to write **a few lines of code** to build decision trees with Chefboost.
+**ChefBoost** is a lightweight decision tree framework for Python **with categorical feature support**. It covers regular decision tree algorithms: [ID3](https://sefiks.com/2017/11/20/a-step-by-step-id3-decision-tree-example/), [C4.5](https://sefiks.com/2018/05/13/a-step-by-step-c4-5-decision-tree-example/), [CART](https://sefiks.com/2018/08/27/a-step-by-step-cart-decision-tree-example/), [CHAID](https://sefiks.com/2020/03/18/a-step-by-step-chaid-decision-tree-example/) and [regression tree](https://sefiks.com/2018/08/28/a-step-by-step-regression-decision-tree-example/); also some advanved techniques: [gradient boosting](https://sefiks.com/2018/10/04/a-step-by-step-gradient-boosting-decision-tree-example/), [random forest](https://sefiks.com/2017/11/19/how-random-forests-can-keep-you-from-decision-tree/) and [adaboost](https://sefiks.com/2018/11/02/a-step-by-step-adaboost-example/). You just need to write **a few lines of code** to build decision trees with Chefboost.
 
 **Installation** - [`Demo`](https://youtu.be/YYF993HTHf8)
 
-The easiest way to install Chefboost framework is to download it from [from PyPI](https://pypi.org/project/chefboost).
+The easiest way to install ChefBoost framework is to download it from [from PyPI](https://pypi.org/project/chefboost).
 
 ```
 pip install chefboost
@@ -88,7 +88,7 @@ prediction = chef.predict(model, ['Sunny',85,85,'Weak'])
 
 ### Sample configurations
 
-Chefboost supports several decision tree, bagging and boosting algorithms. You just need to pass the configuration to use different algorithms.
+ChefBoost supports several decision tree, bagging and boosting algorithms. You just need to pass the configuration to use different algorithms.
 
 **Regular Decision Trees**
 
@@ -150,7 +150,7 @@ df = chef.feature_importance("outputs/rules/rules.py")
 
 ### Paralellism
 
-Chefboost offers parallelism to speed model building up. Branches of a decision tree will be created in parallel in this way. You should set enableParallelism argument to True in the configuration. Its default value is False. It allocates half of the total number of cores in your environment if parallelism is enabled.
+ChefBoost offers parallelism to speed model building up. Branches of a decision tree will be created in parallel in this way. You should set enableParallelism argument to True in the configuration. Its default value is False. It allocates half of the total number of cores in your environment if parallelism is enabled.
 
 ```python
 if __name__ == '__main__':
@@ -170,7 +170,7 @@ There are many ways to support a project - starring⭐️ the GitHub repos is ju
 
 ### Citation
 
-Please cite chefboost in your publications if it helps your research. Here is an example BibTeX entry:
+Please cite ChefBoost in your publications if it helps your research. Here is an example BibTeX entry:
 
 ```BibTeX
 @misc{serengil2019chefboost,
@@ -184,4 +184,4 @@ Please cite chefboost in your publications if it helps your research. Here is an
 
 ### Licence
 
-Chefboost is licensed under the MIT License - see [`LICENSE`](https://github.com/serengil/chefboost/blob/master/LICENSE) for more details.
+ChefBoost is licensed under the MIT License - see [`LICENSE`](https://github.com/serengil/chefboost/blob/master/LICENSE) for more details.
