@@ -3,6 +3,7 @@
 [![Downloads](https://pepy.tech/badge/chefboost)](https://pepy.tech/project/chefboost)
 [![Stars](https://img.shields.io/github/stars/serengil/chefboost?color=yellow)](https://github.com/serengil/chefboost)
 [![License](http://img.shields.io/:license-MIT-green.svg?style=flat)](https://github.com/serengil/chefboost/blob/master/LICENSE)
+[![DOI](http://img.shields.io/:10.5281/zenodo.5576203-blue.svg?style=flat)](https://doi.org/10.5281/zenodo.5576203)
 
 **ChefBoost** is a lightweight decision tree framework for Python **with categorical feature support**. It covers regular decision tree algorithms: [ID3](https://sefiks.com/2017/11/20/a-step-by-step-id3-decision-tree-example/), [C4.5](https://sefiks.com/2018/05/13/a-step-by-step-c4-5-decision-tree-example/), [CART](https://sefiks.com/2018/08/27/a-step-by-step-cart-decision-tree-example/), [CHAID](https://sefiks.com/2020/03/18/a-step-by-step-chaid-decision-tree-example/) and [regression tree](https://sefiks.com/2018/08/28/a-step-by-step-regression-decision-tree-example/); also some advanved techniques: [gradient boosting](https://sefiks.com/2018/10/04/a-step-by-step-gradient-boosting-decision-tree-example/), [random forest](https://sefiks.com/2017/11/19/how-random-forests-can-keep-you-from-decision-tree/) and [adaboost](https://sefiks.com/2018/11/02/a-step-by-step-adaboost-example/). You just need to write **a few lines of code** to build decision trees with Chefboost.
 
@@ -170,15 +171,17 @@ There are many ways to support a project - starring⭐️ the GitHub repos is ju
 
 ### Citation
 
-Please cite ChefBoost in your publications if it helps your research. Here is an example BibTeX entry:
+Please cite [ChefBoost](https://doi.org/10.5281/zenodo.5576203) in your publications if it helps your research. Here is an example BibTeX entry:
 
 ```BibTeX
-@misc{serengil2019chefboost,
-  abstract = {Lightweight Decision Trees Framework supporting Gradient Boosting (GBDT, GBRT, GBM), Random Forest and Adaboost w/categorical features support for Python},
-  author={Serengil, Sefik Ilkin},
-  title={chefboost},
-  url={https://github.com/serengil/chefboost}
-  year={2019}
+@misc{serengil2021chefboost,
+  author       = {Serengil, Sefik Ilkin},
+  title        = {{ChefBoost: A Lightweight Boosted Decision Tree Framework}},
+  month        = oct,
+  year         = 2021,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.5576203},
+  url          = {https://doi.org/10.5281/zenodo.5576203}
 }
 ```
 
