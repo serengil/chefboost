@@ -181,7 +181,7 @@ Please cite [ChefBoost](https://doi.org/10.5281/zenodo.5576203) in your publicat
   year         = 2021,
   publisher    = {Zenodo},
   doi          = {10.5281/zenodo.5576203},
-  url          = {https://doi.org/10.5281/zenodo.5576203}
+  howpublished = {https://doi.org/10.5281/zenodo.5576203}
 }
 ```
 
