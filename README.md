@@ -25,7 +25,7 @@ import pandas as pd
 
 df = pd.read_csv("dataset/golf.txt")
 config = {'algorithm': 'C4.5'}
-model = chef.fit(df, config = config)
+model = chef.fit(df, config = config, target_label = 'Decision')
 ```
 
 **Outcomes**
