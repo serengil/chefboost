@@ -185,6 +185,8 @@ Please cite [ChefBoost](https://doi.org/10.5281/zenodo.5576203) in your publicat
 }
 ```
 
+Also, if you use chefboost in your GitHub projects, please add chefboost in the requirements.txt.
+
 ### Licence
 
 ChefBoost is licensed under the MIT License - see [`LICENSE`](https://github.com/serengil/chefboost/blob/master/LICENSE) for more details.
