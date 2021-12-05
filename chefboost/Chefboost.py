@@ -369,7 +369,7 @@ def save_model(base_model, file_name="model.pkl"):
 
 	model["trees"] = module_names
 
-	f = open("outputs/rules/"+file_name, "wb")
+	f = open(file_name, "wb")
 	pickle.dump(model,f)
 	f.close()
 
