@@ -177,7 +177,7 @@ Pull requests are welcome. You should run the unit tests locally by running [`te
 
 ### Support
 
-There are many ways to support a project - starring⭐️ the GitHub repos is just one.
+There are many ways to support a project - starring⭐️ the GitHub repos is just one 🙏
 
 You can also support this work on [Patreon](https://patreon.com/serengil)
 
