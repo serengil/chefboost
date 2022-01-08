@@ -170,6 +170,12 @@ Pull requests are welcome. You should run the unit tests locally by running [`te
 
 There are many ways to support a project - starring⭐️ the GitHub repos is just one.
 
+You can also support this work on [Patreon](https://patreon.com/serengil)
+
+<a href="https://patreon.com/serengil">
+<img src="https://raw.githubusercontent.com/serengil/chefboost/master/icon/patreon.png" width="30%" height="30%">
+</a>
+
 ### Citation
 
 Please cite [ChefBoost](https://doi.org/10.5281/zenodo.5576203) in your publications if it helps your research. Here is an example BibTeX entry:
