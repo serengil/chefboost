@@ -16,18 +16,27 @@ The easiest way to install ChefBoost framework is to download it from [from PyPI
 pip install chefboost
 ```
 
-**Usage** - [`Demo`](https://youtu.be/Z93qE5eb6eg)
-
-Basically, you just need to pass the dataset as pandas data frame and tree configurations optionally after importing Chefboost as illustrated below. You just need to put the target label to the right. Besides, chefboost handles both numeric and nominal features and target values in contrast to its alternatives.
+Then, you will be able to import the library and use its functionalities
 
 ```python
 from chefboost import Chefboost as chef
+```
+
+**Usage** - [`Demo`](https://youtu.be/Z93qE5eb6eg)
+
+Basically, you just need to pass the dataset as pandas data frame and the optional tree configurations as illustrated below.
+
+```python
 import pandas as pd
 
 df = pd.read_csv("dataset/golf.txt")
 config = {'algorithm': 'C4.5'}
 model = chef.fit(df, config = config, target_label = 'Decision')
 ```
+
+**Pre-processing**
+
+Chefboost handles the both numeric and nominal features and target values in contrast to its alternatives. So, you don't have to apply any pre-processing to build trees.
 
 **Outcomes**
 
