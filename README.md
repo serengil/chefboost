@@ -10,7 +10,7 @@
 
 **Installation** - [`Demo`](https://youtu.be/YYF993HTHf8)
 
-The easiest way to install ChefBoost framework is to download it from [from PyPI](https://pypi.org/project/chefboost).
+The easiest way to install ChefBoost framework is to download it from [from PyPI](https://pypi.org/project/chefboost). It's going to install the library itself and its prerequisites as well.
 
 ```
 pip install chefboost
