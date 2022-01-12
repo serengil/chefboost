@@ -179,7 +179,7 @@ Pull requests are welcome. You should run the unit tests locally by running [`te
 
 There are many ways to support a project - starring⭐️ the GitHub repos is just one 🙏
 
-You can also support this work on [Patreon](https://patreon.com/serengil)
+You can also support this work on [Patreon](https://www.patreon.com/bePatron?u=31795557&redirect_uri=https%3A%2F%2Fgithub.com%2Fserengil%2Fchefboost%2F)
 
 <a href="https://www.patreon.com/bePatron?u=31795557&redirect_uri=https%3A%2F%2Fgithub.com%2Fserengil%2Fchefboost%2F">
 <img src="https://raw.githubusercontent.com/serengil/chefboost/master/icon/patreon.png" width="30%" height="30%">
