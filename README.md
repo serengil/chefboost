@@ -3,7 +3,7 @@
 [![Downloads](https://pepy.tech/badge/chefboost)](https://pepy.tech/project/chefboost)
 [![Stars](https://img.shields.io/github/stars/serengil/chefboost?color=yellow)](https://github.com/serengil/chefboost)
 [![License](http://img.shields.io/:license-MIT-green.svg?style=flat)](https://github.com/serengil/chefboost/blob/master/LICENSE)
-[![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dserengil%26type%3Dpatrons&style=flat)](https://patreon.com/serengil)
+[![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dserengil%26type%3Dpatrons&style=flat)](https://www.patreon.com/bePatron?u=31795557&redirect_uri=https%3A%2F%2Fgithub.com%2Fserengil%2Fchefboost%2F)
 [![Twitter](https://badgen.net/twitter/follow/serengil?icon=twitter)](https://twitter.com/serengil)
 [![DOI](http://img.shields.io/:DOI-10.5281/zenodo.5576203-blue.svg?style=flat)](https://doi.org/10.5281/zenodo.5576203)
 
