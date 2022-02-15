@@ -5,7 +5,7 @@
 [![License](http://img.shields.io/:license-MIT-green.svg?style=flat)](https://github.com/serengil/chefboost/blob/master/LICENSE)
 [![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dserengil%26type%3Dpatrons&style=flat)](https://www.patreon.com/serengil?repo=chefboost)
 [![DOI](http://img.shields.io/:DOI-10.5281/zenodo.5576203-blue.svg?style=flat)](https://doi.org/10.5281/zenodo.5576203)
-[![Twitter](https://img.shields.io/twitter/follow/serengil?color=blue&logo=twitter&style=plastic)](https://twitter.com/serengil)
+[![Twitter](https://img.shields.io/twitter/follow/serengil?color=blue&logo=twitter&style=flat)](https://twitter.com/serengil)
 
 **ChefBoost** is a lightweight decision tree framework for Python **with categorical feature support**. It covers regular decision tree algorithms: [ID3](https://sefiks.com/2017/11/20/a-step-by-step-id3-decision-tree-example/), [C4.5](https://sefiks.com/2018/05/13/a-step-by-step-c4-5-decision-tree-example/), [CART](https://sefiks.com/2018/08/27/a-step-by-step-cart-decision-tree-example/), [CHAID](https://sefiks.com/2020/03/18/a-step-by-step-chaid-decision-tree-example/) and [regression tree](https://sefiks.com/2018/08/28/a-step-by-step-regression-decision-tree-example/); also some advanved techniques: [gradient boosting](https://sefiks.com/2018/10/04/a-step-by-step-gradient-boosting-decision-tree-example/), [random forest](https://sefiks.com/2017/11/19/how-random-forests-can-keep-you-from-decision-tree/) and [adaboost](https://sefiks.com/2018/11/02/a-step-by-step-adaboost-example/). You just need to write **a few lines of code** to build decision trees with Chefboost.
 
