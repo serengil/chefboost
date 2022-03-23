@@ -162,7 +162,7 @@ df = chef.feature_importance("outputs/rules/rules.py")
 
 ### Paralellism
 
-ChefBoost offers parallelism to speed model building up. Branches of a decision tree will be created in parallel in this way. You should set enableParallelism argument to True in the configuration. Its default value is False. It allocates half of the total number of cores in your environment if parallelism is enabled.
+ChefBoost offers parallelism to speed model building up. Branches of a decision tree will be created in parallel in this way. You should set enableParallelism argument to False in the configuration if you don't want to use parallelism. Its default value is True. It allocates half of the total number of cores in your environment if parallelism is enabled.
 
 ```python
 if __name__ == '__main__':
@@ -171,6 +171,13 @@ if __name__ == '__main__':
 ```
 
 Notice that you have to locate training step in an if block and it should check you are in main.
+
+To not use parallelism set the parameter to False.
+
+```python
+config = {'algorithm': 'C4.5', 'enableParallelism': False}
+model = chef.fit(df, config)
+```
 
 ### Contributing
 
