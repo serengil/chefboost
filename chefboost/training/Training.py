@@ -253,9 +253,12 @@ def createBranch(config, current_class, subdataset, numericColumn, branch_index,
 	elif subdataset.shape[1] == 1: #if decision cannot be made even though all columns dropped
 		final_decision = subdataset['Decision'].value_counts().idxmax() #get the most frequent one
 		terminateBuilding = True
-	elif algorithm == 'Regression' and subdataset.shape[0] < 5: #pruning condition
+	elif algorithm == 'Regression' and (subdataset.shape[0] < 5 or root >= max_depth): #pruning condition
 	#elif algorithm == 'Regression' and subdataset['Decision'].std(ddof=0)/global_stdev < 0.4: #pruning condition
 		final_decision = subdataset['Decision'].mean() #get average
+		terminateBuilding = True
+	elif algorithm in ['ID3', 'C4.5', 'CART', 'CHAID'] and root >= max_depth:
+		final_decision = subdataset['Decision'].value_counts().idxmax() #get the most frequent one
 		terminateBuilding = True
 
 	#-----------------------------------------------

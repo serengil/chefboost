@@ -80,7 +80,7 @@ def initializeFolders():
 def initializeParams(config):
 	algorithm = 'ID3'
 	enableRandomForest = False; num_of_trees = 5; enableMultitasking = False
-	enableGBM = False; epochs = 10; learning_rate = 1; max_depth = 3
+	enableGBM = False; epochs = 10; learning_rate = 1; max_depth = 5
 	enableAdaboost = False; num_of_weak_classifier = 4
 	enableParallelism = True
 	num_cores = int(multiprocessing.cpu_count()/2) #allocate half of your total cores
