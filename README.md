@@ -1,4 +1,4 @@
-# ChefBoost
+# 👨‍🍳 ChefBoost
 
 <div align="center">
 
