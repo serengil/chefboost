@@ -433,7 +433,7 @@ def buildDecisionTree(df, root, file, config, dataset_features, parent_level = 0
 
 	if df.Decision.dtypes == 'object': #classification
 		pivot = pd.DataFrame(subdataset.Decision.value_counts()).reset_index()
-		pivot = pivot.rename(columns = {"Decision": "Instances","index": "Decision"})
+		pivot = pivot.rename(columns = {"Decision": "Instances","count": "Decision"})
 		pivot = pivot.sort_values(by = ["Instances"], ascending = False).reset_index()
 
 		else_decision = "return '%s'" % (pivot.iloc[0].Decision)
