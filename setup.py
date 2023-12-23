@@ -3,6 +3,9 @@ import setuptools
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
+with open("requirements.txt", "r", encoding="utf-8") as f:
+    requirements = f.read().split("\n")
+
 setuptools.setup(
     name="chefboost",
     version="0.0.18",
@@ -19,5 +22,5 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    install_requires=["pandas>=0.22.0", "numpy>=1.14.0", "tqdm>=4.30.0", "psutil>=5.4.3"]
+    install_requires=requirements
 )
