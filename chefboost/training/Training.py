@@ -511,12 +511,12 @@ def buildDecisionTree(
 
     if df.Decision.dtypes == "object":  # classification
         pivot = pd.DataFrame(subdataset.Decision.value_counts()).reset_index()
-        
+
         if pd.__version__.split(".")[0] == "1":
             pivot = pivot.rename(columns={"Decision": "Instances", "index": "Decision"})
-        else: # if pd.__version__.split(".")[0] == "2":
+        else:  # if pd.__version__.split(".")[0] == "2":
             pivot = pivot.rename(columns={"Decision": "Instances", "count": "Decision"})
-        
+
         pivot = pivot.sort_values(by=["Instances"], ascending=False).reset_index()
 
         else_decision = f"return '{pivot.iloc[0].Decision}'"
