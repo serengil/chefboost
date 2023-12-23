@@ -25,7 +25,6 @@ if __name__ == "__main__":
 
         logger.info("no config passed")
         df = pd.read_csv("dataset/golf.txt")
-        logger.info(df.head())
         model = cb.fit(df)
 
         gc.collect()
