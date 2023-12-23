@@ -1,4 +1,4 @@
-pip install pandas==0.22.0
-pip install numpy==1.14.0
-pip install tqdm==4.30.0
-pip install psutil==5.4.3
+pandas>=0.22.0
+numpy>=1.14.0
+tqdm>=4.30.0
+psutil>=5.4.3

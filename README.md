@@ -187,9 +187,10 @@ config = {'algorithm': 'C4.5', 'enableParallelism': False}
 model = chef.fit(df, config)
 ```
 
-### Contributing
+## Contribution [![Tests](https://github.com/serengil/chefboost/actions/workflows/tests.yml/badge.svg)](https://github.com/serengil/chefboost/actions/workflows/tests.yml)
 
-Pull requests are welcome. You should run the unit tests locally by running [`test/global-unit-test.py`](https://github.com/serengil/chefboost/blob/master/tests/global-unit-test.py). Please share the unit test result logs in the PR.
+Pull requests are more than welcome! You should run the unit tests and linting locally by running `make test` and `make lint` commands before creating a PR. Once a PR created, GitHub test workflow will be run automatically and unit test results will be available in [GitHub actions](https://github.com/serengil/chefboosts/actions) before approval.
+
 
 ### Support
 
