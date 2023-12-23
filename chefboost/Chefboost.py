@@ -443,16 +443,16 @@ def load_model(file_name: str = "model.pkl") -> dict:
     return model
 
 
-def restoreTree(moduleName) -> dict:
+def restoreTree(module_name) -> Any:
     """
     Load built model from set of decision rules
     Args:
-        moduleName (str): e.g. outputs/rules/rules to restore outputs/rules/rules.py
+        module_name (str): e.g. outputs/rules/rules to restore outputs/rules/rules.py
     Returns:
             built model (dict)
     """
 
-    return functions.restoreTree(moduleName)
+    return functions.restoreTree(module_name)
 
 
 def feature_importance(rules: Union[str, list]) -> pd.DataFrame:

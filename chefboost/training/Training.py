@@ -1,5 +1,4 @@
 import math
-import imp  # pylint:disable=deprecated-module
 import uuid
 import json
 import copy
@@ -15,6 +14,7 @@ import pandas as pd
 from chefboost.training import Preprocess
 from chefboost.commons import functions
 from chefboost.commons.logger import Logger
+from chefboost.commons.module import load_module
 
 # pylint: disable=too-many-function-args, unused-argument
 
@@ -668,9 +668,8 @@ def buildDecisionTree(
         ):
             # this is reguler decision tree. find accuracy here.
 
-            moduleName = "outputs/rules/rules"
-            fp, pathname, description = imp.find_module(moduleName)
-            myrules = imp.load_module(moduleName, fp, pathname, description)  # rules0
+            module_name = "outputs/rules/rules"
+            myrules = load_module(module_name) # rules0
             models.append(myrules)
 
     return models
@@ -682,9 +681,8 @@ def findPrediction(row):
     for j in range(0, num_of_features):
         params.append(row[j])
 
-    moduleName = "outputs/rules/rules"
-    fp, pathname, description = imp.find_module(moduleName)
-    myrules = imp.load_module(moduleName, fp, pathname, description)  # rules0
+    module_name = "outputs/rules/rules"
+    myrules = load_module(module_name) # rules0
 
     prediction = myrules.findDecision(params)
     return prediction
