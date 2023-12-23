@@ -5,13 +5,14 @@
 [![Downloads](https://pepy.tech/badge/chefboost)](https://pepy.tech/project/chefboost)
 [![Stars](https://img.shields.io/github/stars/serengil/chefboost?color=yellow)](https://github.com/serengil/chefboost)
 [![License](http://img.shields.io/:license-MIT-green.svg?style=flat)](https://github.com/serengil/chefboost/blob/master/LICENSE)
-[![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dserengil%26type%3Dpatrons&style=flat)](https://www.patreon.com/serengil?repo=chefboost)
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/serengil?logo=GitHub&color=lightgray)](https://github.com/sponsors/serengil)
+[![Tests](https://github.com/serengil/chefboost/actions/workflows/tests.yml/badge.svg)](https://github.com/serengil/chefboost/actions/workflows/tests.yml)
 [![DOI](http://img.shields.io/:DOI-10.5281/zenodo.5576203-blue.svg?style=flat)](https://doi.org/10.5281/zenodo.5576203)
 
 [![Blog](https://img.shields.io/:blog-sefiks.com-blue.svg?style=flat&logo=wordpress)](https://sefiks.com)
 [![YouTube](https://img.shields.io/:youtube-@sefiks-red.svg?style=flat&logo=youtube)](https://www.youtube.com/@sefiks?sub_confirmation=1)
 [![Twitter](https://img.shields.io/:follow-@serengil-blue.svg?style=flat&logo=twitter)](https://twitter.com/intent/user?screen_name=serengil)
+[![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dserengil%26type%3Dpatrons&style=flat)](https://www.patreon.com/serengil?repo=chefboost)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/serengil?logo=GitHub&color=lightgray)](https://github.com/sponsors/serengil)
 
 </div>
 
@@ -187,9 +188,10 @@ config = {'algorithm': 'C4.5', 'enableParallelism': False}
 model = chef.fit(df, config)
 ```
 
-### Contributing
+## Contribution [![Tests](https://github.com/serengil/chefboost/actions/workflows/tests.yml/badge.svg)](https://github.com/serengil/chefboost/actions/workflows/tests.yml)
 
-Pull requests are welcome. You should run the unit tests locally by running [`test/global-unit-test.py`](https://github.com/serengil/chefboost/blob/master/tests/global-unit-test.py). Please share the unit test result logs in the PR.
+Pull requests are more than welcome! You should run the unit tests and linting locally by running `make test` and `make lint` commands before creating a PR. Once a PR created, GitHub test workflow will be run automatically and unit test results will be available in [GitHub actions](https://github.com/serengil/chefboosts/actions) before approval.
+
 
 ### Support
 

@@ -8,7 +8,6 @@ dist/
 Pipfile
 Pipfile.lock
 .mypy_cache/
-.vscode/
 .idea/
 chefboost.egg-info/
 tests/outputs/
@@ -19,3 +18,4 @@ chefboost/tuning/__pycache__/*
 .DS_Store
 chefboost/.DS_Store
 tests/.DS_Store
+.pytest_cache
