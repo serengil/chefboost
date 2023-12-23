@@ -85,8 +85,8 @@ prediction = chef.predict(model, param = ['Sunny', 'Hot', 'High', 'Weak'])
 You can consume built decision trees directly as well. In this way, you can restore already built decision trees and skip learning steps, or apply [transfer learning](https://youtu.be/9hX8ir7_ZtA). Loaded trees offer you findDecision method to test for new instances.
 
 ```python
-moduleName = "outputs/rules/rules" #this will load outputs/rules/rules.py
-tree = chef.restoreTree(moduleName)
+module_name = "outputs/rules/rules" #this will load outputs/rules/rules.py
+tree = chef.restoreTree(module_name)
 prediction = tree.findDecision(['Sunny', 'Hot', 'High', 'Weak'])
 ```
 

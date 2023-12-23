@@ -1,11 +1,11 @@
 import multiprocessing
 from contextlib import closing
-import imp  # pylint: disable=deprecated-module
 
 from tqdm import tqdm
 
 from chefboost.commons import functions
 from chefboost.training import Training
+from chefboost.commons.module import load_module
 
 # pylint: disable=unused-argument
 
@@ -31,8 +31,8 @@ def apply(df, config, header, dataset_features, validation_df=None, process_id=N
 
         root = 1
 
-        moduleName = "outputs/rules/rule_" + str(i)
-        file = moduleName + ".py"
+        module_name = "outputs/rules/rule_" + str(i)
+        file = module_name + ".py"
 
         functions.createFile(file, header)
 
@@ -85,9 +85,8 @@ def apply(df, config, header, dataset_features, validation_df=None, process_id=N
     # -------------------------------
     # collect models for both serial and parallel here
     for i in range(0, num_of_trees):
-        moduleName = "outputs/rules/rule_" + str(i)
-        fp, pathname, description = imp.find_module(moduleName)
-        myrules = imp.load_module(moduleName, fp, pathname, description)
+        module_name = "outputs/rules/rule_" + str(i)
+        myrules = load_module(module_name)
         models.append(myrules)
 
     # -------------------------------

@@ -1,5 +1,4 @@
 import pathlib
-import imp  # pylint: disable=deprecated-module
 import os
 from os import path
 import multiprocessing
@@ -7,6 +6,7 @@ from typing import Optional
 import numpy as np
 from chefboost import Chefboost as cb
 from chefboost.commons.logger import Logger
+from chefboost.commons.module import load_module
 
 # pylint: disable=no-else-return, broad-except
 
@@ -23,9 +23,8 @@ def bulk_prediction(df, model):
     df["Prediction"] = predictions
 
 
-def restoreTree(moduleName):
-    fp, pathname, description = imp.find_module(moduleName)
-    return imp.load_module(moduleName, fp, pathname, description)
+def restoreTree(module_name):
+    return load_module(module_name)
 
 
 def softmax(w):

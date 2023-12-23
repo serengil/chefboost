@@ -1,4 +1,3 @@
-import imp  # pylint: disable=deprecated-module
 import gc
 
 import pandas as pd
@@ -8,6 +7,7 @@ from tqdm import tqdm
 from chefboost.commons import functions
 from chefboost.training import Training
 from chefboost.commons.logger import Logger
+from chefboost.commons.module import load_module
 
 # pylint: disable=unused-argument
 
@@ -23,9 +23,8 @@ def findPrediction(row):
     for j in range(0, columns - 1):
         params.append(row[j])
 
-    moduleName = f"outputs/rules/rules{epoch - 1}"
-    fp, pathname, description = imp.find_module(moduleName)
-    myrules = imp.load_module(moduleName, fp, pathname, description)
+    module_name = f"outputs/rules/rules{epoch - 1}"
+    myrules = load_module(module_name)
 
     # prediction = int(myrules.findDecision(params))
     prediction = myrules.findDecision(params)
@@ -81,9 +80,8 @@ def regressor(df, config, header, dataset_features, validation_df=None, process_
         # run data(i-1) and rules(i-1), save data1
 
         # dynamic import
-        moduleName = f"outputs/rules/rules{index - 1}"
-        fp, pathname, description = imp.find_module(moduleName)
-        myrules = imp.load_module(moduleName, fp, pathname, description)  # rules0
+        module_name = f"outputs/rules/rules{index - 1}"
+        myrules = load_module(module_name)  # rules0
 
         models.append(myrules)
 
@@ -237,9 +235,8 @@ def classifier(df, config, header, dataset_features, validation_df=None, process
             # ----------------------------
 
             # dynamic import
-            moduleName = "outputs/rules/rules-for-" + current_class + "-round-" + str(epoch)
-            fp, pathname, description = imp.find_module(moduleName)
-            myrules = imp.load_module(moduleName, fp, pathname, description)  # rules0
+            module_name = "outputs/rules/rules-for-" + current_class + "-round-" + str(epoch)
+            myrules = load_module(module_name)  # rules0
 
             models.append(myrules)
 
