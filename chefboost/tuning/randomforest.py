@@ -1,7 +1,9 @@
+from typing import Optional
 import multiprocessing
 from contextlib import closing
 
 from tqdm import tqdm
+import pandas as pd
 
 from chefboost.commons import functions
 from chefboost.training import Training
@@ -10,7 +12,15 @@ from chefboost.commons.module import load_module
 # pylint: disable=unused-argument
 
 
-def apply(df, config, header, dataset_features, validation_df=None, process_id=None):
+def apply(
+    df: pd.DataFrame,
+    config: dict,
+    header: str,
+    dataset_features: dict,
+    validation_df: Optional[pd.DataFrame] = None,
+    process_id: Optional[int] = None,
+    silent: bool = False,
+):
     models = []
 
     num_of_trees = config["num_of_trees"]
@@ -24,9 +34,10 @@ def apply(df, config, header, dataset_features, validation_df=None, process_id=N
 
     input_params = []
 
-    pbar = tqdm(range(0, num_of_trees), desc="Bagging")
+    pbar = tqdm(range(0, num_of_trees), desc="Bagging", disable=silent)
     for i in pbar:
-        pbar.set_description(f"Sub decision tree {i + 1} is processing")
+        if silent is False:
+            pbar.set_description(f"Sub decision tree {i + 1} is processing")
         subset = df.sample(frac=1 / num_of_trees)
 
         root = 1
@@ -38,7 +49,19 @@ def apply(df, config, header, dataset_features, validation_df=None, process_id=N
 
         if parallelism_on:  # parallel run
             input_params.append(
-                (subset, root, file, config, dataset_features, 0, 0, "root", i, None, process_id)
+                (
+                    subset,
+                    root,
+                    file,
+                    config,
+                    dataset_features,
+                    0,
+                    0,
+                    "root",
+                    i,
+                    None,
+                    process_id,
+                )
             )
 
         else:  # serial run
@@ -75,7 +98,7 @@ def apply(df, config, header, dataset_features, validation_df=None, process_id=N
 
             # all functions registered here
             # results = []
-            for f in tqdm(funclist):
+            for f in tqdm(funclist, disable=silent):
                 _ = f.get(timeout=100000)  # this was branch_results
                 # results.append(branch_results)
 

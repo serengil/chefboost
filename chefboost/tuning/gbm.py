@@ -1,4 +1,5 @@
 import gc
+from typing import Optional, Union
 
 import pandas as pd
 import numpy as np
@@ -14,7 +15,7 @@ from chefboost.commons.module import load_module
 logger = Logger(module="chefboost/tuning/gbm.py")
 
 
-def findPrediction(row):
+def findPrediction(row: pd.Series) -> Union[str, float]:
     epoch = row["Epoch"]
     row = row.drop(labels=["Epoch"])
     columns = row.shape[0]
@@ -32,7 +33,15 @@ def findPrediction(row):
     return prediction
 
 
-def regressor(df, config, header, dataset_features, validation_df=None, process_id=None):
+def regressor(
+    df: pd.DataFrame,
+    config: dict,
+    header: str,
+    dataset_features: dict,
+    validation_df: Optional[pd.DataFrame] = None,
+    process_id: Optional[int] = None,
+    silent: bool = False,
+) -> list:
     models = []
 
     # we will update decisions in every epoch, this will be used to restore
@@ -69,10 +78,7 @@ def regressor(df, config, header, dataset_features, validation_df=None, process_
     best_epoch_idx = 0
     best_epoch_loss = 1000000
 
-    pbar = tqdm(range(1, epochs + 1), desc="Boosting")
-
-    # for index in range(1,epochs+1):
-    # for index in tqdm(range(1,epochs+1), desc='Boosting'):
+    pbar = tqdm(range(1, epochs + 1), desc="Boosting", disable=silent)
     for index in pbar:
         logger.debug(f"epoch {index} - ")
         loss = 0
@@ -155,22 +161,33 @@ def regressor(df, config, header, dataset_features, validation_df=None, process_
 
     # ---------------------------------
 
-    logger.info(f"The best epoch is {best_epoch_idx} with {best_epoch_loss} loss value")
+    if silent is False:
+        logger.info(f"The best epoch is {best_epoch_idx} with {best_epoch_loss} loss value")
     models = models[0:best_epoch_idx]
     config["epochs"] = best_epoch_idx
 
-    logger.info(
-        f"MSE of {num_of_instances} instances are boosted from {boosted_from}"
-        f"to {best_epoch_loss} in {epochs} epochs"
-    )
+    if silent is False:
+        logger.info(
+            f"MSE of {num_of_instances} instances are boosted from {boosted_from}"
+            f"to {best_epoch_loss} in {epochs} epochs"
+        )
 
     return models
 
 
-def classifier(df, config, header, dataset_features, validation_df=None, process_id=None):
+def classifier(
+    df: pd.DataFrame,
+    config: dict,
+    header: str,
+    dataset_features: dict,
+    validation_df: Optional[pd.DataFrame] = None,
+    process_id: Optional[int] = None,
+    silent: bool = False,
+) -> tuple:
     models = []
 
-    logger.info("gradient boosting for classification")
+    if silent is False:
+        logger.info("gradient boosting for classification")
 
     epochs = config["epochs"]
     enableParallelism = config["enableParallelism"]
@@ -182,7 +199,7 @@ def classifier(df, config, header, dataset_features, validation_df=None, process
 
     boosted_predictions = np.zeros([df.shape[0], len(classes)])
 
-    pbar = tqdm(range(0, epochs), desc="Boosting")
+    pbar = tqdm(range(0, epochs), desc="Boosting", disable=silent)
 
     # store actual set, we will use this to calculate loss
     actual_set = pd.DataFrame(np.zeros([df.shape[0], len(classes)]), columns=classes)
@@ -317,9 +334,11 @@ def classifier(df, config, header, dataset_features, validation_df=None, process
 
     # --------------------------------
 
-    logger.info(
-        f"The best accuracy got in {best_accuracy_idx} epoch with the score {best_accuracy_value}"
-    )
+    if silent is False:
+        logger.info(
+            f"The best accuracy got in {best_accuracy_idx} epoch"
+            f" with the score {best_accuracy_value}"
+        )
 
     models = models[0 : best_accuracy_idx * len(classes) + len(classes)]
 

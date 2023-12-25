@@ -31,7 +31,9 @@ def findPrediction(row):
     return prediction
 
 
-def apply(df, config, header, dataset_features, validation_df=None, process_id=None):
+def apply(
+    df, config, header, dataset_features, validation_df=None, process_id=None, silent: bool = False
+):
     models = []
     alphas = []
 
@@ -53,8 +55,7 @@ def apply(df, config, header, dataset_features, validation_df=None, process_id=N
     best_epoch_idx = 0
     best_epoch_value = 1000000
 
-    # for i in range(0, num_of_weak_classifier):
-    pbar = tqdm(range(0, num_of_weak_classifier), desc="Adaboosting")
+    pbar = tqdm(range(0, num_of_weak_classifier), desc="Adaboosting", disable=silent)
     for i in pbar:
         worksheet["Decision"] = worksheet["Weight"] * worksheet["Decision"]
 
@@ -139,8 +140,8 @@ def apply(df, config, header, dataset_features, validation_df=None, process_id=N
         pbar.set_description(f"Epoch {i + 1}. Loss: {mae}. Process: ")
 
     # ------------------------------
-
-    logger.info(f"The best epoch is {best_epoch_idx} with the {best_epoch_value} MAE score")
+    if silent is False:
+        logger.info(f"The best epoch is {best_epoch_idx} with the {best_epoch_value} MAE score")
 
     models = models[0 : best_epoch_idx + 1]
     alphas = alphas[0 : best_epoch_idx + 1]

@@ -1,5 +1,5 @@
 test:
-	cd tests && python global-unit-test.py
+	cd tests && python -m pytest . -s --disable-warnings
 
 lint:
 	python -m pylint chefboost/ --fail-under=10

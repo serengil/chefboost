@@ -24,6 +24,7 @@ def fit(
     config: Optional[dict] = None,
     target_label: str = "Decision",
     validation_df: Optional[pd.DataFrame] = None,
+    silent: bool = False,
 ) -> Dict[str, Any]:
     """
     Build (a) decision tree model(s)
@@ -54,6 +55,9 @@ def fit(
             validation_df (pandas data frame): validation data frame
                 if nothing is passed to validation data frame, then the function validates
                 built trees for training data frame
+
+            silent (bool): set this to True if you do not want to see
+                any informative logs
 
     Returns:
             chefboost model
@@ -139,7 +143,8 @@ def fit(
 
     if enableParallelism == True:
         num_cores = config["num_cores"]
-        logger.info(f"[INFO]: {num_cores} CPU cores will be allocated in parallel running")
+        if silent is False:
+            logger.info(f"[INFO]: {num_cores} CPU cores will be allocated in parallel running")
 
         from multiprocessing import set_start_method, freeze_support
 
@@ -169,7 +174,8 @@ def fit(
         config["algorithm"] = "Regression"
 
     if enableGBM == True:
-        logger.info("Gradient Boosting Machines...")
+        if silent is False:
+            logger.info("Gradient Boosting Machines...")
         algorithm = "Regression"
         config["algorithm"] = "Regression"
 
@@ -184,7 +190,8 @@ def fit(
 
     # -------------------------
 
-    logger.info(f"{algorithm} tree is going to be built...")
+    if silent is False:
+        logger.info(f"{algorithm} tree is going to be built...")
 
     # initialize a dictionary. this is going to be used to check features numeric or nominal.
     # numeric features should be transformed to nominal values based on scales.
@@ -212,7 +219,13 @@ def fit(
 
     if enableAdaboost == True:
         trees, alphas = adaboost_clf.apply(
-            df, config, header, dataset_features, validation_df=validation_df, process_id=process_id
+            df,
+            config,
+            header,
+            dataset_features,
+            validation_df=validation_df,
+            process_id=process_id,
+            silent=silent,
         )
 
     elif enableGBM == True:
@@ -224,6 +237,7 @@ def fit(
                 dataset_features,
                 validation_df=validation_df,
                 process_id=process_id,
+                silent=silent,
             )
             # classification = True
 
@@ -235,12 +249,19 @@ def fit(
                 dataset_features,
                 validation_df=validation_df,
                 process_id=process_id,
+                silent=silent,
             )
             # classification = False
 
     elif enableRandomForest == True:
         trees = randomforest.apply(
-            df, config, header, dataset_features, validation_df=validation_df, process_id=process_id
+            df,
+            config,
+            header,
+            dataset_features,
+            validation_df=validation_df,
+            process_id=process_id,
+            silent=silent,
         )
     else:  # regular decision tree building
         root = 1
@@ -264,8 +285,9 @@ def fit(
             main_process_id=process_id,
         )
 
-    logger.info("-------------------------")
-    logger.info(f"finished in {time.time() - begin} seconds")
+    if silent is False:
+        logger.info("-------------------------")
+        logger.info(f"finished in {time.time() - begin} seconds")
 
     obj = {"trees": trees, "alphas": alphas, "config": config, "nan_values": nan_values}
 
@@ -273,13 +295,13 @@ def fit(
 
     # train set accuracy
     df = base_df.copy()
-    evaluate(obj, df, task="train")
+    trainset_evaluation = evaluate(obj, df, task="train", silent=silent)
+    obj["evaluation"] = {"train": trainset_evaluation}
 
     # validation set accuracy
     if isinstance(validation_df, pd.DataFrame):
-        evaluate(obj, validation_df, task="validation")
-
-    # -----------------------------------------
+        validationset_evaluation = evaluate(obj, validation_df, task="validation", silent=silent)
+        obj["evaluation"]["validation"] = validationset_evaluation
 
     return obj
 
@@ -455,31 +477,38 @@ def restoreTree(module_name) -> Any:
     return functions.restoreTree(module_name)
 
 
-def feature_importance(rules: Union[str, list]) -> pd.DataFrame:
+def feature_importance(rules: Union[str, list], silent: bool = False) -> pd.DataFrame:
     """
     Show the feature importance values of a built model
     Args:
-            rules (str or list): e.g. decision_rules = "outputs/rules/rules.py"
+        rules (str or list): e.g. decision_rules = "outputs/rules/rules.py"
             or this could be retrieved from built model as shown below.
 
-                    decision_rules = []
-                    for tree in model["trees"]:
-                       rule = .__dict__["__spec__"].origin
-                       decision_rules.append(rule)
+            ```python
+            decision_rules = []
+            for tree in model["trees"]:
+               rule = .__dict__["__spec__"].origin
+               decision_rules.append(rule)
+            ```
+        silent (bool): set this to True if you do want to see
+            any informative logs.
     Returns:
             feature importance (pd.DataFrame)
     """
 
     if not isinstance(rules, list):
         rules = [rules]
-    logger.info(f"rules: {rules}")
+
+    if silent is False:
+        logger.info(f"rules: {rules}")
 
     # -----------------------------
 
     dfs = []
 
     for rule in rules:
-        logger.info("Decision rule: {rule}")
+        if silent is False:
+            logger.info(f"Decision rule: {rule}")
 
         with open(rule, "r", encoding="UTF-8") as file:
             lines = file.readlines()
@@ -564,8 +593,12 @@ def feature_importance(rules: Union[str, list]) -> pd.DataFrame:
 
 
 def evaluate(
-    model: dict, df: pd.DataFrame, target_label: str = "Decision", task: str = "test"
-) -> None:
+    model: dict,
+    df: pd.DataFrame,
+    target_label: str = "Decision",
+    task: str = "test",
+    silent: bool = False,
+) -> dict:
     """
     Evaluate the performance of a built model on a data set
     Args:
@@ -573,8 +606,10 @@ def evaluate(
         df (pandas data frame): data frame you would like to evaluate
         target_label (str): target label
         task (string): set this to train, validation or test
+        silent (bool): set this to True if you do not want to see
+            any informative logs
     Returns:
-        None
+        evaluation results (dict)
     """
 
     # --------------------------
@@ -598,4 +633,4 @@ def evaluate(
         df["Decision"] = df["Decision"].astype(str)
         df["Prediction"] = df["Prediction"].astype(str)
 
-    cb_eval.evaluate(df, task=task)
+    return cb_eval.evaluate(df, task=task, silent=silent)
