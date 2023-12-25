@@ -510,16 +510,10 @@ def buildDecisionTree(
     # add else condition in the decision tree
 
     if df.Decision.dtypes == "object":  # classification
-        pivot = pd.DataFrame(subdataset.Decision.value_counts()).reset_index()
-
-        if pd.__version__.split(".")[0] == "1":
-            pivot = pivot.rename(columns={"Decision": "Instances", "index": "Decision"})
-        else:  # if pd.__version__.split(".")[0] == "2":
-            pivot = pivot.rename(columns={"Decision": "Instances", "count": "Decision"})
-
-        pivot = pivot.sort_values(by=["Instances"], ascending=False).reset_index()
-
-        else_decision = f"return '{pivot.iloc[0].Decision}'"
+        pivot = pd.DataFrame(subdataset.Decision.value_counts()).sort_values(
+            by=["count"], ascending=False
+        )
+        else_decision = f"return '{str(pivot.iloc[0].name)}'"
 
         if enableParallelism != True:
             functions.storeRule(file, (functions.formatRule(root), "else:"))
@@ -669,7 +663,7 @@ def buildDecisionTree(
             # this is reguler decision tree. find accuracy here.
 
             module_name = "outputs/rules/rules"
-            myrules = load_module(module_name) # rules0
+            myrules = load_module(module_name)  # rules0
             models.append(myrules)
 
     return models
@@ -682,7 +676,7 @@ def findPrediction(row):
         params.append(row[j])
 
     module_name = "outputs/rules/rules"
-    myrules = load_module(module_name) # rules0
+    myrules = load_module(module_name)  # rules0
 
     prediction = myrules.findDecision(params)
     return prediction

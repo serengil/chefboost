@@ -1,4 +1,5 @@
 import math
+import pandas as pd
 from chefboost.commons.logger import Logger
 
 # pylint: disable=broad-except
@@ -6,25 +7,38 @@ from chefboost.commons.logger import Logger
 logger = Logger(module="chefboost/commons/evaluate.py")
 
 
-def evaluate(df, task="train"):
+def evaluate(df: pd.DataFrame, task: str = "train", silent: bool = False) -> dict:
+    """
+    Evaluate results
+    Args:
+        df (pd.DataFrame): data frame
+        task (str): train, test
+        silent (bool): set this to True if you do not want to
+            see any informative logs
+    Returns:
+        evaluation results (dict)
+    """
     if df["Decision"].dtypes == "object":
         problem_type = "classification"
     else:
         problem_type = "regression"
 
-    # -------------------------------------
-
+    evaluation_results = {}
     instances = df.shape[0]
 
-    logger.info("-------------------------")
-    logger.info(f"Evaluate {task} set")
-    logger.info("-------------------------")
+    if silent is False:
+        logger.info("-------------------------")
+        logger.info(f"Evaluate {task} set")
+        logger.info("-------------------------")
 
     if problem_type == "classification":
         idx = df[df["Prediction"] == df["Decision"]].index
         accuracy = 100 * len(idx) / df.shape[0]
-        logger.info(f"Accuracy: {accuracy}% on {instances} instances")
+        if silent is False:
+            logger.info(f"Accuracy: {accuracy}% on {instances} instances")
 
+        evaluation_results["Accuracy"] = accuracy
+        evaluation_results["Instances"] = instances
         # -----------------------------
 
         predictions = df.Prediction.values
@@ -48,8 +62,12 @@ def evaluate(df, task="train"):
                 confusion_row.append(item)
             confusion_matrix.append(confusion_row)
 
-        logger.info(f"Labels: {labels}")
-        logger.info(f"Confusion matrix: {confusion_matrix}")
+        if silent is False:
+            logger.info(f"Labels: {labels}")
+            logger.info(f"Confusion matrix: {confusion_matrix}")
+
+        evaluation_results["Labels"] = labels
+        evaluation_results["Confusion matrix"] = confusion_matrix
 
         # -----------------------------
         # precision and recall
@@ -79,11 +97,19 @@ def evaluate(df, task="train"):
             accuracy = round(100 * (tp + tn) / (tp + tn + fp + fn + epsilon), 4)
 
             if len(labels) >= 3:
-                logger.info(f"Decision {decision_class}")
-                logger.info(f"Accuray: {accuracy}")
+                if silent is False:
+                    logger.info(f"Decision {decision_class}")
+                    logger.info(f"Accuracy: {accuracy}")
 
-            logger.info(f"Precision: {precision}%, Recall: {recall}%, F1: {f1_score}%")
-            logger.debug(f"TP: {tp}, TN: {tn}, FP: {fp}, FN: {fn}")
+                evaluation_results[f"Decision {decision_class}'s Accuracy"] = accuracy
+
+            if silent is False:
+                logger.info(f"Precision: {precision}%, Recall: {recall}%, F1: {f1_score}%")
+                logger.debug(f"TP: {tp}, TN: {tn}, FP: {fp}, FN: {fn}")
+
+            evaluation_results["Precision"] = precision
+            evaluation_results["Recall"] = recall
+            evaluation_results["F1"] = f1_score
 
             if len(labels) < 3:
                 break
@@ -99,13 +125,17 @@ def evaluate(df, task="train"):
 
         if instances > 0:
             mae = df["Absolute_Error"].sum() / instances
-            logger.info(f"MAE: {mae}")
-
             mse = df["Absolute_Error_Squared"].sum() / instances
-            logger.info(f"MSE: {mse}")
-
             rmse = math.sqrt(mse)
-            logger.info(f"RMSE: {rmse}")
+
+            evaluation_results["MAE"] = mae
+            evaluation_results["MSE"] = mse
+            evaluation_results["RMSE"] = rmse
+
+            if silent is False:
+                logger.info(f"MAE: {mae}")
+                logger.info(f"MSE: {mse}")
+                logger.info(f"RMSE: {rmse}")
 
             rae = 0
             rrse = 0
@@ -122,12 +152,26 @@ def evaluate(df, task="train"):
             except Exception as err:
                 logger.error(str(err))
 
-            logger.info(f"RAE: {rae}")
-            logger.info(f"RRSE {rrse}")
+            if silent is False:
+                logger.info(f"RAE: {rae}")
+                logger.info(f"RRSE {rrse}")
+
+            evaluation_results["RAE"] = rae
+            evaluation_results["RRSE"] = rrse
 
             mean = df["Decision"].mean()
-            logger.info(f"Mean: {mean}")
+
+            if silent is False:
+                logger.info(f"Mean: {mean}")
+
+            evaluation_results["Mean"] = mean
 
             if mean > 0:
-                logger.info(f"MAE / Mean: {100 * mae / mean}%")
-                logger.info(f"RMSE / Mean: {100 * rmse / mean}%")
+                if silent is False:
+                    logger.info(f"MAE / Mean: {100 * mae / mean}%")
+                    logger.info(f"RMSE / Mean: {100 * rmse / mean}%")
+
+                evaluation_results["MAE / Mean"] = 100 * mae / mean
+                evaluation_results["RMSE / Mean"] = 100 * rmse / mean
+
+    return evaluation_results
