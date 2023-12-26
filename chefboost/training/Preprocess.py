@@ -1,12 +1,26 @@
 import math
 import numpy as np
+import pandas as pd
 from chefboost.training import Training
 from chefboost.commons.logger import Logger
 
 logger = Logger(module="chefboost/training/Preprocess.py")
 
 
-def processContinuousFeatures(algorithm, df, column_name, entropy, config):
+def processContinuousFeatures(
+    algorithm: str, df: pd.DataFrame, column_name: str, entropy: float, config: dict
+) -> pd.DataFrame:
+    """
+    Find the best split point for numeric features
+    Args:
+        df (pd.DataFrame): (sub) training dataframe
+        column_name (str): current column to process
+        entropy (float): calculated entropy
+        config (dict): training configuration
+    Returns
+        df (pd.DataFrame): dataframe with numeric columns updated
+            to nominal (e.g. instead of continious age >40 or <=40)
+    """
     # if True:
     if df[column_name].nunique() <= 20:
         unique_values = sorted(df[column_name].unique())

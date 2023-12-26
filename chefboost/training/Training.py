@@ -1,55 +1,41 @@
+# built-in imports
 import math
 import uuid
 import json
 import copy
-import multiprocessing
-import multiprocessing.pool
-from contextlib import closing
 import gc
-import psutil
+from contextlib import closing
+from typing import Optional
 
+# 3rd party
+import psutil
 import numpy as np
 import pandas as pd
 
+# project's imports
 from chefboost.training import Preprocess
 from chefboost.commons import functions
 from chefboost.commons.logger import Logger
 from chefboost.commons.module import load_module
+from chefboost.commons.daemon import CustomPool
 
 # pylint: disable=too-many-function-args, unused-argument
 
 logger = Logger(module="chefboost/training/Training.py")
 
-# ----------------------------------------
-
 global decision_rules  # pylint: disable=global-at-module-level
 
 
-class NoDaemonProcess(multiprocessing.Process):
-    # make 'daemon' attribute always return False
-    def _get_daemon(self):
-        return False
-
-    def _set_daemon(self, value):
-        pass
-
-    daemon = property(_get_daemon, _set_daemon)
-
-
-class NoDaemonContext(type(multiprocessing.get_context())):
-    # pylint: disable=too-few-public-methods
-    Process = NoDaemonProcess
-
-
-class MyPool(multiprocessing.pool.Pool):
-    # pylint: disable=too-few-public-methods, abstract-method, super-with-arguments
-    def __init__(self, *args, **kwargs):
-        kwargs["context"] = NoDaemonContext()
-        super(MyPool, self).__init__(*args, **kwargs)
-
-
-# ----------------------------------------
-def calculateEntropy(df, config):
+def calculateEntropy(df: pd.DataFrame, config: dict) -> float:
+    """
+    Calculate entropy for a given dataframe with respect
+        to the algorithm in the configuration
+    Args:
+        df (pd.DataFrame): train set's data frame
+        config (dict): configuration dictionary
+    Returns:
+        entropy (float)
+    """
     algorithm = config["algorithm"]
 
     # --------------------------
@@ -64,21 +50,31 @@ def calculateEntropy(df, config):
     decisions = df["Decision"].value_counts().keys().tolist()
 
     entropy = 0
-
     for i, decision in enumerate(decisions):
         num_of_decisions = df["Decision"].value_counts().tolist()[i]
         logger.debug(f"{decision} -> {num_of_decisions}")
-
         class_probability = num_of_decisions / instances
-
         entropy = entropy - class_probability * math.log(class_probability, 2)
 
     return entropy
 
 
-def findDecision(df, config):
-    # information gain for id3, gain ratio for c4.5, gini for cart,
-    # chi square for chaid and std for regression
+def findDecision(df: pd.DataFrame, config: dict) -> tuple:
+    """
+    Find the most dominant decision for a given dataframe
+    Args:
+        df (pd.DataFrame): (sub) train set's dataframe
+        config (dict): configuration
+    Returns
+        result (tuple): the most dominant feature, data frame's
+            number of instances, metric value (e.g. information gain
+            for ID3), metric name (e.g. gain ratio for C4.5)
+
+    Information about metrics: information gain for id3, gain ratio
+    for c4.5, gini for cart,     chi square for chaid and std
+    for regression
+    """
+
     algorithm = config["algorithm"]
 
     resp_obj = findGains(df, config)
@@ -111,7 +107,15 @@ def findDecision(df, config):
     return winner_name, df.shape[0], metric_value, metric_name
 
 
-def findGains(df, config):
+def findGains(df: pd.DataFrame, config: dict) -> dict:
+    """
+    Find entropy and gains of each feature in the data frame
+    Args:
+        df (pd.DataFrame): (sub) train set as data frame
+        config (dict): training configuration
+    Returns:
+        result (dict): gains with respect to the algorithm
+    """
     algorithm = config["algorithm"]
     decision_classes = df["Decision"].unique()
 
@@ -227,22 +231,46 @@ def createBranchWrapper(func, args):
 
 
 def createBranch(
-    config,
-    current_class,
-    subdataset,
-    numericColumn,
-    branch_index,
-    winner_name,
-    winner_index,
-    root,
-    parents,
-    file,
-    dataset_features,
-    num_of_instances,
-    metric,
-    tree_id=0,
-    main_process_id=None,
-):
+    config: dict,
+    current_class: str,
+    subdataset: pd.DataFrame,
+    numericColumn: bool,
+    branch_index: int,
+    winner_name: str,
+    winner_index: int,
+    root: int,
+    parents: str,
+    file: str,
+    dataset_features: dict,
+    num_of_instances: int,
+    metric: float,
+    tree_id: int = 0,
+    main_process_id: Optional[int] = None,
+) -> list:
+    """
+    Create a branch and its leafs in the tree
+    Args:
+        config (dict): training configuration
+        current_class (str): condition for the current leaf
+            e.g. '>40' or '<=40' if the current branch is age
+        subdataset (pd.DataFrame): filtered dataframe for the
+            current_class' condition
+        numericColumn (bool): current branch is numeric or nominal
+        branch_index (int): current index. will use if for the first
+            one and elif for the rest
+        winner_name (str): the most dominant feature's name
+        winner_index (int): index of the most dominant feature's name
+        root (int): depth of the current decision rule
+        parents (str): parent's uuid. using root name for the top one.
+        file (str): target file to store rules
+        dataset_features (dict): feature names
+        num_of_instances (int): number of rows
+        metric (float): e.g. information gain result for ID3
+        tree_id (int): current tree's id
+        main_process_id (int): main tree's process id
+    Returns
+        custom rules (list)
+    """
     custom_rules = []
 
     algorithm = config["algorithm"]
@@ -389,18 +417,38 @@ def createBranch(
 
 
 def buildDecisionTree(
-    df,
-    root,
-    file,
-    config,
-    dataset_features,
-    parent_level=0,
-    leaf_id=0,
-    parents="root",
-    tree_id=0,
-    validation_df=None,
-    main_process_id=None,
-):
+    df: pd.DataFrame,
+    root: int,
+    file: str,
+    config: dict,
+    dataset_features: dict,
+    parent_level: int = 0,
+    leaf_id: int = 0,
+    parents: str = "root",
+    tree_id: int = 0,
+    validation_df: Optional[pd.DataFrame] = None,
+    main_process_id: Optional[int] = None,
+) -> list:
+    """
+    Build a decition tree rules
+    Args:
+        df (pd.DataFrame): (sub) train set's data frame
+        root (int): current depth
+        file (str): target file to store rules
+        config (dict): training configuration
+        dataset_features (dict): pivot information about current
+            dataframe's features with types
+        parent_level (int): depth of the parent
+        leaf_id (int): index of the current leaf. will use if
+            for the first, and elif for the rest
+        parents (str): id of the parent leaf as uuid. root is for
+            the top one.
+        tree_id (int): tree's id
+        validation_df (pd.DataFrame): validation dataframe
+        main_process_id (int): process id of the main trx
+    Returns:
+        models (list): list of dict as built model information
+    """
     models = []
 
     decision_rules = []
@@ -588,7 +636,7 @@ def buildDecisionTree(
             POOL_SIZE = len(classes)
 
             # with closing(multiprocessing.Pool(POOL_SIZE)) as pool:
-            with closing(MyPool(POOL_SIZE)) as pool:
+            with closing(CustomPool(POOL_SIZE)) as pool:
                 funclist = []
 
                 for input_param in input_params:
@@ -669,25 +717,17 @@ def buildDecisionTree(
     return models
 
 
-def findPrediction(row):
-    params = []
-    num_of_features = row.shape[0] - 1
-    for j in range(0, num_of_features):
-        params.append(row[j])
-
-    module_name = "outputs/rules/rules"
-    myrules = load_module(module_name)  # rules0
-
-    prediction = myrules.findDecision(params)
-    return prediction
-
-
-# If you set parelellisim True, then branches will be created parallel. Rules are stored in a
-# json file randomly. This program reconstructs built rules in a tree form.
-# In this way, we can build decision trees faster.
-
-
-def reconstructRules(source, feature_names, tree_id=0):
+def reconstructRules(source: str, feature_names, tree_id: int = 0) -> None:
+    """
+    Reconstruct rules as python files from randomly created json
+        files in parallel runs
+    Args:
+        source (str): json file name (e.g. outputs/rules/rules.json)
+        feature_names (list): feature names
+        tree_id (int): tree's id
+    Returns:
+        None
+    """
     logger.debug(f"Reconstructing {source}")
 
     file_name = source.split(".json")[0]
@@ -736,24 +776,33 @@ def reconstructRules(source, feature_names, tree_id=0):
             rule_set.append(rule)
             logger.debug(padleft(instance["rule"], instance["current_level"]))
 
-    df = np.array(rule_set)
+    np_rules = np.array(rule_set)
 
-    def extractRules(df, parent="root", level=1):
+    def extract_rules(np_rules: np.ndarray, parent: str = "root", level: int = 1) -> None:
+        """
+        Extract rules
+        Args:
+            np_rules (ndarray): (sub) training data frame
+            parent (str): parent leaf's uuid or root for the top one
+            level (int): current depth
+        Returns:
+            None
+        """
         level_raw = level * 1
         parent_raw = copy.copy(parent)
 
         else_rule = ""
 
         leaf_idx = 0
-        for i in range(0, df.shape[0]):
-            current_level = int(df[i][0])
-            leaf_id = df[i][1]
-            parent_id = df[i][2]
-            rule = df[i][3]
-            feature_name = df[i][4]
-            instances = int(df[i][5])
-            metric = float(df[i][6])
-            return_statement = int(df[i][7])
+        for i in range(0, np_rules.shape[0]):
+            current_level = int(np_rules[i][0])
+            leaf_id = np_rules[i][1]
+            parent_id = np_rules[i][2]
+            rule = np_rules[i][3]
+            feature_name = np_rules[i][4]
+            instances = int(np_rules[i][5])
+            metric = float(np_rules[i][6])
+            return_statement = int(np_rules[i][7])
 
             if parent_id == parent:
                 if_statement = False
@@ -786,7 +835,7 @@ def reconstructRules(source, feature_names, tree_id=0):
 
                     level = level + 1
                     parent = copy.copy(leaf_id)
-                    extractRules(df, parent, level)
+                    extract_rules(np_rules, parent, level)
                     level = level_raw * 1
                     parent = copy.copy(parent_raw)  # restore
 
@@ -798,8 +847,7 @@ def reconstructRules(source, feature_names, tree_id=0):
             logger.debug(padleft(else_rule, level))
             functions.storeRule(file_name, padleft(else_rule, level))
 
+    # end of extract_rules
     # ------------------------------------
 
-    extractRules(df)
-
-    # ------------------------------------
+    extract_rules(np_rules)

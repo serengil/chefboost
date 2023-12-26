@@ -20,7 +20,20 @@ def apply(
     validation_df: Optional[pd.DataFrame] = None,
     process_id: Optional[int] = None,
     silent: bool = False,
-):
+) -> list:
+    """
+    Train procedure of random forest
+    Args:
+        df (pd.DataFrame): train set
+        config (dict): configuration sent to fit function
+        header (str): output module's header line
+        dataset_features (dict): dataframe's columns with datatypes
+        validation_df (pd.DataFrame): validation set
+        process_id (int): process id of parent trx
+        silent (bool): set this to True to make it silent
+    Returns:
+        result (list): list of built models
+    """
     models = []
 
     num_of_trees = config["num_of_trees"]
@@ -131,6 +144,9 @@ def buildDecisionTree(
     validation_df=None,
     process_id=None,
 ):
+    """
+    Wrapper for Training.buildDecisionTree
+    """
     Training.buildDecisionTree(
         df,
         root,

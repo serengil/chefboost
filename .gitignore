@@ -3,6 +3,7 @@ __pycache__/*
 commons/__pycache__/*
 training/__pycache__/*
 tuning/__pycache__/*
+tests/__pycache__/*
 build/
 dist/
 Pipfile
@@ -19,3 +20,4 @@ chefboost/tuning/__pycache__/*
 chefboost/.DS_Store
 tests/.DS_Store
 .pytest_cache
+*.pyc
