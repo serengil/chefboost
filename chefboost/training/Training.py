@@ -556,12 +556,10 @@ def buildDecisionTree(
 
     # ---------------------------
     # add else condition in the decision tree
-
     if df.Decision.dtypes == "object":  # classification
-        pivot = pd.DataFrame(subdataset.Decision.value_counts()).sort_values(
-            by=["count"], ascending=False
-        )
+        pivot = pd.DataFrame(df.Decision.value_counts()).sort_values(by=["count"], ascending=False)
         else_decision = f"return '{str(pivot.iloc[0].name)}'"
+        print(f"else decision is {else_decision}")
 
         if enableParallelism != True:
             functions.storeRule(file, (functions.formatRule(root), "else:"))
@@ -588,7 +586,7 @@ def buildDecisionTree(
             decision_rules.append(sample_rule)
 
     else:  # regression
-        else_decision = f"return {subdataset.Decision.mean()}"
+        else_decision = f"return {df.Decision.mean()}"
 
         if enableParallelism != True:
             functions.storeRule(file, (functions.formatRule(root), "else:"))
