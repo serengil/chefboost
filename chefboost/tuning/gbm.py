@@ -15,7 +15,15 @@ from chefboost.commons.module import load_module
 logger = Logger(module="chefboost/tuning/gbm.py")
 
 
-def findPrediction(row: pd.Series) -> Union[str, float]:
+def findPrediction(row: pd.Series) -> Union[str, int, float]:
+    """
+    Make a prediction for a row of data frame on built gbm model
+    Args:
+        row (pd.Series): a row of a pandas data frame
+    Returns:
+        result (str or float): str for classifier, int or float
+            for regressor
+    """
     epoch = row["Epoch"]
     row = row.drop(labels=["Epoch"])
     columns = row.shape[0]
@@ -42,6 +50,19 @@ def regressor(
     process_id: Optional[int] = None,
     silent: bool = False,
 ) -> list:
+    """
+    Train procedure of adaboost gbm regressor
+    Args:
+        df (pd.DataFrame): train set
+        config (dict): configuration sent to fit function
+        header (str): output module's header line
+        dataset_features (dict): dataframe's columns with datatypes
+        validation_df (pd.DataFrame): validation set
+        process_id (int): process id of parent trx
+        silent (bool): set this to True to make it silent
+    Returns:
+        result (list): list of built models
+    """
     models = []
 
     # we will update decisions in every epoch, this will be used to restore
@@ -184,6 +205,20 @@ def classifier(
     process_id: Optional[int] = None,
     silent: bool = False,
 ) -> tuple:
+    """
+    Train procedure of adaboost gbm classifier
+    Args:
+        df (pd.DataFrame): train set
+        config (dict): configuration sent to fit function
+        header (str): output module's header line
+        dataset_features (dict): dataframe's columns with datatypes
+        validation_df (pd.DataFrame): validation set
+        process_id (int): process id of parent trx
+        silent (bool): set this to True to make it silent
+    Returns:
+        result (tuple): list of built models, unique classes
+            in target column
+    """
     models = []
 
     if silent is False:

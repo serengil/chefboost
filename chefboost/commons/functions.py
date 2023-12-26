@@ -1,9 +1,12 @@
 import pathlib
 import os
+import sys
 from os import path
+from types import ModuleType
 import multiprocessing
-from typing import Optional
+from typing import Optional, Union
 import numpy as np
+import pandas as pd
 from chefboost import Chefboost as cb
 from chefboost.commons.logger import Logger
 from chefboost.commons.module import load_module
@@ -13,7 +16,15 @@ from chefboost.commons.module import load_module
 logger = Logger(module="chefboost/commons/functions.py")
 
 
-def bulk_prediction(df, model):
+def bulk_prediction(df: pd.DataFrame, model: dict) -> None:
+    """
+    Perform a bulk prediction on given dataframe
+    Args:
+        df (pd.DataFrame): input data frame
+        model (dict): built model
+    Returns:
+        None
+    """
     predictions = []
     for _, instance in df.iterrows():
         features = instance.values[0:-1]
@@ -23,17 +34,35 @@ def bulk_prediction(df, model):
     df["Prediction"] = predictions
 
 
-def restoreTree(module_name):
+def restoreTree(module_name: str) -> ModuleType:
+    """
+    Restores a built tree
+    """
     return load_module(module_name)
 
 
-def softmax(w):
+def softmax(w: list) -> np.ndarray:
+    """
+    Softmax function
+    Args:
+        w (list): probabilities
+    Returns:
+        result (numpy.ndarray): softmax of inputs
+    """
     e = np.exp(np.array(w, dtype=np.float32))
     dist = e / np.sum(e)
     return dist
 
 
-def sign(x):
+def sign(x: Union[int, float]) -> int:
+    """
+    Sign function
+    Args:
+        x (int or float): input
+    Returns
+        result (int) 1 for positive inputs, -1 for negative
+            inputs, 0 for neutral input
+    """
     if x > 0:
         return 1
     elif x < 0:
@@ -42,7 +71,14 @@ def sign(x):
         return 0
 
 
-def formatRule(root):
+def formatRule(root: int) -> str:
+    """
+    Format a rule in the output file (tree)
+    Args:
+        root (int): degree of current rule
+    Returns:
+        formatted rule (str)
+    """
     resp = ""
 
     for _ in range(0, root):
@@ -51,20 +87,37 @@ def formatRule(root):
     return resp
 
 
-def storeRule(file, content):
+def storeRule(file: str, content: str) -> None:
+    """
+    Store a custom rule
+    Args:
+        file (str): target file
+        content (str): content to store
+    Returns:
+        None
+    """
     with open(file, "a+", encoding="UTF-8") as f:
         f.writelines(content)
         f.writelines("\n")
 
 
-def createFile(file, content):
+def createFile(file: str, content: str) -> None:
+    """
+    Create a file with given content
+    Args:
+        file (str): target file
+        content (str): content to store
+    Returns
+        None
+    """
     with open(file, "w", encoding="UTF-8") as f:
         f.write(content)
 
 
-def initializeFolders():
-    import sys
-
+def initializeFolders() -> None:
+    """
+    Initialize required folders
+    """
     sys.path.append("..")
     pathlib.Path("outputs").mkdir(parents=True, exist_ok=True)
     pathlib.Path("outputs/data").mkdir(parents=True, exist_ok=True)
@@ -97,8 +150,14 @@ def initializeFolders():
     # ------------------------------------
 
 
-def initializeParams(config: Optional[dict] = None):
-
+def initializeParams(config: Optional[dict] = None) -> dict:
+    """
+    Arrange a chefboost configuration
+    Args:
+        config (dict): initial configuration
+    Returns:
+        config (dict): final configuration
+    """
     if config == None:
         config = {}
 

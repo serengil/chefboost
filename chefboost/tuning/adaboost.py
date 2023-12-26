@@ -1,4 +1,5 @@
 import math
+from typing import Optional
 
 import pandas as pd
 import numpy as np
@@ -14,7 +15,14 @@ from chefboost.commons.module import load_module
 logger = Logger(module="chefboost/tuning/adaboost.py")
 
 
-def findPrediction(row):
+def findPrediction(row: pd.Series) -> int:
+    """
+    Make prediction for an instance with a built adaboost model
+    Args:
+        row (pd.Series): row of a pandas dataframe
+    Returns
+        prediction (int)
+    """
     epoch = row["Epoch"]
     row = row.drop(labels=["Epoch"])
     columns = row.shape[0]
@@ -32,8 +40,27 @@ def findPrediction(row):
 
 
 def apply(
-    df, config, header, dataset_features, validation_df=None, process_id=None, silent: bool = False
-):
+    df: pd.DataFrame,
+    config: dict,
+    header: str,
+    dataset_features: dict,
+    validation_df: Optional[pd.DataFrame] = None,
+    process_id: Optional[int] = None,
+    silent: bool = False,
+) -> tuple:
+    """
+    Train procedure of adaboost algorithm
+    Args:
+        df (pd.DataFrame): train set
+        config (dict): configuration sent to fit function
+        header (str): output module's header line
+        dataset_features (dict): dataframe's columns with datatypes
+        validation_df (pd.DataFrame): validation set
+        process_id (int): process id of parent trx
+        silent (bool): set this to True to make it silent
+    Returns:
+        result (tuple): models and alphas
+    """
     models = []
     alphas = []
 
@@ -151,13 +178,19 @@ def apply(
     return models, alphas
 
 
-def initializeAlphaFile():
+def initializeAlphaFile() -> None:
+    """
+    Initialize alpha file
+    """
     file = "outputs/rules/alphas.py"
     header = "def findAlpha(epoch):\n"
     functions.createFile(file, header)
 
 
-def addEpochAlpha(epoch, alpha):
+def addEpochAlpha(epoch: int, alpha: int) -> None:
+    """
+    Add epoch's result into alpha file
+    """
     file = "outputs/rules/alphas.py"
     content = "   if epoch == " + str(epoch) + ":\n"
     content += "      return " + str(alpha)
