@@ -158,65 +158,45 @@ def initializeParams(config: Optional[dict] = None) -> dict:
     Returns:
         config (dict): final configuration
     """
-    if config == None:
+    if config is None:
         config = {}
 
-    algorithm = "ID3"
-    enableRandomForest = False
-    num_of_trees = 5
-    enableMultitasking = False
-    enableGBM = False
-    epochs = 10
-    learning_rate = 1
-    max_depth = 5
-    enableAdaboost = False
-    num_of_weak_classifier = 4
-    enableParallelism = False
-    num_cores = int(multiprocessing.cpu_count() / 2)  # allocate half of your total cores
-    # num_cores = int((3*multiprocessing.cpu_count())/4) #allocate 3/4 of your total cores
-    # num_cores = multiprocessing.cpu_count()
+    # set these default values if they are not mentioned in config
+    if config.get("algorithm") is None:
+        config["algorithm"] = "ID3"
 
-    for key, value in config.items():
-        if key == "algorithm":
-            algorithm = value
-        # ---------------------------------
-        elif key == "enableRandomForest":
-            enableRandomForest = value
-        elif key == "num_of_trees":
-            num_of_trees = value
-        elif key == "enableMultitasking":
-            enableMultitasking = value
-        # ---------------------------------
-        elif key == "enableGBM":
-            enableGBM = value
-        elif key == "epochs":
-            epochs = value
-        elif key == "learning_rate":
-            learning_rate = value
-        elif key == "max_depth":
-            max_depth = value
-        # ---------------------------------
-        elif key == "enableAdaboost":
-            enableAdaboost = value
-        elif key == "num_of_weak_classifier":
-            num_of_weak_classifier = value
-        # ---------------------------------
-        elif key == "enableParallelism":
-            enableParallelism = value
-        elif key == "num_cores":
-            num_cores = value
+    if config.get("enableRandomForest") is None:
+        config["enableRandomForest"] = False
 
-    config["algorithm"] = algorithm
-    config["enableRandomForest"] = enableRandomForest
-    config["num_of_trees"] = num_of_trees
-    config["enableMultitasking"] = enableMultitasking
-    config["enableGBM"] = enableGBM
-    config["epochs"] = epochs
-    config["learning_rate"] = learning_rate
-    config["max_depth"] = max_depth
-    config["enableAdaboost"] = enableAdaboost
-    config["num_of_weak_classifier"] = num_of_weak_classifier
-    config["enableParallelism"] = enableParallelism
-    config["num_cores"] = num_cores
+    if config.get("num_of_trees") is None:
+        config["num_of_trees"] = 5
+
+    if config.get("enableMultitasking") is None:
+        config["enableMultitasking"] = False
+
+    if config.get("enableGBM") is None:
+        config["enableGBM"] = False
+
+    if config.get("epochs") is None:
+        config["epochs"] = 10
+
+    if config.get("learning_rate") is None:
+        config["learning_rate"] = 1
+
+    if config.get("max_depth") is None:
+        config["max_depth"] = 5
+
+    if config.get("enableAdaboost") is None:
+        config["enableAdaboost"] = False
+
+    if config.get("num_of_weak_classifier") is None:
+        config["num_of_weak_classifier"] = 4
+
+    if config.get("enableParallelism") is None:
+        config["enableParallelism"] = False
+
+    if config.get("num_cores") is None:
+        # allocate half of your total cores
+        config["num_cores"] = int(multiprocessing.cpu_count() / 2)
 
     return config
