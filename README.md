@@ -3,7 +3,7 @@
 <div align="center">
 
 [![Downloads](https://pepy.tech/badge/chefboost)](https://pepy.tech/project/chefboost)
-[![Stars](https://img.shields.io/github/stars/serengil/chefboost?color=yellow)](https://github.com/serengil/chefboost)
+[![Stars](https://img.shields.io/github/stars/serengil/chefboost?color=yellow&style=flat&label=%E2%AD%90%20stars)](https://github.com/serengil/chefboost/stargazers)
 [![License](http://img.shields.io/:license-MIT-green.svg?style=flat)](https://github.com/serengil/chefboost/blob/master/LICENSE)
 [![Tests](https://github.com/serengil/chefboost/actions/workflows/tests.yml/badge.svg)](https://github.com/serengil/chefboost/actions/workflows/tests.yml)
 [![DOI](http://img.shields.io/:DOI-10.5281/zenodo.5576203-blue.svg?style=flat)](https://doi.org/10.5281/zenodo.5576203)
