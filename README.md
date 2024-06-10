@@ -197,10 +197,14 @@ Pull requests are more than welcome! You should run the unit tests and linting l
 
 There are many ways to support a project - starring⭐️ the GitHub repos is just one 🙏
 
-You can also support this work on [Patreon](https://www.patreon.com/serengil?repo=chefboost)
+You can also support this work on [Patreon](https://www.patreon.com/serengil?repo=chefboost), [GitHub Sponsors](https://github.com/sponsors/serengil) or [Buy Me a Coffee](https://buymeacoffee.com/serengil).
 
 <a href="https://www.patreon.com/serengil?repo=chefboost">
 <img src="https://raw.githubusercontent.com/serengil/chefboost/master/icon/patreon.png" width="30%" height="30%">
+</a>
+
+<a href="https://buymeacoffee.com/serengil">
+<img src="https://raw.githubusercontent.com/serengil/chefboost/master/icon/bmc-button.png" width="25%" height="25%">
 </a>
 
 ### Citation
