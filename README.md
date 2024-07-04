@@ -1,6 +1,8 @@
-# 👨‍🍳 ChefBoost
+# ChefBoost
 
 <div align="center">
+
+👨‍🍳
 
 [![Downloads](https://pepy.tech/badge/chefboost)](https://pepy.tech/project/chefboost)
 [![Stars](https://img.shields.io/github/stars/serengil/chefboost?color=yellow&style=flat&label=%E2%AD%90%20stars)](https://github.com/serengil/chefboost/stargazers)
