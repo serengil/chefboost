@@ -211,6 +211,8 @@ You can also support this work on [Patreon](https://www.patreon.com/serengil?rep
 <img src="https://raw.githubusercontent.com/serengil/chefboost/master/icon/bmc-button.png" width="25%" height="25%">
 </a>
 
+Also, your company's logo will be shown on README on GitHub if you become sponsor in gold, silver or bronze tiers.
+
 ### Citation
 
 Please cite [ChefBoost](https://doi.org/10.5281/zenodo.5576203) in your publications if it helps your research. Here is an example BibTeX entry:
