@@ -735,7 +735,7 @@ def reconstructRules(source: str, feature_names, tree_id: int = 0) -> None:
     constructor = "def findDecision(obj): #"
     idx = 0
     for feature in feature_names:
-        constructor = constructor + "obj[" + str(idx) + "]: " + feature
+        constructor = constructor + "obj.iloc[" + str(idx) + "]: " + feature
 
         if idx < len(feature_names) - 1:
             constructor = constructor + ", "
