@@ -707,7 +707,7 @@ def buildDecisionTree(
         ):
             # this is reguler decision tree. find accuracy here.
 
-            module_name = "outputs/rules/rules"
+            module_name = "outputs.rules.rules"
             myrules = load_module(module_name)  # rules0
             models.append(myrules)
 
