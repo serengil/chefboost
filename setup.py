@@ -8,7 +8,7 @@ with open("requirements.txt", "r", encoding="utf-8") as f:
 
 setuptools.setup(
     name="chefboost",
-    version="0.0.18",
+    version="0.0.19",
     author="Sefik Ilkin Serengil",
     author_email="serengil@gmail.com",
     description="Lightweight Decision Tree Framework Supporting GBM, Random Forest and Adaboost",
@@ -21,6 +21,6 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
-    install_requires=requirements
+    python_requires=">=3.6",
+    install_requires=requirements,
 )
