@@ -557,7 +557,10 @@ def buildDecisionTree(
     # ---------------------------
     # add else condition in the decision tree
     if df.Decision.dtypes == "object":  # classification
-        pivot = pd.DataFrame(df.Decision.value_counts()).sort_values(by=["count"], ascending=False)
+        # value_counts return count label in 3.8, and Decision label in 3.9
+        df_summary = pd.DataFrame(df.Decision.value_counts())
+        count_label = df_summary.columns[0]
+        pivot = df_summary.sort_values(by=[count_label], ascending=False)
         else_decision = f"return '{str(pivot.iloc[0].name)}'"
 
         if enableParallelism != True:

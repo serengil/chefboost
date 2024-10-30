@@ -12,10 +12,10 @@ def load_module(module_name: str) -> ModuleType:
     Returns:
         module (ModuleType)
     """
-    if sys.version_info >= (3, 11):
+    if sys.version_info >= (3, 9):
         import importlib.util
 
-        spec = importlib.util.find_spec(module_name)
+        spec = importlib.util.find_spec(module_name.replace("/", "."))
         if spec is None:
             raise ImportError(f"Module '{module_name}' not found")
 
